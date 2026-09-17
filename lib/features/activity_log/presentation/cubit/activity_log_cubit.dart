@@ -69,6 +69,7 @@ class ActivityLogCubit extends Cubit<ActivityLogState> {
   Future<void> loadFirst() async {
     emit(state.copyWith(isLoading: true, clearFailure: true));
     final result = await _repository.getActivityLog(page: 1, action: _action, modelType: _modelType);
+    if (isClosed) return;
     result.when(
       success: (page) => emit(ActivityLogState(items: page.items, currentPage: 1, lastPage: page.lastPage, isLoading: false)),
       failure: (f) => emit(state.copyWith(isLoading: false, failure: f)),
@@ -80,6 +81,7 @@ class ActivityLogCubit extends Cubit<ActivityLogState> {
     emit(state.copyWith(isLoadingMore: true));
     final nextPage = state.currentPage + 1;
     final result = await _repository.getActivityLog(page: nextPage, action: _action, modelType: _modelType);
+    if (isClosed) return;
     result.when(
       success: (page) => emit(state.copyWith(
         items: [...state.items, ...page.items],

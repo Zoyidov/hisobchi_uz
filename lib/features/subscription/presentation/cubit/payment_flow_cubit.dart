@@ -66,13 +66,18 @@ class PaymentFlowCubit extends Cubit<PaymentFlowState> {
   Future<void> start() async {
     emit(const PaymentFlowCreatingOrder());
     final result = await _createOrder();
+    if (isClosed) return;
     await result.when(
       success: (order) async {
         await launchUrl(Uri.parse(order.paymentUrl), mode: LaunchMode.externalApplication);
+        if (isClosed) return;
         emit(PaymentFlowPolling(order.orderNumber));
         _startPolling(order.orderNumber);
       },
-      failure: (f) async => emit(PaymentFlowFailed(f)),
+      failure: (f) async {
+        if (isClosed) return;
+        emit(PaymentFlowFailed(f));
+      },
     );
   }
 
@@ -85,6 +90,10 @@ class PaymentFlowCubit extends Cubit<PaymentFlowState> {
   Future<void> _poll(String orderNumber) async {
     _elapsedSeconds += 5;
     final result = await _checkStatus(orderNumber);
+    if (isClosed) {
+      _timer?.cancel();
+      return;
+    }
     result.when(
       success: (status) {
         switch (status) {
@@ -106,6 +115,7 @@ class PaymentFlowCubit extends Cubit<PaymentFlowState> {
   }
 
   Future<void> checkNow(String orderNumber) async {
+    if (isClosed) return;
     emit(PaymentFlowPolling(orderNumber));
     _startPolling(orderNumber);
   }

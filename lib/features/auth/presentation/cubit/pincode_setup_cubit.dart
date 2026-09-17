@@ -35,6 +35,7 @@ class PincodeSetupCubit extends Cubit<PincodeSetupState> {
     emit(const PincodeSetupSaving());
     await _secureStorage.savePincode(pincode);
     await _authRepository.updateAppSettings(userId: userId, pincode: pincode);
+    if (isClosed) return;
     emit(const PincodeSetupSuccess());
   }
 }

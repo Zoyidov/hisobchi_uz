@@ -37,8 +37,10 @@ class InstallmentDetailCubit extends Cubit<InstallmentDetailState> {
   final int planId;
 
   Future<void> load() async {
+    if (isClosed) return;
     emit(const InstallmentDetailLoading());
     final result = await _repository.getInstallment(planId);
+    if (isClosed) return;
     result.when(
       success: (plan) => emit(InstallmentDetailLoaded(plan)),
       failure: (f) => emit(InstallmentDetailError(f)),

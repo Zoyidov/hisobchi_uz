@@ -48,6 +48,7 @@ class SimpleDocumentCubit extends Cubit<SimpleDocumentState> {
   Future<void> load() async {
     emit(const SimpleDocumentLoading());
     final result = await fetchAll();
+    if (isClosed) return;
     result.when(
       success: (items) => emit(SimpleDocumentLoaded(items as List<SimpleDocument>)),
       failure: (f) => emit(SimpleDocumentError(f as Failure)),
@@ -56,21 +57,25 @@ class SimpleDocumentCubit extends Cubit<SimpleDocumentState> {
 
   Future<Failure?> submitCreate(String name, String? description) async {
     final result = await create(name, description);
+    if (isClosed) return null;
     return result.when(success: (_) { load(); return null; }, failure: (f) => f as Failure);
   }
 
   Future<Failure?> submitUpdate(int id, String name, String? description) async {
     final result = await update(id, name, description);
+    if (isClosed) return null;
     return result.when(success: (_) { load(); return null; }, failure: (f) => f as Failure);
   }
 
   Future<Failure?> submitDelete(int id) async {
     final result = await delete(id);
+    if (isClosed) return null;
     return result.when(success: (_) { load(); return null; }, failure: (f) => f as Failure);
   }
 
   Future<Failure?> submitRestore(int id) async {
     final result = await restore(id);
+    if (isClosed) return null;
     return result.when(success: (_) { load(); return null; }, failure: (f) => f as Failure);
   }
 }

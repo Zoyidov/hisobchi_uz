@@ -58,6 +58,10 @@ class OtpCubit extends Cubit<OtpState> {
     var seconds = AppDurations.otpCountdownSec;
     emit(OtpCountingDown(seconds));
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (isClosed) {
+        timer.cancel();
+        return;
+      }
       seconds--;
       if (seconds <= 0) {
         timer.cancel();
@@ -70,6 +74,7 @@ class OtpCubit extends Cubit<OtpState> {
 
   Future<void> resend() async {
     final result = await _authRepository.sendOtp(phone);
+    if (isClosed) return;
     result.when(
       success: (_) => _startTimer(),
       failure: (f) => emit(OtpInvalid(f, state.secondsRemaining)),
@@ -78,11 +83,13 @@ class OtpCubit extends Cubit<OtpState> {
 
   Future<void> submit(String code) async {
     if (mode == OtpMode.resetPassword) {
+      if (isClosed) return;
       emit(OtpVerified(code, state.secondsRemaining));
       return;
     }
     emit(OtpVerifying(state.secondsRemaining));
     final result = await _authRepository.verifyOtp(phone: phone, otpCode: code);
+    if (isClosed) return;
     result.when(
       success: (data) => emit(OtpVerified(data.verifyToken, state.secondsRemaining)),
       failure: (f) => emit(OtpInvalid(f, state.secondsRemaining)),

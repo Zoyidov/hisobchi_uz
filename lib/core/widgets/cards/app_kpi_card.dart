@@ -41,22 +41,29 @@ class AppKpiCard extends StatelessWidget {
             children: [
               if (icon != null)
                 Container(
-                  width: 34,
-                  height: 34,
+                  width: 36,
+                  height: 36,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: tint.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(11),
                   ),
-                  child: Icon(icon, color: tint, size: 18),
+                  child: Icon(icon, color: tint, size: 19),
                 ),
               if (!isZero)
                 Container(
-                  width: 6,
-                  height: 6,
+                  width: 7,
+                  height: 7,
                   decoration: BoxDecoration(
                     color: tint,
                     shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: tint.withValues(alpha: 0.4),
+                        blurRadius: 4,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
                   ),
                 ),
             ],
@@ -68,6 +75,7 @@ class AppKpiCard extends StatelessWidget {
                   color: isZero ? colors.textTertiary : colors.textPrimary,
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.3,
+                  fontFeatures: const [FontFeature.tabularFigures()],
                 ),
           ),
           const SizedBox(height: 4),
@@ -76,7 +84,7 @@ class AppKpiCard extends StatelessWidget {
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: colors.textSecondary,
                   height: 1.25,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,

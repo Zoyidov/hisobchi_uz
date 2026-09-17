@@ -16,6 +16,7 @@ import '../../../../core/widgets/media/app_file_attachment.dart';
 import '../../../../core/widgets/misc/app_segmented_control.dart';
 import '../../../documents/data/currency.dart';
 import '../../data/partner_models.dart';
+import '../../data/partners_repository.dart';
 import '../../data/wallet_repository.dart';
 import '../cubit/wallet_form_cubit.dart';
 import '../widgets/partner_search_sheet.dart';
@@ -23,7 +24,7 @@ import '../widgets/partner_search_sheet.dart';
 /// Dashboard/hamkor kartochkasidan chaqiriladigan kirish nuqtasi — agar
 /// `partner` berilmagan bo'lsa, avval qidiruvli tanlov sheeti ochiladi
 /// (MOBILE_APP_TZ.md 8.7, "Oldindan to'ldirilgan").
-Future<void> showWalletFormSheet(
+Future<dynamic> showWalletFormSheet(
   BuildContext context, {
   required String type,
   int? partnerId,
@@ -31,16 +32,22 @@ Future<void> showWalletFormSheet(
   Wallet? editingWallet,
 }) async {
   var resolved = partner;
+  if (resolved == null && partnerId != null) {
+    final res = await getIt<PartnersRepository>().getPartner(partnerId);
+    resolved = res.dataOrNull;
+  }
+  if (!context.mounted) return null;
   if (resolved == null) {
     resolved = await showPartnerSearchSheet(context);
-    if (resolved == null || !context.mounted) return;
+    if (resolved == null || !context.mounted) return null;
   }
   if (context.mounted) {
-    context.push(
+    return context.push(
       RoutePaths.walletCreate(resolved.id),
       extra: {'partner': resolved, 'type': type, 'editingWallet': editingWallet},
     );
   }
+  return null;
 }
 
 class WalletFormPage extends StatelessWidget {
@@ -121,8 +128,51 @@ class _WalletFormViewState extends State<_WalletFormView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(widget.partner.name, style: Theme.of(context).textTheme.titleMedium, textAlign: TextAlign.center),
-                  const SizedBox(height: AppSpacing.md),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: colors.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: colors.border.withValues(alpha: 0.8)),
+                      boxShadow: colors.cardShadow,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 42,
+                          height: 42,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: colors.primary.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            widget.partner.name.isNotEmpty ? widget.partner.name[0].toUpperCase() : '?',
+                            style: TextStyle(color: colors.primary, fontWeight: FontWeight.w700, fontSize: 18),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.partner.name,
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                widget.partner.phone,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.textSecondary),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
                   if (widget.lockedType == null && !_isEditing)
                     AppSegmentedControl<String>(
                       value: _type,

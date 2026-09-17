@@ -20,6 +20,7 @@ class AppLoggingInterceptor extends Interceptor {
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (kDebugMode) {
       debugPrint('✅ ${response.statusCode} ${response.requestOptions.uri}');
+      debugPrint('   response (${response.statusCode}): ${response.data}');
     }
     handler.next(response);
   }
@@ -30,6 +31,9 @@ class AppLoggingInterceptor extends Interceptor {
       debugPrint(
         '❌ ${err.response?.statusCode ?? err.type} ${err.requestOptions.uri} — ${err.message}',
       );
+      if (err.response?.data != null) {
+        debugPrint('   error data: ${err.response?.data}');
+      }
     }
     handler.next(err);
   }

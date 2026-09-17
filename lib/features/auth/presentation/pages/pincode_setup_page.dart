@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/cubits/user_cubit.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/domain/repositories/auth_repository.dart';
 import '../../../../core/storage/secure_storage_service.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_radius.dart';
-import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/widgets/buttons/app_button.dart';
 import '../auth_navigation.dart';
 import '../cubit/pincode_setup_cubit.dart';
+import '../widgets/pincode_widgets.dart';
 
 /// PIN yaratish — login/register'dan keyingi ixtiyoriy taklif ekrani
 /// (MOBILE_APP_TZ.md 5.6, 5.8).
@@ -37,23 +34,50 @@ class _PincodeSetupView extends StatefulWidget {
 class _PincodeSetupViewState extends State<_PincodeSetupView> {
   String? _firstCode;
   String? _error;
-  final _controller = TextEditingController();
+  String _code = '';
+  final _capsulesKey = GlobalKey<PincodeCapsulesViewState>();
+
+  void _onDigit(String digit) {
+    if (_code.length >= 4) return;
+    setState(() {
+      _code += digit;
+      _error = null;
+    });
+    if (_code.length == 4) {
+      _onCompleted(_code);
+    }
+  }
+
+  void _onBackspace() {
+    if (_code.isEmpty) return;
+    setState(() {
+      _code = _code.substring(0, _code.length - 1);
+    });
+  }
+
+  void _onLongPressBackspace() {
+    if (_code.isEmpty) return;
+    setState(() {
+      _code = '';
+    });
+  }
 
   void _onCompleted(String code) {
     if (_firstCode == null) {
       setState(() {
         _firstCode = code;
+        _code = '';
         _error = null;
-        _controller.clear();
       });
       return;
     }
     if (code != _firstCode) {
       setState(() {
         _firstCode = null;
-        _error = 'PIN kodlar mos emas';
-        _controller.clear();
+        _code = '';
+        _error = 'PIN kodlar mos emas. Qaytadan kiriting';
       });
+      _capsulesKey.currentState?.triggerShake();
       return;
     }
     final userId = context.read<UserCubit>().currentUserOrNull?.userId;
@@ -64,66 +88,58 @@ class _PincodeSetupViewState extends State<_PincodeSetupView> {
     context.read<PincodeSetupCubit>().save(userId: userId, pincode: code);
   }
 
+  void _onExitOrSkip() {
+    if (context.canPop()) {
+      context.pop(false);
+    } else {
+      AuthNavigation.goToNextAfterPincode(context);
+    }
+  }
+
+  void _onSuccess() {
+    if (context.canPop()) {
+      context.pop(true);
+    } else {
+      AuthNavigation.goToNextAfterPincode(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    return Scaffold(
-      body: SafeArea(
-        child: BlocListener<PincodeSetupCubit, PincodeSetupState>(
-          listener: (context, state) {
-            if (state is PincodeSetupSuccess) {
-              AuthNavigation.goToNextAfterPincode(context);
-            }
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.xl),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Spacer(),
-                Icon(Icons.lock_outline_rounded, size: 48, color: colors.primary),
-                const SizedBox(height: AppSpacing.lg),
-                Text('Ilovani himoyalang', style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  _firstCode == null ? '4 xonali PIN yarating' : 'PIN kodni takrorlang',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                PinCodeTextField(
-                  key: ValueKey(_firstCode),
-                  appContext: context,
-                  length: 4,
-                  controller: _controller,
-                  obscureText: true,
-                  autoFocus: true,
-                  keyboardType: TextInputType.number,
-                  pinTheme: PinTheme(
-                    shape: PinCodeFieldShape.box,
-                    borderRadius: AppRadius.mediumRadius,
-                    fieldHeight: 56,
-                    fieldWidth: 52,
-                    activeColor: colors.primary,
-                    selectedColor: colors.primary,
-                    inactiveColor: colors.border,
-                    activeFillColor: colors.surfaceSecondary,
-                    selectedFillColor: colors.surfaceSecondary,
-                    inactiveFillColor: colors.surfaceSecondary,
-                  ),
-                  onChanged: (_) {},
-                  onCompleted: _onCompleted,
-                ),
-                if (_error != null) ...[
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(_error!, style: TextStyle(color: colors.error), textAlign: TextAlign.center),
-                ],
-                const Spacer(flex: 2),
-                AppButton.text(label: 'Keyinroq', onPressed: () => AuthNavigation.goToNextAfterPincode(context)),
-              ],
-            ),
-          ),
-        ),
+    return BlocListener<PincodeSetupCubit, PincodeSetupState>(
+      listener: (context, state) {
+        if (state is PincodeSetupSuccess) {
+          _onSuccess();
+        }
+      },
+      child: Builder(
+        builder: (context) {
+          final user = context.watch<UserCubit>().currentUserOrNull;
+          final firstName = user?.name.trim().split(RegExp(r'\s+')).firstOrNull;
+          final title = (firstName != null && firstName.isNotEmpty)
+              ? 'Hi, $firstName!'
+              : 'Hi, Faruxjon!';
+
+          final subtitle = _firstCode == null ? 'Enter new PIN' : 'Confirm your PIN';
+
+          return PincodeScreenLayout(
+            topLabel: 'Security check',
+            onExit: _onExitOrSkip,
+            exitIcon: Icons.close_rounded,
+            title: title,
+            subtitle: subtitle,
+            errorMessage: _error,
+            code: _code,
+            onDigit: _onDigit,
+            onBackspace: _onBackspace,
+            onLongPressBackspace: _onLongPressBackspace,
+            showBiometrics: false,
+            pillButtonLabel: 'Skip for now',
+            onPillButtonTap: _onExitOrSkip,
+            capsulesKey: _capsulesKey,
+            isError: _error != null,
+          );
+        },
       ),
     );
   }

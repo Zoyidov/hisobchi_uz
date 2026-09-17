@@ -1,7 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/di/injector.dart';
 import '../../../../core/errors/failure.dart';
+import '../../../../core/events/data_refresh_bus.dart';
 import '../../data/staff_models.dart';
 import '../../data/staff_repository.dart';
 
@@ -61,12 +63,14 @@ class StaffCreateCubit extends Cubit<StaffCreateState> {
 
   Future<void> loadPermissionGroups() async {
     final result = await _repository.getPermissionGroups();
+    if (isClosed) return;
     result.when(success: (groups) => emit(state.copyWith(permissionGroups: groups)), failure: (_) {});
   }
 
   Future<void> submitPhone(String phone) async {
     emit(state.copyWith(isLoading: true, clearError: true, phone: phone));
     final result = await _repository.sendOtp(phone);
+    if (isClosed) return;
     result.when(
       success: (_) => emit(state.copyWith(isLoading: false, step: 1)),
       failure: (f) => emit(state.copyWith(isLoading: false, error: f)),
@@ -76,6 +80,7 @@ class StaffCreateCubit extends Cubit<StaffCreateState> {
   Future<void> submitOtp(String code) async {
     emit(state.copyWith(isLoading: true, clearError: true));
     final result = await _repository.verifyOtp(phone: state.phone, otpCode: code);
+    if (isClosed) return;
     result.when(
       success: (token) => emit(state.copyWith(isLoading: false, step: 2, verifyToken: token)),
       failure: (f) => emit(state.copyWith(isLoading: false, error: f)),
@@ -118,8 +123,15 @@ class StaffCreateCubit extends Cubit<StaffCreateState> {
       permissions: state.selectedPermissions.toList(),
     );
     result.when(
-      success: (_) => emit(state.copyWith(isLoading: false, success: true)),
-      failure: (f) => emit(state.copyWith(isLoading: false, error: f)),
+      success: (_) {
+        getIt<DataRefreshBus>().notifyStaffChanged();
+        if (isClosed) return;
+        emit(state.copyWith(isLoading: false, success: true));
+      },
+      failure: (f) {
+        if (isClosed) return;
+        emit(state.copyWith(isLoading: false, error: f));
+      },
     );
   }
 }

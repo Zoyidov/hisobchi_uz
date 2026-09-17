@@ -57,6 +57,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
   Future<void> loadFirst() async {
     emit(state.copyWith(isLoading: true, clearFailure: true));
     final result = await _repository.getNotifications(page: 1);
+    if (isClosed) return;
     result.when(
       success: (page) => emit(NotificationsState(items: page.items, currentPage: page.currentPage, lastPage: page.lastPage, isLoading: false)),
       failure: (f) => emit(state.copyWith(isLoading: false, failure: f)),
@@ -68,6 +69,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     emit(state.copyWith(isLoadingMore: true));
     final nextPage = state.currentPage + 1;
     final result = await _repository.getNotifications(page: nextPage);
+    if (isClosed) return;
     result.when(
       success: (page) => emit(state.copyWith(
         items: [...state.items, ...page.items],
@@ -84,6 +86,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
   Future<void> markAsRead(AppNotification notification) async {
     if (notification.isRead) return;
     await _repository.markAsRead(notification.id);
+    if (isClosed) return;
     loadFirst();
   }
 }

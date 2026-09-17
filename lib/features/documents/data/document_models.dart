@@ -16,12 +16,16 @@ class SimpleDocument {
 
   bool get isDeleted => deletedAt != null;
 
-  factory SimpleDocument.fromJson(Map<String, dynamic> json) => SimpleDocument(
-        id: json['id'] as int,
-        name: json['name'] as String? ?? '',
-        description: json['description'] as String?,
-        deletedAt: AppDateFormatter.parseFromBackend(json['deleted_at'] as String?),
-      );
+  factory SimpleDocument.fromJson(Map<String, dynamic> json) {
+    final idVal = json['id'];
+    final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
+    return SimpleDocument(
+      id: id,
+      name: json['name']?.toString() ?? '',
+      description: json['description']?.toString(),
+      deletedAt: AppDateFormatter.parseFromBackend(json['deleted_at']?.toString()),
+    );
+  }
 }
 
 /// Xarajat turi — qo'shimcha `is_worker_join` va `is_update_and_delete` bayrog'i.
@@ -46,14 +50,22 @@ class CostType {
 
   bool get isDeleted => deletedAt != null;
 
-  factory CostType.fromJson(Map<String, dynamic> json) => CostType(
-        id: json['id'] as int,
-        name: json['name'] as String? ?? '',
-        description: json['description'] as String?,
-        isWorkerJoin: json['is_worker_join'] as bool? ?? false,
-        isSystem: json['is_update_and_delete'] == false,
-        deletedAt: AppDateFormatter.parseFromBackend(json['deleted_at'] as String?),
-      );
+  factory CostType.fromJson(Map<String, dynamic> json) {
+    final idVal = json['id'];
+    final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
+    final workerJoinVal = json['is_worker_join'];
+    final isWorkerJoin = workerJoinVal == true || workerJoinVal == 1 || workerJoinVal == '1';
+    final updateDeleteVal = json['is_update_and_delete'];
+    final isSystem = updateDeleteVal == false || updateDeleteVal == 0 || updateDeleteVal == '0';
+    return CostType(
+      id: id,
+      name: json['name']?.toString() ?? '',
+      description: json['description']?.toString(),
+      isWorkerJoin: isWorkerJoin,
+      isSystem: isSystem,
+      deletedAt: AppDateFormatter.parseFromBackend(json['deleted_at']?.toString()),
+    );
+  }
 }
 
 /// Ishchi (MOBILE_APP_TZ.md 11-bo'lim).
@@ -80,16 +92,22 @@ class Worker {
 
   bool get isDeleted => deletedAt != null;
 
-  factory Worker.fromJson(Map<String, dynamic> json) => Worker(
-        id: json['id'] as int,
-        name: json['name'] as String? ?? '',
-        phone: json['phone'] as String? ?? '',
-        additionalPhone: json['additional_phone'] as String?,
-        positionId: json['worker_position_id'] as int?,
-        positionName: json['worker_position_name'] as String?,
-        description: json['description'] as String?,
-        deletedAt: AppDateFormatter.parseFromBackend(json['deleted_at'] as String?),
-      );
+  factory Worker.fromJson(Map<String, dynamic> json) {
+    final idVal = json['id'];
+    final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
+    final posVal = json['worker_position_id'];
+    final positionId = posVal is int ? posVal : int.tryParse('$posVal');
+    return Worker(
+      id: id,
+      name: json['name']?.toString() ?? '',
+      phone: json['phone']?.toString() ?? '',
+      additionalPhone: json['additional_phone']?.toString(),
+      positionId: positionId,
+      positionName: json['worker_position_name']?.toString(),
+      description: json['description']?.toString(),
+      deletedAt: AppDateFormatter.parseFromBackend(json['deleted_at']?.toString()),
+    );
+  }
 }
 
 /// CBU valyuta kursi (MOBILE_APP_TZ.md 11: `currencys-exchange-rates`).

@@ -64,8 +64,10 @@ abstract class PagedListCubit<T> extends Cubit<PagedListState<T>> {
   Future<ApiResult<SimplePage<T>>> fetchPage(int page);
 
   Future<void> loadFirst() async {
+    if (isClosed) return;
     emit(state.copyWith(isLoading: true, clearFailure: true));
     final result = await fetchPage(1);
+    if (isClosed) return;
     result.when(
       success: (page) => emit(PagedListState(
         items: page.items,
@@ -79,10 +81,11 @@ abstract class PagedListCubit<T> extends Cubit<PagedListState<T>> {
   }
 
   Future<void> loadMore() async {
-    if (!state.hasNext || state.isLoadingMore || state.isLoading) return;
+    if (isClosed || !state.hasNext || state.isLoadingMore || state.isLoading) return;
     emit(state.copyWith(isLoadingMore: true));
     final nextPage = state.currentPage + 1;
     final result = await fetchPage(nextPage);
+    if (isClosed) return;
     result.when(
       success: (page) => emit(state.copyWith(
         items: [...state.items, ...page.items],

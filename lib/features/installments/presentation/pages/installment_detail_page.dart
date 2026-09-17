@@ -7,9 +7,9 @@ import '../../../../core/cubits/user_cubit.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/router/route_paths.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/widgets/cards/app_card.dart';
 import '../../../../core/widgets/chips/app_status_chip.dart';
 import '../../../../core/widgets/feedback/app_snackbar.dart';
 import '../../../../core/widgets/navigation/permission_guard.dart';
@@ -104,31 +104,83 @@ class _Loaded extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [
-          Text(plan.partnerName, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 4),
-          MoneyText(plan.totalAmount, currencyTypeId: plan.currencyTypeId, size: MoneySize.display),
-          const SizedBox(height: AppSpacing.sm),
+          AppCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        plan.partnerName,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                      ),
+                    ),
+                    _statusChip(plan.status, plan.statusLabel),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                MoneyText(plan.totalAmount, currencyTypeId: plan.currencyTypeId, size: MoneySize.display),
+                const SizedBox(height: AppSpacing.md),
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceSecondary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('To\'langan', style: TextStyle(color: colors.textSecondary, fontSize: 12)),
+                            const SizedBox(height: 2),
+                            MoneyText(plan.paidAmount, currencyTypeId: plan.currencyTypeId, size: MoneySize.card, colorOverride: colors.success),
+                          ],
+                        ),
+                      ),
+                      Container(width: 1, height: 32, color: colors.borderSubtle),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Qolgan', style: TextStyle(color: colors.textSecondary, fontSize: 12)),
+                            const SizedBox(height: 2),
+                            MoneyText(plan.remaining, currencyTypeId: plan.currencyTypeId, size: MoneySize.card, colorOverride: colors.error),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                AppProgressBar(value: plan.progress),
+                if (plan.note != null && plan.note!.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  Text(plan.note!, style: TextStyle(color: colors.textSecondary, fontSize: 13)),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xl),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              MoneyText(plan.paidAmount, currencyTypeId: plan.currencyTypeId, size: MoneySize.list, colorOverride: colors.success),
-              const SizedBox(width: 4),
-              const Text('to\'langan'),
-              const SizedBox(width: AppSpacing.md),
-              MoneyText(plan.remaining, currencyTypeId: plan.currencyTypeId, size: MoneySize.list, colorOverride: colors.error),
-              const SizedBox(width: 4),
-              const Text('qolgan'),
+              Text(
+                'To\'lov grafigi',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              Text(
+                '${plan.items.length} ta bosqich',
+                style: TextStyle(color: colors.textSecondary, fontSize: 13),
+              ),
             ],
           ),
-          const SizedBox(height: AppSpacing.sm),
-          AppProgressBar(value: plan.progress),
-          const SizedBox(height: AppSpacing.sm),
-          _statusChip(plan.status, plan.statusLabel),
-          if (plan.note != null && plan.note!.isNotEmpty) ...[
-            const SizedBox(height: AppSpacing.md),
-            Text(plan.note!, style: TextStyle(color: colors.textSecondary)),
-          ],
-          const SizedBox(height: AppSpacing.xl),
-          Text('To\'lov grafigi', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: AppSpacing.sm),
           for (final item in plan.items) _ScheduleTile(item: item, currencyTypeId: plan.currencyTypeId),
           const SizedBox(height: AppSpacing.xl),
@@ -154,6 +206,7 @@ class _Loaded extends StatelessWidget {
             label: 'To\'lovlar tarixi',
             onPressed: () => context.push(RoutePaths.installmentPaymentHistory(plan.id), extra: plan.currencyTypeId),
           ),
+          const SizedBox(height: 80),
         ],
       ),
     );
@@ -185,20 +238,36 @@ class _ScheduleTile extends StatelessWidget {
       InstallmentItemStatus.pending => (AppStatusChipTone.neutral, item.statusLabel),
     };
 
+    final isOverdue = item.status == InstallmentItemStatus.overdue;
+
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: AppRadius.mediumRadius,
-        border: Border.all(color: item.status == InstallmentItemStatus.overdue ? colors.error : colors.border),
+        color: isOverdue ? colors.errorContainer.withValues(alpha: 0.15) : colors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isOverdue ? colors.error.withValues(alpha: 0.3) : colors.borderSubtle,
+        ),
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 16,
-            backgroundColor: colors.surfaceSecondary,
-            child: Text('${item.itemNumber}', style: const TextStyle(fontSize: 12)),
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: isOverdue ? colors.error.withValues(alpha: 0.1) : colors.surfaceSecondary,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              '${item.itemNumber}',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: isOverdue ? colors.error : colors.textPrimary,
+              ),
+            ),
           ),
           const SizedBox(width: AppSpacing.sm),
           Expanded(

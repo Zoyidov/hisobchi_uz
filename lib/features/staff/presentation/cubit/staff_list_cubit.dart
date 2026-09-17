@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/di/injector.dart';
 import '../../../../core/errors/failure.dart';
+import '../../../../core/events/data_refresh_bus.dart';
 import '../../data/staff_models.dart';
 import '../../data/staff_repository.dart';
 
@@ -31,13 +35,27 @@ class StaffListError extends StaffListState {
 
 /// Xodimlar ro'yxati (MOBILE_APP_TZ.md 15.2).
 class StaffListCubit extends Cubit<StaffListState> {
-  StaffListCubit(this._repository) : super(const StaffListLoading());
+  StaffListCubit(this._repository) : super(const StaffListLoading()) {
+    _refreshSub = getIt<DataRefreshBus>().events.listen((event) {
+      if (event is StaffChangedEvent) {
+        load();
+      }
+    });
+  }
 
   final StaffRepository _repository;
+  StreamSubscription<DataChangeEvent>? _refreshSub;
+
+  @override
+  Future<void> close() {
+    _refreshSub?.cancel();
+    return super.close();
+  }
 
   Future<void> load() async {
     emit(const StaffListLoading());
     final result = await _repository.getStaff();
+    if (isClosed) return;
     result.when(success: (items) => emit(StaffListLoaded(items)), failure: (f) => emit(StaffListError(f)));
   }
 

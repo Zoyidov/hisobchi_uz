@@ -11,6 +11,7 @@ class NotificationBadgeCubit extends Cubit<int> {
 
   Future<void> refresh() async {
     final result = await _repository.getUnreadCount();
+    if (isClosed) return;
     result.when(success: (count) => emit(count), failure: (_) {});
   }
 }

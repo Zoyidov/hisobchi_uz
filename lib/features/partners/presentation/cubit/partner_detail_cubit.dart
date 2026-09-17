@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/di/injector.dart';
 import '../../../../core/errors/failure.dart';
+import '../../../../core/events/data_refresh_bus.dart';
 import '../../data/partner_models.dart';
 import '../../data/partners_repository.dart';
 
@@ -32,26 +36,51 @@ class PartnerDetailError extends PartnerDetailState {
 
 /// Hamkor kartochkasi — yuqori blok (MOBILE_APP_TZ.md 8.5).
 class PartnerDetailCubit extends Cubit<PartnerDetailState> {
-  PartnerDetailCubit(this._repository, this.partnerId) : super(const PartnerDetailLoading());
+  PartnerDetailCubit(this._repository, this.partnerId) : super(const PartnerDetailLoading()) {
+    _refreshSub = getIt<DataRefreshBus>().events.listen((event) {
+      if ((event is PartnersChangedEvent && (event.partnerId == null || event.partnerId == partnerId)) ||
+          (event is WalletsChangedEvent && (event.partnerId == null || event.partnerId == partnerId))) {
+        load();
+      }
+    });
+  }
 
   final PartnersRepository _repository;
   final int partnerId;
+  StreamSubscription<DataChangeEvent>? _refreshSub;
+
+  @override
+  Future<void> close() {
+    _refreshSub?.cancel();
+    return super.close();
+  }
 
   Future<void> load() async {
+    if (isClosed) return;
     emit(const PartnerDetailLoading());
     final partnerFuture = _repository.getPartner(partnerId);
     final accountFuture = _repository.getPartnerAccount(partnerId);
     final partnerResult = await partnerFuture;
     final accountResult = await accountFuture;
+    if (isClosed) return;
 
     partnerResult.when(
       success: (partner) {
         accountResult.when(
-          success: (account) => emit(PartnerDetailLoaded(partner, account)),
-          failure: (f) => emit(PartnerDetailError(f)),
+          success: (account) {
+            if (isClosed) return;
+            emit(PartnerDetailLoaded(partner, account));
+          },
+          failure: (f) {
+            if (isClosed) return;
+            emit(PartnerDetailError(f));
+          },
         );
       },
-      failure: (f) => emit(PartnerDetailError(f)),
+      failure: (f) {
+        if (isClosed) return;
+        emit(PartnerDetailError(f));
+      },
     );
   }
 

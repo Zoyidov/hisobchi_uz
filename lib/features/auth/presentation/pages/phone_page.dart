@@ -116,20 +116,27 @@ class _PhoneViewState extends State<_PhoneView> {
                     onChanged: (_) => setState(() {}),
                   ),
                   const SizedBox(height: AppSpacing.sm),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: _agreed,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                        onChanged: (v) => setState(() => _agreed = v ?? false),
+                  InkWell(
+                    onTap: () => setState(() => _agreed = !_agreed),
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: _agreed,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                            onChanged: (v) => setState(() => _agreed = v ?? false),
+                          ),
+                          const Expanded(
+                            child: Text(
+                              'Foydalanish shartlariga roziman',
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ],
                       ),
-                      const Expanded(
-                        child: Text(
-                          'Foydalanish shartlariga roziman',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   AppButton.primary(

@@ -50,6 +50,7 @@ class ResetPasswordCubit extends Cubit<ResetPasswordState> {
       otpCode: otpCode,
       password: password,
     );
+    if (isClosed) return;
     result.when(
       success: (data) => emit(ResetPasswordSuccess(data.token)),
       failure: (f) => emit(ResetPasswordFailed(f)),

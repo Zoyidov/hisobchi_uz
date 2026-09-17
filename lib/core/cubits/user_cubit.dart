@@ -48,11 +48,15 @@ class UserCubit extends Cubit<UserState> {
   Future<void> loadMe() async {
     emit(const UserLoading());
     final result = await _authRepository.me();
+    if (isClosed) return;
     result.when(
       success: (user) => emit(UserLoaded(user)),
       failure: (failure) => emit(UserError(failure)),
     );
   }
 
-  void clear() => emit(const UserInitial());
+  void clear() {
+    if (isClosed) return;
+    emit(const UserInitial());
+  }
 }

@@ -1,6 +1,8 @@
 import 'package:decimal/decimal.dart';
 
 import '../../../core/constants/app_endpoints.dart';
+import '../../../core/di/injector.dart';
+import '../../../core/events/data_refresh_bus.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_result.dart';
 import '../../../core/network/paged_result.dart';
@@ -76,13 +78,36 @@ class ProjectsRepository {
     );
   }
 
-  Future<ApiResult<void>> deleteProject(int id) => _client.delete(ApiEndpoints.projectById(id), parse: (_) {});
-  Future<ApiResult<void>> restoreProject(int id) => _client.post(ApiEndpoints.projectRestore(id), parse: (_) {});
-  Future<ApiResult<void>> forceDeleteProject(int id) =>
-      _client.delete(ApiEndpoints.projectForceDelete(id), parse: (_) {});
+  Future<ApiResult<void>> deleteProject(int id) async {
+    final res = await _client.delete(ApiEndpoints.projectById(id), parse: (_) {});
+    if (res.isSuccess) {
+      getIt<DataRefreshBus>().notifyProjectsChanged(projectId: id);
+    }
+    return res;
+  }
 
-  Future<ApiResult<void>> updateStatus(int id, ProjectStatus status) {
-    return _client.put(ApiEndpoints.projectUpdateStatus(id), data: {'status': status.apiValue}, parse: (_) {});
+  Future<ApiResult<void>> restoreProject(int id) async {
+    final res = await _client.post(ApiEndpoints.projectRestore(id), parse: (_) {});
+    if (res.isSuccess) {
+      getIt<DataRefreshBus>().notifyProjectsChanged(projectId: id);
+    }
+    return res;
+  }
+
+  Future<ApiResult<void>> forceDeleteProject(int id) async {
+    final res = await _client.delete(ApiEndpoints.projectForceDelete(id), parse: (_) {});
+    if (res.isSuccess) {
+      getIt<DataRefreshBus>().notifyProjectsChanged(projectId: id);
+    }
+    return res;
+  }
+
+  Future<ApiResult<void>> updateStatus(int id, ProjectStatus status) async {
+    final res = await _client.put(ApiEndpoints.projectUpdateStatus(id), data: {'status': status.apiValue}, parse: (_) {});
+    if (res.isSuccess) {
+      getIt<DataRefreshBus>().notifyProjectsChanged(projectId: id);
+    }
+    return res;
   }
 
   // ---------------- Contracts ----------------

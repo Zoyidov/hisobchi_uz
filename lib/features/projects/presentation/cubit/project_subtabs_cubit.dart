@@ -38,6 +38,7 @@ class ProjectContractsCubit extends Cubit<ListState<ProjectContract>> {
   Future<void> load() async {
     emit(const ListLoading());
     final result = await _repository.getContracts(projectId);
+    if (isClosed) return;
     result.when(success: (items) => emit(ListLoaded(items)), failure: (f) => emit(ListError(f)));
   }
 }
@@ -51,6 +52,7 @@ class ProjectIncomesCubit extends Cubit<ListState<ProjectIncome>> {
   Future<void> load() async {
     emit(const ListLoading());
     final result = await _repository.getIncomes(projectId);
+    if (isClosed) return;
     result.when(success: (items) => emit(ListLoaded(items)), failure: (f) => emit(ListError(f)));
   }
 }
@@ -64,6 +66,7 @@ class ProjectCostsCubit extends Cubit<ListState<ProjectCost>> {
   Future<void> load() async {
     emit(const ListLoading());
     final result = await _repository.getCosts(projectId);
+    if (isClosed) return;
     result.when(success: (items) => emit(ListLoaded(items)), failure: (f) => emit(ListError(f)));
   }
 }
@@ -77,16 +80,19 @@ class ProjectWorkersCubit extends Cubit<ListState<ProjectWorker>> {
   Future<void> load() async {
     emit(const ListLoading());
     final result = await _repository.getProjectWorkers(projectId);
+    if (isClosed) return;
     result.when(success: (items) => emit(ListLoaded(items)), failure: (f) => emit(ListError(f)));
   }
 
   Future<Failure?> addWorkers(List<int> workerIds) async {
     final result = await _repository.addWorkersToProject(projectId, workerIds);
+    if (isClosed) return null;
     return result.when(success: (_) { load(); return null; }, failure: (f) => f);
   }
 
   Future<Failure?> removeWorker(int workerId) async {
     final result = await _repository.removeWorkerFromProject(projectId, workerId);
+    if (isClosed) return null;
     return result.when(success: (_) { load(); return null; }, failure: (f) => f);
   }
 }

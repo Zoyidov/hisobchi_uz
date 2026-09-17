@@ -60,7 +60,7 @@ class AppCard extends StatelessWidget {
       );
     }
 
-    return Container(
+    final cardContent = Container(
       decoration: decoration,
       child: Material(
         color: Colors.transparent,
@@ -77,6 +77,60 @@ class AppCard extends StatelessWidget {
             child: child,
           ),
         ),
+      ),
+    );
+
+    return _AppCardPressable(
+      enabled: isInteractive,
+      child: cardContent,
+    );
+  }
+}
+
+class _AppCardPressable extends StatefulWidget {
+  const _AppCardPressable({required this.child, this.enabled = true});
+
+  final Widget child;
+  final bool enabled;
+
+  @override
+  State<_AppCardPressable> createState() => _AppCardPressableState();
+}
+
+class _AppCardPressableState extends State<_AppCardPressable> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 90),
+      reverseDuration: const Duration(milliseconds: 140),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.985).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!widget.enabled) return widget.child;
+
+    return Listener(
+      onPointerDown: (_) => _controller.forward(),
+      onPointerUp: (_) => _controller.reverse(),
+      onPointerCancel: (_) => _controller.reverse(),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: widget.child,
       ),
     );
   }

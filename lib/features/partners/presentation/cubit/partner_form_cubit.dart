@@ -1,7 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/di/injector.dart';
 import '../../../../core/errors/failure.dart';
+import '../../../../core/events/data_refresh_bus.dart';
 import '../../data/partner_models.dart';
 import '../../data/partners_repository.dart';
 
@@ -80,8 +82,13 @@ class PartnerFormCubit extends Cubit<PartnerFormState> {
           );
 
     result.when(
-      success: (partner) => emit(PartnerFormSuccess(partner)),
+      success: (partner) {
+        getIt<DataRefreshBus>().notifyPartnersChanged(partnerId: partner.id);
+        if (isClosed) return;
+        emit(PartnerFormSuccess(partner));
+      },
       failure: (f) {
+        if (isClosed) return;
         if (f is ValidationFailure) {
           emit(PartnerFormValidationError(f.fieldErrors));
         } else if (f is BusinessFailure && f.message.contains('limit')) {

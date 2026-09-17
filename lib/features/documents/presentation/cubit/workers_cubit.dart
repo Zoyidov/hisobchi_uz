@@ -40,6 +40,7 @@ class WorkersCubit extends Cubit<WorkersState> {
     emit(const WorkersLoading());
     final workersResult = await _repository.getWorkers();
     final positionsResult = await _repository.getPositions();
+    if (isClosed) return;
     workersResult.when(
       success: (workers) => emit(WorkersLoaded(workers, positionsResult.dataOrNull ?? [])),
       failure: (f) => emit(WorkersError(f)),
@@ -60,6 +61,7 @@ class WorkersCubit extends Cubit<WorkersState> {
       positionId: positionId,
       description: description,
     );
+    if (isClosed) return null;
     return result.when(success: (_) { load(); return null; }, failure: (f) => f);
   }
 
@@ -79,16 +81,19 @@ class WorkersCubit extends Cubit<WorkersState> {
       positionId: positionId,
       description: description,
     );
+    if (isClosed) return null;
     return result.when(success: (_) { load(); return null; }, failure: (f) => f);
   }
 
   Future<Failure?> submitDelete(int id) async {
     final result = await _repository.deleteWorker(id);
+    if (isClosed) return null;
     return result.when(success: (_) { load(); return null; }, failure: (f) => f);
   }
 
   Future<Failure?> submitRestore(int id) async {
     final result = await _repository.restoreWorker(id);
+    if (isClosed) return null;
     return result.when(success: (_) { load(); return null; }, failure: (f) => f);
   }
 }

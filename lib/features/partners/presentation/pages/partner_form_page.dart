@@ -78,11 +78,7 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
           listener: (context, state) {
             if (state is PartnerFormSuccess) {
               AppSnackbar.success(context, 'Saqlandi');
-              if (_isEditing) {
-                context.pop(state.partner);
-              } else {
-                context.pushReplacement(RoutePaths.partnerDetail(state.partner.id));
-              }
+              context.pop(state.partner);
             } else if (state is PartnerFormValidationError) {
               setState(() => _errors = state.fieldErrors);
             } else if (state is PartnerFormLimitReached) {
@@ -121,13 +117,20 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                       if (selected != null) setState(() => _currencyTypeId = selected.id);
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      decoration: BoxDecoration(color: colors.surfaceSecondary, borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceSecondary.withValues(alpha: 0.7),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: colors.border.withValues(alpha: 0.9)),
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(_currencies.firstWhere((c) => c.id == _currencyTypeId, orElse: () => Currency.uzs).name),
-                          Icon(Icons.chevron_right, color: colors.textTertiary),
+                          Text(
+                            _currencies.firstWhere((c) => c.id == _currencyTypeId, orElse: () => Currency.uzs).name,
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          Icon(Icons.unfold_more_rounded, color: colors.textSecondary, size: 20),
                         ],
                       ),
                     ),

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 /// Limit progress (MOBILE_APP_TZ.md 13.2). `-1` — cheksiz.
 class UsageLimit {
   const UsageLimit({required this.current, required this.max, required this.extra});
@@ -9,11 +11,21 @@ class UsageLimit {
   double get percentage => isUnlimited || max == 0 ? 0 : (current / max).clamp(0, 1).toDouble();
   bool get canAdd => extra['can_add'] as bool? ?? extra['can_send'] as bool? ?? (isUnlimited || current < max);
 
-  factory UsageLimit.fromJson(Map<String, dynamic> json) => UsageLimit(
-        current: json['current'] as int? ?? 0,
-        max: json['max'] as int? ?? 0,
-        extra: json,
-      );
+  factory UsageLimit.fromJson(Map<String, dynamic> json) {
+    int parseInt(dynamic val) {
+      if (val == null) return 0;
+      if (val is int) return val;
+      if (val is num) return val.round();
+      if (val is String) return int.tryParse(val) ?? 0;
+      return 0;
+    }
+
+    return UsageLimit(
+      current: parseInt(json['current']),
+      max: parseInt(json['max']),
+      extra: json,
+    );
+  }
 
   static const empty = UsageLimit(current: 0, max: 0, extra: {});
 }
@@ -70,6 +82,15 @@ class SubscriptionInfo {
     final sub = json['subscription'] as Map<String, dynamic>;
     final plan = sub['plan'] as Map<String, dynamic>? ?? const {};
     final period = sub['current_period'] as Map<String, dynamic>? ?? const {};
+
+    int? parseDaysUntilDue(dynamic val) {
+      if (val == null) return null;
+      if (val is int) return val;
+      if (val is num) return val.round();
+      if (val is String) return int.tryParse(val);
+      return null;
+    }
+
     return SubscriptionInfo(
       hasSubscription: true,
       planName: plan['name'] as String?,
@@ -79,7 +100,7 @@ class SubscriptionInfo {
       billingCycle: sub['billing_cycle'] as String?,
       periodStart: period['start'] as String?,
       periodEnd: period['end'] as String?,
-      daysUntilDue: sub['days_until_due'] as int?,
+      daysUntilDue: parseDaysUntilDue(sub['days_until_due']),
       isOverdue: sub['is_overdue'] as bool? ?? false,
       usage: SubscriptionUsage.fromJson(sub['usage'] as Map<String, dynamic>? ?? const {}),
     );
@@ -94,6 +115,7 @@ class PriceOption {
     required this.formatted,
     this.discount,
     this.description,
+    this.description1,
   });
 
   final bool currentlySubscribed;
@@ -101,14 +123,36 @@ class PriceOption {
   final String formatted;
   final int? discount;
   final String? description;
+  final String? description1;
 
-  factory PriceOption.fromJson(Map<String, dynamic> json) => PriceOption(
-        currentlySubscribed: json['currently_subscribed'] as bool? ?? false,
-        amount: json['amount'] as num? ?? 0,
-        formatted: json['formatted'] as String? ?? '',
-        discount: json['discount'] as int?,
-        description: json['description'] as String?,
-      );
+  factory PriceOption.fromJson(Map<String, dynamic> json) {
+    num parsedAmount = 0;
+    final rawAmount = json['amount'];
+    if (rawAmount is num) {
+      parsedAmount = rawAmount;
+    } else if (rawAmount is String) {
+      parsedAmount = num.tryParse(rawAmount) ?? 0;
+    }
+
+    int? parsedDiscount;
+    final rawDiscount = json['discount'];
+    if (rawDiscount is int) {
+      parsedDiscount = rawDiscount;
+    } else if (rawDiscount is num) {
+      parsedDiscount = rawDiscount.round();
+    } else if (rawDiscount is String) {
+      parsedDiscount = double.tryParse(rawDiscount)?.round();
+    }
+
+    return PriceOption(
+      currentlySubscribed: json['currently_subscribed'] as bool? ?? false,
+      amount: parsedAmount,
+      formatted: json['formatted'] as String? ?? '',
+      discount: parsedDiscount,
+      description: json['description'] as String?,
+      description1: json['description1'] as String?,
+    );
+  }
 }
 
 /// Tarif (MOBILE_APP_TZ.md 13.3).
@@ -117,6 +161,7 @@ class PricingPlan {
     required this.id,
     required this.name,
     required this.displayName,
+    this.description,
     this.monthly,
     this.semiAnnual,
     this.annual,
@@ -133,6 +178,7 @@ class PricingPlan {
   final int id;
   final String name;
   final String displayName;
+  final String? description;
   final PriceOption? monthly;
   final PriceOption? semiAnnual;
   final PriceOption? annual;
@@ -145,22 +191,92 @@ class PricingPlan {
   final bool canSubscribe;
   final List<String> downgradeWarnings;
 
-  factory PricingPlan.fromJson(Map<String, dynamic> json) => PricingPlan(
-        id: json['id'] as int,
-        name: json['name'] as String? ?? '',
-        displayName: json['display_name'] as String? ?? json['name'] as String? ?? '',
-        monthly: json['monthly_price'] != null ? PriceOption.fromJson(json['monthly_price'] as Map<String, dynamic>) : null,
-        semiAnnual: json['semi_annual_price'] != null ? PriceOption.fromJson(json['semi_annual_price'] as Map<String, dynamic>) : null,
-        annual: json['annual_price'] != null ? PriceOption.fromJson(json['annual_price'] as Map<String, dynamic>) : null,
-        maxCustomers: json['max_customers'] as int? ?? 0,
-        maxProjects: json['max_projects'] as int? ?? 0,
-        maxUsers: json['max_users'] as int? ?? 0,
-        smsPerMonth: json['sms_per_month'] as int? ?? 0,
-        features: (json['features'] as List? ?? const []).cast<String>(),
-        currentlySubscribed: json['currently_subscribed'] as bool? ?? false,
-        canSubscribe: json['can_subscribe'] as bool? ?? true,
-        downgradeWarnings: (json['downgrade_warnings'] as List? ?? const []).cast<String>(),
-      );
+  /// `-1` bu cheksiz (unlimited) degani
+  bool get isUnlimitedCustomers => maxCustomers == -1;
+  bool get isUnlimitedProjects => maxProjects == -1;
+  bool get isUnlimitedUsers => maxUsers == -1;
+  bool get isUnlimitedSms => smsPerMonth == -1;
+
+  String get customersLabel => isUnlimitedCustomers ? 'Cheksiz' : '$maxCustomers';
+  String get projectsLabel => isUnlimitedProjects ? 'Cheksiz' : '$maxProjects';
+  String get usersLabel => isUnlimitedUsers ? 'Cheksiz' : '$maxUsers';
+  String get smsLabel => isUnlimitedSms ? 'Cheksiz' : '$smsPerMonth';
+
+  factory PricingPlan.fromJson(Map<String, dynamic> json) {
+    int parseInt(dynamic val, int defaultValue) {
+      if (val == null) return defaultValue;
+      if (val is int) return val;
+      if (val is num) return val.round();
+      if (val is String) return int.tryParse(val) ?? defaultValue;
+      return defaultValue;
+    }
+
+    List<String> parseFeatures(dynamic raw) {
+      if (raw == null) return const [];
+      if (raw is List) {
+        return raw.map((e) => e.toString()).toList();
+      }
+      if (raw is String) {
+        if (raw.trim().isEmpty) return const [];
+        try {
+          final decoded = jsonDecode(raw);
+          return parseFeatures(decoded);
+        } catch (_) {
+          return [raw];
+        }
+      }
+      if (raw is Map) {
+        return raw.entries
+            .where((e) => e.value == true || e.value == 1)
+            .map((e) => e.key.toString())
+            .toList();
+      }
+      return const [];
+    }
+
+    List<String> parseDowngradeWarnings(dynamic raw) {
+      if (raw == null) return const [];
+      if (raw is List) {
+        final list = <String>[];
+        for (final item in raw) {
+          if (item is String && item.isNotEmpty) {
+            list.add(item);
+          } else if (item is Map) {
+            final msg = item['message']?.toString();
+            if (msg != null && msg.isNotEmpty) {
+              list.add(msg);
+            }
+          }
+        }
+        return list;
+      }
+      return const [];
+    }
+
+    return PricingPlan(
+      id: parseInt(json['id'], 0),
+      name: json['name'] as String? ?? '',
+      displayName: json['display_name'] as String? ?? json['name'] as String? ?? '',
+      description: json['description'] as String?,
+      monthly: json['monthly_price'] != null && json['monthly_price'] is Map<String, dynamic>
+          ? PriceOption.fromJson(json['monthly_price'] as Map<String, dynamic>)
+          : null,
+      semiAnnual: json['semi_annual_price'] != null && json['semi_annual_price'] is Map<String, dynamic>
+          ? PriceOption.fromJson(json['semi_annual_price'] as Map<String, dynamic>)
+          : null,
+      annual: json['annual_price'] != null && json['annual_price'] is Map<String, dynamic>
+          ? PriceOption.fromJson(json['annual_price'] as Map<String, dynamic>)
+          : null,
+      maxCustomers: parseInt(json['max_customers'], 0),
+      maxProjects: parseInt(json['max_projects'], 0),
+      maxUsers: parseInt(json['max_users'], 0),
+      smsPerMonth: parseInt(json['sms_per_month'], 0),
+      features: parseFeatures(json['features']),
+      currentlySubscribed: json['currently_subscribed'] as bool? ?? false,
+      canSubscribe: json['can_subscribe'] as bool? ?? true,
+      downgradeWarnings: parseDowngradeWarnings(json['downgrade_warnings']),
+    );
+  }
 }
 
 enum BillingCycle { monthly, semiAnnual, annual }
@@ -186,12 +302,29 @@ class PurchaseOrder {
   final num amount;
   final String paymentUrl;
 
-  factory PurchaseOrder.fromJson(Map<String, dynamic> json) => PurchaseOrder(
-        orderId: json['order_id'] as int? ?? 0,
-        orderNumber: json['order_number'] as String? ?? '',
-        amount: json['amount'] as num? ?? 0,
-        paymentUrl: json['payment_url'] as String? ?? '',
-      );
+  factory PurchaseOrder.fromJson(Map<String, dynamic> json) {
+    int parseOrderId(dynamic val) {
+      if (val == null) return 0;
+      if (val is int) return val;
+      if (val is num) return val.round();
+      if (val is String) return int.tryParse(val) ?? 0;
+      return 0;
+    }
+
+    num parseAmount(dynamic val) {
+      if (val == null) return 0;
+      if (val is num) return val;
+      if (val is String) return num.tryParse(val) ?? 0;
+      return 0;
+    }
+
+    return PurchaseOrder(
+      orderId: parseOrderId(json['order_id']),
+      orderNumber: json['order_number']?.toString() ?? '',
+      amount: parseAmount(json['amount']),
+      paymentUrl: json['payment_url'] as String? ?? '',
+    );
+  }
 }
 
 enum OrderStatus { paid, pending, failed }
@@ -208,6 +341,7 @@ extension OrderStatusX on OrderStatus {
 class SmsPackage {
   const SmsPackage({
     required this.id,
+    this.name,
     required this.displayName,
     this.description,
     required this.price,
@@ -216,18 +350,41 @@ class SmsPackage {
   });
 
   final int id;
+  final String? name;
   final String displayName;
   final String? description;
   final num price;
   final String formattedPrice;
   final int smsCount;
 
-  factory SmsPackage.fromJson(Map<String, dynamic> json) => SmsPackage(
-        id: json['id'] as int,
-        displayName: json['display_name'] as String? ?? json['name'] as String? ?? '',
-        description: json['description'] as String?,
-        price: json['price'] as num? ?? 0,
-        formattedPrice: json['formatted_price'] as String? ?? '',
-        smsCount: json['sms_count'] as int? ?? 0,
-      );
+  /// `-1` cheksiz bo'lsa
+  bool get isUnlimited => smsCount == -1;
+  String get countLabel => isUnlimited ? 'Cheksiz' : '$smsCount';
+
+  factory SmsPackage.fromJson(Map<String, dynamic> json) {
+    int parseInt(dynamic val, int defaultValue) {
+      if (val == null) return defaultValue;
+      if (val is int) return val;
+      if (val is num) return val.round();
+      if (val is String) return int.tryParse(val) ?? defaultValue;
+      return defaultValue;
+    }
+
+    num parseNum(dynamic val, num defaultValue) {
+      if (val == null) return defaultValue;
+      if (val is num) return val;
+      if (val is String) return num.tryParse(val) ?? defaultValue;
+      return defaultValue;
+    }
+
+    return SmsPackage(
+      id: parseInt(json['id'], 0),
+      name: json['name'] as String?,
+      displayName: json['display_name'] as String? ?? json['name'] as String? ?? '',
+      description: json['description'] as String?,
+      price: parseNum(json['price'], 0),
+      formattedPrice: json['formatted_price'] as String? ?? '${json['price'] ?? 0} UZS',
+      smsCount: parseInt(json['sms_count'], 0),
+    );
+  }
 }

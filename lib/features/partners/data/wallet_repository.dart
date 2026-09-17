@@ -1,6 +1,8 @@
 import 'package:decimal/decimal.dart';
 
 import '../../../core/constants/app_endpoints.dart';
+import '../../../core/di/injector.dart';
+import '../../../core/events/data_refresh_bus.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_result.dart';
 import '../../../core/utils/formatters/date_formatter.dart';
@@ -15,6 +17,7 @@ class WalletRepository {
   /// Paginatsiyasiz — barcha yozuvlar bir marta keladi (MOBILE_APP_TZ.md 8.6).
   Future<ApiResult<List<Wallet>>> getWallets({
     required int partnerId,
+    int? isCancelled = 0,
     String? search,
     DateTime? dateFrom,
     DateTime? dateTo,
@@ -25,6 +28,7 @@ class WalletRepository {
       ApiEndpoints.wallets,
       query: {
         'partner_id': partnerId,
+        if (isCancelled != null) 'is_cancelled': isCancelled,
         if (search != null && search.isNotEmpty) 'search': search,
         if (dateFrom != null) 'date[0]': AppDateFormatter.toApiFilterDate(dateFrom),
         if (dateTo != null) 'date[1]': AppDateFormatter.toApiFilterDate(dateTo),
@@ -55,7 +59,24 @@ class WalletRepository {
         if (returnDate != null) 'return_date': AppDateFormatter.toApiDate(returnDate),
         if (fileIds != null) 'file_id': fileIds,
       },
-      parse: (r) => Wallet.fromJson(r as Map<String, dynamic>),
+      parse: (r) {
+        if (r is Map<String, dynamic>) {
+          return Wallet.fromJson(r);
+        }
+        return Wallet(
+          id: 0,
+          partnerId: partnerId,
+          partnerName: '',
+          currencyTypeId: currencyTypeId,
+          currencyTypeName: currencyTypeId == 2 ? 'USD' : 'UZS',
+          summa: summa,
+          description: description,
+          returnDate: returnDate,
+          type: type,
+          isCancelled: false,
+          createdAt: DateTime.now(),
+        );
+      },
     );
   }
 
@@ -82,16 +103,48 @@ class WalletRepository {
         if (returnDate != null) 'return_date': AppDateFormatter.toApiDate(returnDate),
         if (fileIds != null) 'file_id': fileIds,
       },
-      parse: (r) => Wallet.fromJson(r as Map<String, dynamic>),
+      parse: (r) {
+        if (r is Map<String, dynamic>) {
+          return Wallet.fromJson(r);
+        }
+        return Wallet(
+          id: id,
+          partnerId: partnerId,
+          partnerName: '',
+          currencyTypeId: currencyTypeId,
+          currencyTypeName: currencyTypeId == 2 ? 'USD' : 'UZS',
+          summa: summa,
+          description: description,
+          returnDate: returnDate,
+          type: type,
+          isCancelled: false,
+          createdAt: DateTime.now(),
+        );
+      },
     );
   }
 
-  Future<ApiResult<void>> cancelWallet(int id, String reason) {
-    return _client.put(ApiEndpoints.walletCancel(id), data: {'cancel_reason': reason}, parse: (_) {});
+  Future<ApiResult<void>> cancelWallet(int id, String reason) async {
+    final res = await _client.put(ApiEndpoints.walletCancel(id), data: {'cancel_reason': reason}, parse: (_) {});
+    if (res.isSuccess) {
+      getIt<DataRefreshBus>().notifyWalletsChanged(walletId: id);
+    }
+    return res;
   }
 
-  Future<ApiResult<void>> deleteWallet(int id) => _client.delete(ApiEndpoints.walletById(id), parse: (_) {});
+  Future<ApiResult<void>> deleteWallet(int id) async {
+    final res = await _client.delete(ApiEndpoints.walletById(id), parse: (_) {});
+    if (res.isSuccess) {
+      getIt<DataRefreshBus>().notifyWalletsChanged(walletId: id);
+    }
+    return res;
+  }
 
-  Future<ApiResult<void>> restoreWallet(int id) =>
-      _client.post(ApiEndpoints.walletRestore(id), parse: (_) {});
+  Future<ApiResult<void>> restoreWallet(int id) async {
+    final res = await _client.post(ApiEndpoints.walletRestore(id), parse: (_) {});
+    if (res.isSuccess) {
+      getIt<DataRefreshBus>().notifyWalletsChanged(walletId: id);
+    }
+    return res;
+  }
 }

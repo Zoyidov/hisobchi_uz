@@ -96,19 +96,36 @@ class _Loaded extends StatelessWidget {
             padding: const EdgeInsets.all(AppSpacing.md),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(project.projectOwner, style: Theme.of(context).textTheme.bodyMedium),
-                    AppStatusChip(
-                      label: project.status.label,
-                      tone: switch (project.status) {
-                        ProjectStatus.inProgress => AppStatusChipTone.info,
-                        ProjectStatus.frozen => AppStatusChipTone.warning,
-                        ProjectStatus.completed => AppStatusChipTone.success,
-                      },
-                    ),
-                  ],
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Theme.of(context).dividerColor),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.person_outline_rounded, size: 16, color: Theme.of(context).colorScheme.primary),
+                          const SizedBox(width: 8),
+                          Text(
+                            project.projectOwner,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                      AppStatusChip(
+                        label: project.status.label,
+                        tone: switch (project.status) {
+                          ProjectStatus.inProgress => AppStatusChipTone.info,
+                          ProjectStatus.frozen => AppStatusChipTone.warning,
+                          ProjectStatus.completed => AppStatusChipTone.success,
+                        },
+                      ),
+                    ],
+                  ),
                 ),
                 if (accounts != null) ...[
                   const SizedBox(height: AppSpacing.sm),

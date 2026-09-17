@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../errors/failure.dart';
 import 'api_result.dart';
@@ -130,7 +131,14 @@ class ApiClient {
 
   dynamic _unwrap(Response response) {
     final data = response.data;
-    if (data is Map && data.containsKey('result')) return data['result'];
+    if (data is Map) {
+      if (data.containsKey('result') && data['result'] != null) {
+        return data['result'];
+      }
+      if (data.containsKey('data') && data['data'] != null && data['status'] == true) {
+        return data['data'];
+      }
+    }
     return data;
   }
 
@@ -140,8 +148,11 @@ class ApiClient {
     } on DioException catch (e) {
       final failure = e.error is Failure ? e.error as Failure : const UnknownFailure();
       return ApiResult.failure(failure);
-    } catch (_) {
-      return const ApiResult.failure(UnknownFailure());
+    } catch (e, stack) {
+      if (kDebugMode) {
+        debugPrint('💥 ApiClient parse error: $e\n$stack');
+      }
+      return ApiResult.failure(UnknownFailure('Xatolik: $e'));
     }
   }
 }

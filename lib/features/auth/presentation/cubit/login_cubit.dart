@@ -50,6 +50,7 @@ class LoginCubit extends Cubit<LoginState> {
       deviceToken: deviceToken,
       deviceType: _deviceInfo.deviceType,
     );
+    if (isClosed) return;
     result.when(
       success: (data) => emit(LoginSuccess(data.token)),
       failure: (f) => emit(LoginFailed(f)),

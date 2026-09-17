@@ -23,10 +23,16 @@ class ProjectCard extends StatelessWidget {
       ProjectStatus.completed => AppStatusChipTone.success,
     };
 
+    final statusColor = switch (project.status) {
+      ProjectStatus.inProgress => colors.info,
+      ProjectStatus.frozen => colors.warning,
+      ProjectStatus.completed => colors.success,
+    };
+
     return AppCard(
       onTap: onTap,
-      padding: const EdgeInsets.all(AppSpacing.md),
-      borderRadius: BorderRadius.circular(18),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      borderRadius: BorderRadius.circular(20),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -35,10 +41,10 @@ class ProjectCard extends StatelessWidget {
             height: 44,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: colors.primary.withValues(alpha: 0.1),
+              color: statusColor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(Icons.work_outline_rounded, color: colors.primary, size: 22),
+            child: Icon(Icons.work_rounded, color: statusColor, size: 22),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(

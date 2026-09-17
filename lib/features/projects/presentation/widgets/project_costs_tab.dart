@@ -65,18 +65,36 @@ class _View extends StatelessWidget {
                           return AppCard(
                             child: Row(
                               children: [
-                                Icon(Icons.arrow_upward_rounded, color: context.colors.error),
-                                const SizedBox(width: AppSpacing.sm),
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: context.colors.error.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(Icons.arrow_upward_rounded, color: context.colors.error, size: 20),
+                                ),
+                                const SizedBox(width: AppSpacing.md),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(cost.costTypeName, style: Theme.of(context).textTheme.titleSmall),
-                                      MoneyText(cost.summa, currencyTypeId: cost.currencyTypeId, colorOverride: context.colors.error),
+                                      Text(
+                                        cost.costTypeName,
+                                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      MoneyText(cost.summa, currencyTypeId: cost.currencyTypeId, colorOverride: context.colors.error, size: MoneySize.list),
                                       if (cost.workerName != null)
-                                        Text('Ishchi: ${cost.workerName}', style: TextStyle(color: context.colors.textSecondary, fontSize: 12)),
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 2),
+                                          child: Text('Ishchi: ${cost.workerName}', style: TextStyle(color: context.colors.textSecondary, fontSize: 12)),
+                                        ),
                                       if (cost.description != null && cost.description!.isNotEmpty)
-                                        Text(cost.description!, style: TextStyle(color: context.colors.textSecondary, fontSize: 13)),
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 2),
+                                          child: Text(cost.description!, style: TextStyle(color: context.colors.textSecondary, fontSize: 13)),
+                                        ),
                                     ],
                                   ),
                                 ),
@@ -90,7 +108,11 @@ class _View extends StatelessWidget {
             Positioned(
               right: AppSpacing.md,
               bottom: AppSpacing.md,
-              child: FloatingActionButton(onPressed: () => _showCostForm(context, projectId), child: const Icon(Icons.add)),
+              child: FloatingActionButton(
+                heroTag: null,
+                onPressed: () => _showCostForm(context, projectId),
+                child: const Icon(Icons.add),
+              ),
             ),
           ],
         );

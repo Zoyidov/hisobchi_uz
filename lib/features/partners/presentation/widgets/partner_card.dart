@@ -55,12 +55,12 @@ class PartnerCard extends StatelessWidget {
 
     return AppCard(
       onTap: onTap,
-      padding: const EdgeInsets.all(AppSpacing.md),
-      borderRadius: BorderRadius.circular(18),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      borderRadius: BorderRadius.circular(20),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppAvatar(name: partner.name, size: 48),
+          AppAvatar(name: partner.name, size: 50),
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(

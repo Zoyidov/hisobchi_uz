@@ -73,6 +73,7 @@ class _View extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: null,
         onPressed: () => _openForm(context),
         icon: const Icon(Icons.add),
         label: Text(entityLabel),

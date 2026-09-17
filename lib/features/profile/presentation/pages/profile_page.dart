@@ -39,7 +39,7 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Profil')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.xxl),
+        padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, 110),
         children: [
           _Header(user: user, ownerContext: ownerContext),
           if (user != null && !user.isOwner) ...[
@@ -64,6 +64,15 @@ class ProfilePage extends StatelessWidget {
                 label: 'Shaxsiy ma\'lumotlar',
                 iconColor: colors.primary,
                 onTap: () => context.push(RoutePaths.profileEdit),
+              ),
+              AppGroupedTile(
+                icon: Icons.lock_outline_rounded,
+                label: 'Xavfsizlik va PIN-kod',
+                subtitle: 'PIN-kodni yoqish yoki o\'chirish',
+                iconColor: colors.accentViolet,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const SettingsPage()),
+                ),
               ),
               AppGroupedTile(
                 icon: Icons.settings_outlined,

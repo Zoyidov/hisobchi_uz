@@ -41,6 +41,7 @@ class PincodeLockCubit extends Cubit<PincodeLockState> {
 
   Future<void> verify(String entered) async {
     final saved = await _secureStorage.readPincode();
+    if (isClosed) return;
     if (saved != null && saved == entered) {
       emit(const PincodeLockUnlocked());
       return;
@@ -57,11 +58,12 @@ class PincodeLockCubit extends Cubit<PincodeLockState> {
   Future<bool> tryBiometrics() async {
     try {
       final canCheck = await _localAuth.canCheckBiometrics || await _localAuth.isDeviceSupported();
-      if (!canCheck) return false;
+      if (!canCheck || isClosed) return false;
       final authenticated = await _localAuth.authenticate(
         localizedReason: 'Ilovaga kirish uchun tasdiqlang',
         options: const AuthenticationOptions(biometricOnly: true, stickyAuth: true),
       );
+      if (isClosed) return authenticated;
       if (authenticated) emit(const PincodeLockUnlocked());
       return authenticated;
     } catch (_) {

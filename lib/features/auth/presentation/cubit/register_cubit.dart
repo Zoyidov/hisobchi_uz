@@ -63,6 +63,7 @@ class RegisterCubit extends Cubit<RegisterState> {
       deviceToken: deviceToken,
       deviceType: _deviceInfo.deviceType,
     );
+    if (isClosed) return;
     result.when(
       success: (data) => emit(RegisterSuccess(data.token)),
       failure: (f) => emit(

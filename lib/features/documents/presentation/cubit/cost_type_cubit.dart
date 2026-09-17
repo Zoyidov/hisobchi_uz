@@ -38,26 +38,31 @@ class CostTypeCubit extends Cubit<CostTypeState> {
   Future<void> load() async {
     emit(const CostTypeLoading());
     final result = await _repository.getCostTypes();
+    if (isClosed) return;
     result.when(success: (items) => emit(CostTypeLoaded(items)), failure: (f) => emit(CostTypeError(f)));
   }
 
   Future<Failure?> submitCreate(String name, String? description, bool isWorkerJoin) async {
     final result = await _repository.createCostType(name: name, description: description, isWorkerJoin: isWorkerJoin);
+    if (isClosed) return null;
     return result.when(success: (_) { load(); return null; }, failure: (f) => f);
   }
 
   Future<Failure?> submitUpdate(int id, String name, String? description, bool isWorkerJoin) async {
     final result = await _repository.updateCostType(id, name: name, description: description, isWorkerJoin: isWorkerJoin);
+    if (isClosed) return null;
     return result.when(success: (_) { load(); return null; }, failure: (f) => f);
   }
 
   Future<Failure?> submitDelete(int id) async {
     final result = await _repository.deleteCostType(id);
+    if (isClosed) return null;
     return result.when(success: (_) { load(); return null; }, failure: (f) => f);
   }
 
   Future<Failure?> submitRestore(int id) async {
     final result = await _repository.restoreCostType(id);
+    if (isClosed) return null;
     return result.when(success: (_) { load(); return null; }, failure: (f) => f);
   }
 }

@@ -66,9 +66,18 @@ class _AppPhoneFieldState extends State<AppPhoneField> {
             widget.controller.text = digits;
             widget.onChanged?.call(digits);
           },
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.3,
+          ),
           decoration: InputDecoration(
             hintText: '+998 (__) ___-__-__',
             errorText: widget.errorText,
+            prefixIcon: Padding(
+              padding: const EdgeInsets.only(left: 14, right: 10),
+              child: Icon(Icons.phone_outlined, size: 20, color: Theme.of(context).colorScheme.primary),
+            ),
+            prefixIconConstraints: const BoxConstraints(minWidth: 44, minHeight: 44),
           ),
         ),
       ],

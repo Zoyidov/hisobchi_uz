@@ -49,21 +49,30 @@ class PhoneCubit extends Cubit<PhoneState> {
   Future<void> submit(String phone) async {
     emit(const PhoneLoading());
     final result = await _authRepository.verifyNumber(phone);
+    if (isClosed) return;
     await result.when(
       success: (data) async {
         if (data.page == 'register') {
           final otpResult = await _authRepository.sendOtp(phone);
+          if (isClosed) return;
           otpResult.when(
             success: (_) => emit(PhoneNeedsOtp(phone)),
             failure: (f) => emit(PhoneError(f)),
           );
         } else {
+          if (isClosed) return;
           emit(PhoneNeedsLogin(phone));
         }
       },
-      failure: (f) async => emit(PhoneError(f)),
+      failure: (f) async {
+        if (isClosed) return;
+        emit(PhoneError(f));
+      },
     );
   }
 
-  void reset() => emit(const PhoneInitial());
+  void reset() {
+    if (isClosed) return;
+    emit(const PhoneInitial());
+  }
 }

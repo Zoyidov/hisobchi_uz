@@ -37,8 +37,10 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
   final int projectId;
 
   Future<void> load() async {
+    if (isClosed) return;
     emit(const ProjectDetailLoading());
     final result = await _repository.getProject(projectId);
+    if (isClosed) return;
     result.when(success: (p) => emit(ProjectDetailLoaded(p)), failure: (f) => emit(ProjectDetailError(f)));
   }
 
