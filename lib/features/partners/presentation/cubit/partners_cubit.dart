@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import '../../../../core/di/injector.dart';
+import '../../../../core/events/data_refresh_bus.dart';
 import '../../../../core/network/api_result.dart';
 import '../../../../core/network/paged_result.dart';
 import '../../../../core/paging/paged_list_cubit.dart';
@@ -6,9 +10,22 @@ import '../../data/partners_repository.dart';
 
 /// Hamkorlar ro'yxati — qidiruv, filtr, saralash (MOBILE_APP_TZ.md 8.2).
 class PartnersCubit extends PagedListCubit<Partner> {
-  PartnersCubit(this._repository);
+  PartnersCubit(this._repository) {
+    _refreshSub = getIt<DataRefreshBus>().events.listen((event) {
+      if (event is PartnersChangedEvent || event is WalletsChangedEvent) {
+        refresh();
+      }
+    });
+  }
 
   final PartnersRepository _repository;
+  StreamSubscription<DataChangeEvent>? _refreshSub;
+
+  @override
+  Future<void> close() {
+    _refreshSub?.cancel();
+    return super.close();
+  }
 
   String _search = '';
   PartnerStatusFilter _status = PartnerStatusFilter.all;

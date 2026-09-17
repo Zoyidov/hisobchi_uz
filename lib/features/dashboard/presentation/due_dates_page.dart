@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/di/injector.dart';
+import '../../../core/events/data_refresh_bus.dart';
 import '../../../core/network/api_result.dart';
 import '../../../core/network/paged_result.dart';
 import '../../../core/paging/paged_list_cubit.dart';
@@ -16,9 +19,23 @@ import '../data/dashboard_models.dart';
 import '../data/dashboard_repository.dart';
 
 class PartnerDueDatesCubit extends PagedListCubit<PartnerDueItem> {
-  PartnerDueDatesCubit(this._repository, this.type);
+  PartnerDueDatesCubit(this._repository, this.type) {
+    _refreshSub = getIt<DataRefreshBus>().events.listen((event) {
+      if (event is WalletsChangedEvent || event is PartnersChangedEvent) {
+        refresh();
+      }
+    });
+  }
+
   final DashboardRepository _repository;
   final DueDateType type;
+  StreamSubscription<DataChangeEvent>? _refreshSub;
+
+  @override
+  Future<void> close() {
+    _refreshSub?.cancel();
+    return super.close();
+  }
 
   @override
   Future<ApiResult<SimplePage<PartnerDueItem>>> fetchPage(int page) =>
@@ -26,9 +43,23 @@ class PartnerDueDatesCubit extends PagedListCubit<PartnerDueItem> {
 }
 
 class InstallmentDueDatesCubit extends PagedListCubit<InstallmentDueItem> {
-  InstallmentDueDatesCubit(this._repository, this.type);
+  InstallmentDueDatesCubit(this._repository, this.type) {
+    _refreshSub = getIt<DataRefreshBus>().events.listen((event) {
+      if (event is InstallmentsChangedEvent || event is WalletsChangedEvent) {
+        refresh();
+      }
+    });
+  }
+
   final DashboardRepository _repository;
   final DueDateType type;
+  StreamSubscription<DataChangeEvent>? _refreshSub;
+
+  @override
+  Future<void> close() {
+    _refreshSub?.cancel();
+    return super.close();
+  }
 
   @override
   Future<ApiResult<SimplePage<InstallmentDueItem>>> fetchPage(int page) =>
@@ -109,7 +140,12 @@ class _PartnerDueView extends StatelessWidget {
                       ),
                       IconButton(
                         icon: Icon(Icons.add_circle_outline_rounded, color: context.colors.success),
-                        onPressed: () => showWalletFormSheet(context, type: 'debt', partnerId: item.partnerId),
+                        onPressed: () async {
+                          final res = await showWalletFormSheet(context, type: 'debt', partnerId: item.partnerId);
+                          if (res != null && context.mounted) {
+                            context.read<PartnerDueDatesCubit>().refresh();
+                          }
+                        },
                       ),
                     ],
                   ),

@@ -32,51 +32,76 @@ class AppBalanceCard extends StatelessWidget {
     final balColor = amountColor(context, balanceNum);
 
     return AppCard(
-      padding: const EdgeInsets.all(AppSpacing.md),
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      borderRadius: BorderRadius.circular(22),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Sof balans',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colors.textSecondary,
-                      fontWeight: FontWeight.w600,
+              Row(
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: balColor,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: balColor.withValues(alpha: 0.4),
+                          blurRadius: 6,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
                     ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Sof balans',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: colors.textSecondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  color: colors.surfaceSecondary,
+                  color: colors.primaryContainer,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: colors.border.withValues(alpha: 0.6)),
+                  border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
                 ),
                 child: Text(
                   currencyLabel,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: colors.textPrimary,
-                        fontWeight: FontWeight.w700,
+                        color: colors.onPrimaryContainer,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
                       ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
             MoneyFormatter.formatSigned(balance, currencyLabel: currencyLabel),
             style: AppTypography.moneyCard.copyWith(
               color: balColor,
               fontWeight: FontWeight.w800,
+              fontSize: 26,
+              fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
           const SizedBox(height: 16),
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
-              color: colors.surfaceSecondary.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(14),
+              color: colors.surfaceSecondary.withValues(alpha: 0.6),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: colors.border.withValues(alpha: 0.5)),
             ),
             child: Row(
               children: [
@@ -91,8 +116,8 @@ class AppBalanceCard extends StatelessWidget {
                 ),
                 Container(
                   width: 1,
-                  height: 36,
-                  color: colors.border.withValues(alpha: 0.8),
+                  height: 38,
+                  color: colors.divider,
                   margin: const EdgeInsets.symmetric(horizontal: 12),
                 ),
                 Expanded(
@@ -108,20 +133,29 @@ class AppBalanceCard extends StatelessWidget {
             ),
           ),
           if (installmentRemaining != null && installmentRemaining! > Decimal.zero) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
                 color: colors.info.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: colors.info.withValues(alpha: 0.2)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.calendar_today_rounded, size: 14, color: colors.info),
-                      const SizedBox(width: 6),
+                      Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: colors.info.withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.calendar_today_rounded, size: 12, color: colors.info),
+                      ),
+                      const SizedBox(width: 8),
                       Text(
                         "Bo'lib to'lash qoldig'i",
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -135,7 +169,8 @@ class AppBalanceCard extends StatelessWidget {
                     MoneyFormatter.format(installmentRemaining!, currencyLabel: currencyLabel),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: colors.info,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w800,
+                          fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                   ),
                 ],

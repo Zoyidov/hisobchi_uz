@@ -39,6 +39,12 @@ class _PincodeSetupViewState extends State<_PincodeSetupView> {
   String? _error;
   final _controller = TextEditingController();
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   void _onCompleted(String code) {
     if (_firstCode == null) {
       setState(() {
@@ -81,9 +87,25 @@ class _PincodeSetupViewState extends State<_PincodeSetupView> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Spacer(),
-                Icon(Icons.lock_outline_rounded, size: 48, color: colors.primary),
+                Center(
+                  child: Container(
+                    width: 64,
+                    height: 64,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: colors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
+                    ),
+                    child: Icon(Icons.shield_outlined, size: 32, color: colors.primary),
+                  ),
+                ),
                 const SizedBox(height: AppSpacing.lg),
-                Text('Ilovani himoyalang', style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
+                Text(
+                  'Ilovani himoyalang',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   _firstCode == null ? '4 xonali PIN yarating' : 'PIN kodni takrorlang',
@@ -96,20 +118,23 @@ class _PincodeSetupViewState extends State<_PincodeSetupView> {
                   appContext: context,
                   length: 4,
                   controller: _controller,
+                  autoDisposeControllers: false,
                   obscureText: true,
                   autoFocus: true,
                   keyboardType: TextInputType.number,
+                  enableActiveFill: true,
                   pinTheme: PinTheme(
                     shape: PinCodeFieldShape.box,
                     borderRadius: AppRadius.mediumRadius,
-                    fieldHeight: 56,
-                    fieldWidth: 52,
+                    fieldHeight: 60,
+                    fieldWidth: 56,
+                    borderWidth: 1.5,
                     activeColor: colors.primary,
                     selectedColor: colors.primary,
-                    inactiveColor: colors.border,
-                    activeFillColor: colors.surfaceSecondary,
-                    selectedFillColor: colors.surfaceSecondary,
-                    inactiveFillColor: colors.surfaceSecondary,
+                    inactiveColor: _error != null ? colors.error : colors.border.withValues(alpha: 0.8),
+                    activeFillColor: colors.surface,
+                    selectedFillColor: colors.surface,
+                    inactiveFillColor: colors.surfaceSecondary.withValues(alpha: 0.6),
                   ),
                   onChanged: (_) {},
                   onCompleted: _onCompleted,

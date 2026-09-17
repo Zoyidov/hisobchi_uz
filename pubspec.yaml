@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.1.16+1
 
 environment:
-  sdk: ^3.13.3
+  sdk: ^3.12.2
 
 dependencies:
   flutter:
@@ -57,7 +57,7 @@ dependencies:
   local_auth: ^2.3.0
 
   # Utils
-  intl: ^0.20.3
+  intl: ^0.20.2
   crypto: ^3.0.6
   decimal: ^3.0.2
   connectivity_plus: ^6.1.0

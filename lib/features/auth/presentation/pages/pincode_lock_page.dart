@@ -47,6 +47,12 @@ class _PincodeLockViewState extends State<_PincodeLockView> {
     });
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   Future<void> _onUnlocked() async {
     await context.read<UserCubit>().loadMe();
     if (!mounted) return;
@@ -77,28 +83,47 @@ class _PincodeLockViewState extends State<_PincodeLockView> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Spacer(),
-                  Icon(Icons.lock_outline_rounded, size: 48, color: colors.primary),
+                  Center(
+                    child: Container(
+                      width: 64,
+                      height: 64,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: colors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
+                      ),
+                      child: Icon(Icons.lock_rounded, size: 30, color: colors.primary),
+                    ),
+                  ),
                   const SizedBox(height: AppSpacing.lg),
-                  Text('PIN kodni kiriting', style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
+                  Text(
+                    'PIN kodni kiriting',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+                    textAlign: TextAlign.center,
+                  ),
                   const SizedBox(height: AppSpacing.xl),
                   PinCodeTextField(
                     appContext: context,
                     length: 4,
                     controller: _controller,
+                    autoDisposeControllers: false,
                     obscureText: true,
                     autoFocus: true,
                     keyboardType: TextInputType.number,
+                    enableActiveFill: true,
                     pinTheme: PinTheme(
                       shape: PinCodeFieldShape.box,
                       borderRadius: AppRadius.mediumRadius,
-                      fieldHeight: 56,
-                      fieldWidth: 52,
+                      fieldHeight: 60,
+                      fieldWidth: 56,
+                      borderWidth: 1.5,
                       activeColor: colors.primary,
                       selectedColor: colors.primary,
-                      inactiveColor: state is PincodeLockWrong ? colors.error : colors.border,
-                      activeFillColor: colors.surfaceSecondary,
-                      selectedFillColor: colors.surfaceSecondary,
-                      inactiveFillColor: colors.surfaceSecondary,
+                      inactiveColor: state is PincodeLockWrong ? colors.error : colors.border.withValues(alpha: 0.8),
+                      activeFillColor: colors.surface,
+                      selectedFillColor: colors.surface,
+                      inactiveFillColor: colors.surfaceSecondary.withValues(alpha: 0.6),
                     ),
                     onChanged: (_) {},
                     onCompleted: (code) => context.read<PincodeLockCubit>().verify(code),
@@ -107,14 +132,14 @@ class _PincodeLockViewState extends State<_PincodeLockView> {
                     const SizedBox(height: AppSpacing.sm),
                     Text(
                       'Noto\'g\'ri PIN. Qolgan urinishlar: ${state.remainingAttempts}',
-                      style: TextStyle(color: colors.error),
+                      style: TextStyle(color: colors.error, fontWeight: FontWeight.w600),
                       textAlign: TextAlign.center,
                     ),
                   ],
                   const SizedBox(height: AppSpacing.lg),
                   Center(
                     child: AppButton.text(
-                      label: 'Face ID / Fingerprint',
+                      label: 'Face ID / Fingerprint orqali kirish',
                       onPressed: () => context.read<PincodeLockCubit>().tryBiometrics(),
                     ),
                   ),

@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/di/injector.dart';
 import '../../../../core/errors/failure.dart';
+import '../../../../core/events/data_refresh_bus.dart';
 import '../../data/partner_models.dart';
 import '../../data/wallet_repository.dart';
 
@@ -32,10 +36,23 @@ class WalletListError extends WalletListState {
 /// Tranzaksiyalar tabi — paginatsiyasiz, oxirgi 3 oy sukut bo'yicha
 /// (MOBILE_APP_TZ.md 8.6).
 class WalletListCubit extends Cubit<WalletListState> {
-  WalletListCubit(this._repository, this.partnerId) : super(const WalletListLoading());
+  WalletListCubit(this._repository, this.partnerId) : super(const WalletListLoading()) {
+    _refreshSub = getIt<DataRefreshBus>().events.listen((event) {
+      if (event is WalletsChangedEvent && (event.partnerId == null || event.partnerId == partnerId)) {
+        load();
+      }
+    });
+  }
 
   final WalletRepository _repository;
   final int partnerId;
+  StreamSubscription<DataChangeEvent>? _refreshSub;
+
+  @override
+  Future<void> close() {
+    _refreshSub?.cancel();
+    return super.close();
+  }
 
   Future<void> load() async {
     emit(const WalletListLoading());

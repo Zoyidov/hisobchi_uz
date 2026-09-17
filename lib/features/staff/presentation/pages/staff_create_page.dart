@@ -47,14 +47,91 @@ class _View extends StatelessWidget {
             }
           },
           builder: (context, state) {
-            return switch (state.step) {
-              0 => const _PhoneStep(),
-              1 => const _OtpStep(),
-              _ => const _DetailsStep(),
-            };
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                  child: _StepIndicator(step: state.step),
+                ),
+                Expanded(
+                  child: switch (state.step) {
+                    0 => const _PhoneStep(),
+                    1 => const _OtpStep(),
+                    _ => const _DetailsStep(),
+                  },
+                ),
+              ],
+            );
           },
         ),
       ),
+    );
+  }
+}
+
+class _StepIndicator extends StatelessWidget {
+  const _StepIndicator({required this.step});
+  final int step;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final labels = ['Telefon', 'SMS Kod', 'Ma\'lumotlar'];
+
+    return Row(
+      children: List.generate(3, (i) {
+        final active = i <= step;
+        final current = i == step;
+        return Expanded(
+          child: Column(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: current
+                      ? colors.primary
+                      : active
+                          ? colors.primary.withValues(alpha: 0.2)
+                          : colors.surfaceSecondary,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: current ? colors.primary : colors.borderSubtle,
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: active && !current
+                    ? Icon(Icons.check_rounded, size: 16, color: colors.primary)
+                    : Text(
+                        '${i + 1}',
+                        style: TextStyle(
+                          color: current
+                              ? Colors.white
+                              : active
+                                  ? colors.primary
+                                  : colors.textTertiary,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
+                      ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                labels[i],
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: current ? FontWeight.w600 : FontWeight.w400,
+                  color: current
+                      ? colors.textPrimary
+                      : active
+                          ? colors.textSecondary
+                          : colors.textTertiary,
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }
@@ -101,6 +178,12 @@ class _OtpStepState extends State<_OtpStep> {
   final _controller = TextEditingController();
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final state = context.watch<StaffCreateCubit>().state;
@@ -115,6 +198,7 @@ class _OtpStepState extends State<_OtpStep> {
             appContext: context,
             length: 4,
             controller: _controller,
+            autoDisposeControllers: false,
             autoFocus: true,
             keyboardType: TextInputType.number,
             pinTheme: PinTheme(

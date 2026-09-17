@@ -2,7 +2,9 @@ import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/di/injector.dart';
 import '../../../../core/errors/failure.dart';
+import '../../../../core/events/data_refresh_bus.dart';
 import '../../data/partner_models.dart';
 import '../../data/wallet_repository.dart';
 
@@ -79,7 +81,10 @@ class WalletFormCubit extends Cubit<WalletFormState> {
             fileIds: fileIds,
           );
     result.when(
-      success: (wallet) => emit(WalletFormSuccess(wallet)),
+      success: (wallet) {
+        getIt<DataRefreshBus>().notifyWalletsChanged(partnerId: wallet.partnerId, walletId: wallet.id);
+        emit(WalletFormSuccess(wallet));
+      },
       failure: (f) => emit(
         f is ValidationFailure ? WalletFormValidationError(f.fieldErrors) : WalletFormFailed(f),
       ),

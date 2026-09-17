@@ -74,30 +74,47 @@ class InstallmentPlan {
 
   double get progress => totalAmount == Decimal.zero ? 0 : (paidAmount / totalAmount).toDouble();
 
-  factory InstallmentPlan.fromJson(Map<String, dynamic> json) => InstallmentPlan(
-        id: json['id'] as int,
-        partnerId: json['partner_id'] as int? ?? 0,
-        partnerName: json['partner_name'] as String? ?? '',
-        partnerPhone: json['partner_phone'] as String? ?? '',
-        currencyTypeId: json['currency_type_id'] as int? ?? 1,
-        currencyTypeName: json['currency_type_name'] as String? ?? 'UZS',
-        totalAmount: parseMoney(json['total_amount']),
-        paidAmount: parseMoney(json['paid_amount']),
-        remaining: parseMoney(json['remaining']),
-        scheduleType: InstallmentScheduleTypeX.fromApi(json['schedule_type'] as String?),
-        hasAdvance: json['has_advance'] as bool? ?? false,
-        advanceAmount: json['advance_amount'] != null ? parseMoney(json['advance_amount']) : null,
-        startDate: json['start_date'] != null ? DateTime.tryParse(json['start_date'] as String) : null,
-        note: json['note'] as String?,
-        status: InstallmentPlanStatusX.fromApi(json['status'] as String?),
-        statusLabel: json['status_label'] as String? ?? '',
-        itemsCount: json['items_count'] as int? ?? (json['items'] as List?)?.length ?? 0,
-        createdAt: AppDateFormatter.parseFromBackend(json['created_at'] as String?),
-        items: (json['items'] as List? ?? const [])
-            .cast<Map<String, dynamic>>()
-            .map(InstallmentItem.fromJson)
-            .toList(),
-      );
+  factory InstallmentPlan.fromJson(Map<String, dynamic> rawJson) {
+    var json = rawJson;
+    if (json['plan'] is Map<String, dynamic>) {
+      json = json['plan'] as Map<String, dynamic>;
+    } else if (json['data'] is Map<String, dynamic>) {
+      json = json['data'] as Map<String, dynamic>;
+    }
+    final idVal = json['id'];
+    final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
+    final partnerVal = json['partner_id'];
+    final partnerId = partnerVal is int ? partnerVal : (int.tryParse('$partnerVal') ?? 0);
+    final currVal = json['currency_type_id'];
+    final currencyTypeId = currVal is int ? currVal : (int.tryParse('$currVal') ?? 1);
+    final advanceVal = json['has_advance'];
+    final hasAdvance = advanceVal == true || advanceVal == 1 || advanceVal == '1';
+
+    return InstallmentPlan(
+      id: id,
+      partnerId: partnerId,
+      partnerName: json['partner_name']?.toString() ?? '',
+      partnerPhone: json['partner_phone']?.toString() ?? '',
+      currencyTypeId: currencyTypeId,
+      currencyTypeName: json['currency_type_name']?.toString() ?? (currencyTypeId == 2 ? 'USD' : 'UZS'),
+      totalAmount: parseMoney(json['total_amount']),
+      paidAmount: parseMoney(json['paid_amount']),
+      remaining: parseMoney(json['remaining']),
+      scheduleType: InstallmentScheduleTypeX.fromApi(json['schedule_type']?.toString()),
+      hasAdvance: hasAdvance,
+      advanceAmount: json['advance_amount'] != null ? parseMoney(json['advance_amount']) : null,
+      startDate: AppDateFormatter.parseFromBackend(json['start_date']?.toString()),
+      note: json['note']?.toString(),
+      status: InstallmentPlanStatusX.fromApi(json['status']?.toString()),
+      statusLabel: json['status_label']?.toString() ?? '',
+      itemsCount: (json['items_count'] as num?)?.toInt() ?? (json['items'] as List?)?.length ?? 0,
+      createdAt: AppDateFormatter.parseFromBackend(json['created_at']?.toString()),
+      items: (json['items'] as List? ?? const [])
+          .whereType<Map<String, dynamic>>()
+          .map(InstallmentItem.fromJson)
+          .toList(),
+    );
+  }
 }
 
 enum InstallmentItemStatus { pending, near, overdue, partial, paid }
@@ -136,17 +153,26 @@ class InstallmentItem {
   final InstallmentItemStatus status;
   final String statusLabel;
 
-  factory InstallmentItem.fromJson(Map<String, dynamic> json) => InstallmentItem(
-        id: json['id'] as int? ?? 0,
-        itemNumber: json['item_number'] as int? ?? 0,
-        isAdvance: json['is_advance'] as bool? ?? false,
-        amount: parseMoney(json['amount']),
-        paidAmount: parseMoney(json['paid_amount']),
-        remaining: parseMoney(json['remaining']),
-        dueDate: json['due_date'] != null ? DateTime.tryParse(json['due_date'] as String) : null,
-        status: InstallmentItemStatusX.fromApi(json['status'] as String?),
-        statusLabel: json['status_label'] as String? ?? '',
-      );
+  factory InstallmentItem.fromJson(Map<String, dynamic> json) {
+    final idVal = json['id'];
+    final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
+    final numVal = json['item_number'];
+    final itemNumber = numVal is int ? numVal : (int.tryParse('$numVal') ?? 0);
+    final advanceVal = json['is_advance'];
+    final isAdvance = advanceVal == true || advanceVal == 1 || advanceVal == '1';
+
+    return InstallmentItem(
+      id: id,
+      itemNumber: itemNumber,
+      isAdvance: isAdvance,
+      amount: parseMoney(json['amount']),
+      paidAmount: parseMoney(json['paid_amount']),
+      remaining: parseMoney(json['remaining']),
+      dueDate: AppDateFormatter.parseFromBackend(json['due_date']?.toString()),
+      status: InstallmentItemStatusX.fromApi(json['status']?.toString()),
+      statusLabel: json['status_label']?.toString() ?? '',
+    );
+  }
 }
 
 /// To'lov tarixi yozuvi (MOBILE_APP_TZ.md 9.7).
@@ -175,18 +201,25 @@ class InstallmentPaymentRecord {
   final DateTime? cancelledAt;
   final DateTime? createdAt;
 
-  factory InstallmentPaymentRecord.fromJson(Map<String, dynamic> json) => InstallmentPaymentRecord(
-        id: json['id'] as int,
-        receivedByName: json['received_by_name'] as String? ?? '',
-        amount: parseMoney(json['amount']),
-        planPaidBefore: parseMoney(json['plan_paid_before']),
-        planPaidAfter: parseMoney(json['plan_paid_after']),
-        note: json['note'] as String?,
-        isCancelled: json['is_cancelled'] as bool? ?? false,
-        cancelledByName: json['cancelled_by_name'] as String?,
-        cancelledAt: AppDateFormatter.parseFromBackend(json['cancelled_at'] as String?),
-        createdAt: AppDateFormatter.parseFromBackend(json['created_at'] as String?),
-      );
+  factory InstallmentPaymentRecord.fromJson(Map<String, dynamic> json) {
+    final idVal = json['id'];
+    final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
+    final cancelledVal = json['is_cancelled'];
+    final isCancelled = cancelledVal == true || cancelledVal == 1 || cancelledVal == '1';
+
+    return InstallmentPaymentRecord(
+      id: id,
+      receivedByName: json['received_by_name']?.toString() ?? '',
+      amount: parseMoney(json['amount']),
+      planPaidBefore: parseMoney(json['plan_paid_before']),
+      planPaidAfter: parseMoney(json['plan_paid_after']),
+      note: json['note']?.toString(),
+      isCancelled: isCancelled,
+      cancelledByName: json['cancelled_by_name']?.toString(),
+      cancelledAt: AppDateFormatter.parseFromBackend(json['cancelled_at']?.toString()),
+      createdAt: AppDateFormatter.parseFromBackend(json['created_at']?.toString()),
+    );
+  }
 }
 
 /// Client-side preview elementi — server yaratadigan grafikning aynan o'zi

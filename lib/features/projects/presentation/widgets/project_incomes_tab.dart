@@ -62,15 +62,26 @@ class _View extends StatelessWidget {
                           return AppCard(
                             child: Row(
                               children: [
-                                Icon(Icons.arrow_downward_rounded, color: context.colors.success),
-                                const SizedBox(width: AppSpacing.sm),
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: context.colors.success.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(Icons.arrow_downward_rounded, color: context.colors.success, size: 20),
+                                ),
+                                const SizedBox(width: AppSpacing.md),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      MoneyText(income.summa, currencyTypeId: income.currencyTypeId, colorOverride: context.colors.success),
+                                      MoneyText(income.summa, currencyTypeId: income.currencyTypeId, colorOverride: context.colors.success, size: MoneySize.list),
                                       if (income.description != null && income.description!.isNotEmpty)
-                                        Text(income.description!, style: TextStyle(color: context.colors.textSecondary, fontSize: 13)),
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 2),
+                                          child: Text(income.description!, style: TextStyle(color: context.colors.textSecondary, fontSize: 13)),
+                                        ),
                                     ],
                                   ),
                                 ),
@@ -84,7 +95,11 @@ class _View extends StatelessWidget {
             Positioned(
               right: AppSpacing.md,
               bottom: AppSpacing.md,
-              child: FloatingActionButton(onPressed: () => _showIncomeForm(context, projectId), child: const Icon(Icons.add)),
+              child: FloatingActionButton(
+                heroTag: null,
+                onPressed: () => _showIncomeForm(context, projectId),
+                child: const Icon(Icons.add),
+              ),
             ),
           ],
         );

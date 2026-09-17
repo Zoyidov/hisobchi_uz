@@ -1,4 +1,6 @@
 import '../../../core/constants/app_endpoints.dart';
+import '../../../core/di/injector.dart';
+import '../../../core/events/data_refresh_bus.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_result.dart';
 import '../../../core/network/paged_result.dart';
@@ -98,14 +100,29 @@ class PartnersRepository {
     );
   }
 
-  Future<ApiResult<void>> deletePartner(int id) =>
-      _client.delete(ApiEndpoints.partnerById(id), parse: (_) {});
+  Future<ApiResult<void>> deletePartner(int id) async {
+    final res = await _client.delete(ApiEndpoints.partnerById(id), parse: (_) {});
+    if (res.isSuccess) {
+      getIt<DataRefreshBus>().notifyPartnersChanged(partnerId: id);
+    }
+    return res;
+  }
 
-  Future<ApiResult<void>> restorePartner(int id) =>
-      _client.post(ApiEndpoints.partnerRestore(id), parse: (_) {});
+  Future<ApiResult<void>> restorePartner(int id) async {
+    final res = await _client.post(ApiEndpoints.partnerRestore(id), parse: (_) {});
+    if (res.isSuccess) {
+      getIt<DataRefreshBus>().notifyPartnersChanged(partnerId: id);
+    }
+    return res;
+  }
 
-  Future<ApiResult<void>> forceDeletePartner(int id) =>
-      _client.delete(ApiEndpoints.partnerForceDelete(id), parse: (_) {});
+  Future<ApiResult<void>> forceDeletePartner(int id) async {
+    final res = await _client.delete(ApiEndpoints.partnerForceDelete(id), parse: (_) {});
+    if (res.isSuccess) {
+      getIt<DataRefreshBus>().notifyPartnersChanged(partnerId: id);
+    }
+    return res;
+  }
 
   Future<ApiResult<SimplePage<SentSms>>> getSentSms(int partnerId, {int page = 1}) {
     return _client.getSimplePage(

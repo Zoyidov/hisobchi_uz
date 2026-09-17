@@ -31,30 +31,35 @@ class AccountSelectionPage extends StatelessWidget {
               const SizedBox(height: AppSpacing.xl),
               if (user != null && user.isOwner)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
                   child: AppCard(
                     onTap: () async {
                       await context.read<OwnerContextCubit>().switchTo(OwnerContext.own);
                       if (context.mounted) context.go(RoutePaths.dashboard);
                     },
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    borderRadius: BorderRadius.circular(20),
                     child: Row(
                       children: [
-                        AppAvatar(name: user.name, imageUrl: user.image),
-                        const SizedBox(width: AppSpacing.sm),
+                        AppAvatar(name: user.name, imageUrl: user.image, size: 50),
+                        const SizedBox(width: AppSpacing.md),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(user.name, style: Theme.of(context).textTheme.titleMedium),
-                              Text('O\'z hisobim',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
-                                      ?.copyWith(color: colors.textSecondary)),
+                              Text(
+                                user.name,
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'O\'z hisobim (Egasi)',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.primary, fontWeight: FontWeight.w600),
+                              ),
                             ],
                           ),
                         ),
-                        Icon(Icons.chevron_right, color: colors.textTertiary),
+                        Icon(Icons.chevron_right_rounded, color: colors.textTertiary, size: 22),
                       ],
                     ),
                   ),
@@ -62,7 +67,7 @@ class AccountSelectionPage extends StatelessWidget {
               if (user != null)
                 ...user.worksFor.map(
                   (w) => Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.md),
                     child: AppCard(
                       onTap: () async {
                         await context
@@ -70,24 +75,29 @@ class AccountSelectionPage extends StatelessWidget {
                             .switchTo(OwnerContext(ownerId: w.ownerId, ownerName: w.ownerName));
                         if (context.mounted) context.go(RoutePaths.dashboard);
                       },
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      borderRadius: BorderRadius.circular(20),
                       child: Row(
                         children: [
-                          AppAvatar(name: w.ownerName),
-                          const SizedBox(width: AppSpacing.sm),
+                          AppAvatar(name: w.ownerName, size: 50),
+                          const SizedBox(width: AppSpacing.md),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(w.ownerName, style: Theme.of(context).textTheme.titleMedium),
-                                Text('Xodim sifatida',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
-                                        ?.copyWith(color: colors.textSecondary)),
+                                Text(
+                                  w.ownerName,
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Xodim sifatida',
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.textSecondary, fontWeight: FontWeight.w500),
+                                ),
                               ],
                             ),
                           ),
-                          Icon(Icons.chevron_right, color: colors.textTertiary),
+                          Icon(Icons.chevron_right_rounded, color: colors.textTertiary, size: 22),
                         ],
                       ),
                     ),

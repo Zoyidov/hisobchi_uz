@@ -1,7 +1,9 @@
 import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/widgets/buttons/app_floating_action.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -42,7 +44,29 @@ class _View extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ishchilar')),
+      appBar: AppBar(
+        title: const Text('Ishchilar'),
+        actions: [
+          BlocBuilder<WorkersCubit, WorkersState>(
+            builder: (context, state) {
+              final positions = state is WorkersLoaded ? state.positions : <SimpleDocument>[];
+              return Padding(
+                padding: const EdgeInsets.only(right: AppSpacing.sm),
+                child: FilledButton.tonalIcon(
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    minimumSize: const Size(0, 36),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  onPressed: () => _showWorkerForm(context, positions: positions),
+                  icon: const Icon(CupertinoIcons.plus, size: 15),
+                  label: const Text('Qo\'shish', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: BlocBuilder<WorkersCubit, WorkersState>(
         builder: (context, state) {
           return switch (state) {
@@ -58,7 +82,7 @@ class _View extends StatelessWidget {
                 : RefreshIndicator(
                     onRefresh: () => context.read<WorkersCubit>().load(),
                     child: ListView.separated(
-                      padding: const EdgeInsets.all(AppSpacing.md),
+                      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 110),
                       itemCount: items.length,
                       separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
                       itemBuilder: (context, i) => _Tile(item: items[i], positions: positions),
@@ -70,10 +94,11 @@ class _View extends StatelessWidget {
       floatingActionButton: BlocBuilder<WorkersCubit, WorkersState>(
         builder: (context, state) {
           final positions = state is WorkersLoaded ? state.positions : <SimpleDocument>[];
-          return FloatingActionButton.extended(
+          return AppFloatingAction(
+            heroTag: 'workers_create_fab',
             onPressed: () => _showWorkerForm(context, positions: positions),
-            icon: const Icon(Icons.add),
-            label: const Text('Ishchi'),
+            icon: CupertinoIcons.person_badge_plus,
+            label: 'Ishchi qo\'shish',
           );
         },
       ),

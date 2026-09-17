@@ -1,7 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/di/injector.dart';
 import '../../../../core/errors/failure.dart';
+import '../../../../core/events/data_refresh_bus.dart';
 import '../../data/staff_models.dart';
 import '../../data/staff_repository.dart';
 
@@ -118,7 +120,10 @@ class StaffCreateCubit extends Cubit<StaffCreateState> {
       permissions: state.selectedPermissions.toList(),
     );
     result.when(
-      success: (_) => emit(state.copyWith(isLoading: false, success: true)),
+      success: (_) {
+        getIt<DataRefreshBus>().notifyStaffChanged();
+        emit(state.copyWith(isLoading: false, success: true));
+      },
       failure: (f) => emit(state.copyWith(isLoading: false, error: f)),
     );
   }

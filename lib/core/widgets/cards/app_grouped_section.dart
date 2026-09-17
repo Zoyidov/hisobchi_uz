@@ -39,7 +39,7 @@ class AppGroupedSection extends StatelessWidget {
                   height: 1,
                   thickness: 1,
                   color: colors.divider.withValues(alpha: 0.8),
-                  indent: 58,
+                  indent: 64,
                 ),
               children[i],
             ],
@@ -80,23 +80,23 @@ class AppGroupedTile extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      splashColor: colors.primary.withValues(alpha: 0.06),
-      highlightColor: colors.primary.withValues(alpha: 0.03),
+      splashColor: effectiveIconColor.withValues(alpha: 0.08),
+      highlightColor: effectiveIconColor.withValues(alpha: 0.04),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 14),
         child: Row(
           children: [
             Container(
-              width: 32,
-              height: 32,
+              width: 36,
+              height: 36,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: effectiveIconColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(9),
+                borderRadius: BorderRadius.circular(11),
               ),
-              child: Icon(icon, size: 18, color: effectiveIconColor),
+              child: Icon(icon, size: 19, color: effectiveIconColor),
             ),
-            const SizedBox(width: AppSpacing.sm + 2),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Text(
                 label,
@@ -111,6 +111,7 @@ class AppGroupedTile extends StatelessWidget {
                 value!,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: colors.textSecondary,
+                      fontWeight: FontWeight.w500,
                     ),
               ),
               const SizedBox(width: 4),

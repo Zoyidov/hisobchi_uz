@@ -1,6 +1,8 @@
 import 'package:decimal/decimal.dart';
 
 import '../../../core/constants/app_endpoints.dart';
+import '../../../core/di/injector.dart';
+import '../../../core/events/data_refresh_bus.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_result.dart';
 import '../../../core/network/paged_result.dart';
@@ -113,10 +115,17 @@ class InstallmentsRepository {
     );
   }
 
-  Future<ApiResult<void>> cancel(int id) => _client.delete(ApiEndpoints.installmentById(id), parse: (_) {});
+  Future<ApiResult<void>> cancel(int id) async {
+    final res = await _client.delete(ApiEndpoints.installmentById(id), parse: (_) {});
+    if (res.isSuccess) {
+      getIt<DataRefreshBus>().notifyInstallmentsChanged(installmentId: id);
+      getIt<DataRefreshBus>().notifyWalletsChanged();
+    }
+    return res;
+  }
 
-  Future<ApiResult<InstallmentPlan>> makePayment(int id, {required Decimal amount, String? note, required DateTime paidAt}) {
-    return _client.post(
+  Future<ApiResult<InstallmentPlan>> makePayment(int id, {required Decimal amount, String? note, required DateTime paidAt}) async {
+    final res = await _client.post(
       ApiEndpoints.installmentPayment(id),
       data: {
         'amount': moneyToApi(amount),
@@ -125,12 +134,23 @@ class InstallmentsRepository {
       },
       parse: (r) => InstallmentPlan.fromJson(r as Map<String, dynamic>),
     );
+    if (res.isSuccess) {
+      getIt<DataRefreshBus>().notifyInstallmentsChanged(installmentId: id);
+      getIt<DataRefreshBus>().notifyWalletsChanged();
+    }
+    return res;
   }
 
   Future<ApiResult<List<InstallmentPaymentRecord>>> getPaymentHistory(int id) {
     return _client.getList(ApiEndpoints.installmentPaymentHistory(id), fromJson: InstallmentPaymentRecord.fromJson);
   }
 
-  Future<ApiResult<void>> cancelPayment(int planId, int paymentId) =>
-      _client.delete(ApiEndpoints.installmentPaymentCancel(planId, paymentId), parse: (_) {});
+  Future<ApiResult<void>> cancelPayment(int planId, int paymentId) async {
+    final res = await _client.delete(ApiEndpoints.installmentPaymentCancel(planId, paymentId), parse: (_) {});
+    if (res.isSuccess) {
+      getIt<DataRefreshBus>().notifyInstallmentsChanged(installmentId: planId);
+      getIt<DataRefreshBus>().notifyWalletsChanged();
+    }
+    return res;
+  }
 }

@@ -52,24 +52,44 @@ class Partner {
     return parseMoney(map[code]);
   }
 
-  factory Partner.fromJson(Map<String, dynamic> json) {
-    final balance = json['balance'] as Map<String, dynamic>?;
-    final installment = json['installment_remaining'] as Map<String, dynamic>?;
+  factory Partner.fromJson(Map<String, dynamic> rawJson) {
+    var json = rawJson;
+    if (json['partner'] is Map<String, dynamic>) {
+      json = json['partner'] as Map<String, dynamic>;
+    } else if (json['data'] is Map<String, dynamic>) {
+      json = json['data'] as Map<String, dynamic>;
+    }
+
+    final idVal = json['id'];
+    final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
+
+    final mainCurrencyVal = json['main_currency_type_id'];
+    final mainCurrencyTypeId = mainCurrencyVal is int ? mainCurrencyVal : (int.tryParse('$mainCurrencyVal') ?? 1);
+
+    final sendOnKirimVal = json['send_on_kirim'];
+    final sendOnKirim = sendOnKirimVal == null ? true : (sendOnKirimVal == true || sendOnKirimVal == 1 || sendOnKirimVal == '1');
+
+    final sendOnChiqimVal = json['send_on_chiqim'];
+    final sendOnChiqim = sendOnChiqimVal == null ? true : (sendOnChiqimVal == true || sendOnChiqimVal == 1 || sendOnChiqimVal == '1');
+
+    final balance = json['balance'] is Map<String, dynamic> ? json['balance'] as Map<String, dynamic> : null;
+    final installment = json['installment_remaining'] is Map<String, dynamic> ? json['installment_remaining'] as Map<String, dynamic> : null;
+
     return Partner(
-      id: json['id'] as int,
-      name: json['name'] as String? ?? '',
-      phone: json['phone'] as String? ?? '',
-      additionalPhone: json['additional_phone'] as String?,
-      mainCurrencyTypeId: json['main_currency_type_id'] as int? ?? 1,
-      mainCurrencyTypeName: json['main_currency_type_name'] as String? ?? 'UZS',
+      id: id,
+      name: json['name']?.toString() ?? '',
+      phone: json['phone']?.toString() ?? '',
+      additionalPhone: json['additional_phone']?.toString(),
+      mainCurrencyTypeId: mainCurrencyTypeId,
+      mainCurrencyTypeName: json['main_currency_type_name']?.toString() ?? (mainCurrencyTypeId == 2 ? 'USD' : 'UZS'),
       balanceUzs: _currencyValue(balance, 'UZS'),
       balanceUsd: _currencyValue(balance, 'USD'),
       installmentRemainingUzs: _currencyValue(installment, 'UZS'),
       installmentRemainingUsd: _currencyValue(installment, 'USD'),
-      sendOnKirim: json['send_on_kirim'] as bool? ?? true,
-      sendOnChiqim: json['send_on_chiqim'] as bool? ?? true,
-      createdAt: AppDateFormatter.parseFromBackend(json['created_at'] as String?),
-      deletedAt: AppDateFormatter.parseFromBackend(json['deleted_at'] as String?),
+      sendOnKirim: sendOnKirim,
+      sendOnChiqim: sendOnChiqim,
+      createdAt: AppDateFormatter.parseFromBackend(json['created_at']?.toString()),
+      deletedAt: AppDateFormatter.parseFromBackend(json['deleted_at']?.toString()),
     );
   }
 }
@@ -133,14 +153,24 @@ class PartnerAccount {
   final PartnerCurrencyAccount uzs;
   final PartnerCurrencyAccount usd;
 
-  factory PartnerAccount.fromJson(Map<String, dynamic> json) => PartnerAccount(
-        uzs: json['uzs_account'] != null
-            ? PartnerCurrencyAccount.fromJson(json['uzs_account'] as Map<String, dynamic>)
-            : PartnerCurrencyAccount.zero,
-        usd: json['usd_account'] != null
-            ? PartnerCurrencyAccount.fromJson(json['usd_account'] as Map<String, dynamic>)
-            : PartnerCurrencyAccount.zero,
-      );
+  factory PartnerAccount.fromJson(Map<String, dynamic> rawJson) {
+    var source = rawJson;
+    if (source['account'] is Map<String, dynamic>) {
+      source = source['account'] as Map<String, dynamic>;
+    } else if (source['data'] is Map<String, dynamic>) {
+      source = source['data'] as Map<String, dynamic>;
+    } else if (source['result'] is Map<String, dynamic>) {
+      source = source['result'] as Map<String, dynamic>;
+    }
+    return PartnerAccount(
+      uzs: source['uzs_account'] is Map<String, dynamic>
+          ? PartnerCurrencyAccount.fromJson(source['uzs_account'] as Map<String, dynamic>)
+          : PartnerCurrencyAccount.zero,
+      usd: source['usd_account'] is Map<String, dynamic>
+          ? PartnerCurrencyAccount.fromJson(source['usd_account'] as Map<String, dynamic>)
+          : PartnerCurrencyAccount.zero,
+    );
+  }
 }
 
 /// Kirim/Chiqim tranzaksiyasi (MOBILE_APP_TZ.md 8.6).
@@ -179,26 +209,50 @@ class Wallet {
 
   bool get isExpense => type == 'credit';
 
-  factory Wallet.fromJson(Map<String, dynamic> json) {
-    final activity = json['activity'] as Map<String, dynamic>?;
-    final performedBy = activity?['performed_by'] as Map<String, dynamic>?;
+  factory Wallet.fromJson(Map<String, dynamic> rawJson) {
+    var json = rawJson;
+    if (json['wallet'] is Map<String, dynamic>) {
+      json = json['wallet'] as Map<String, dynamic>;
+    } else if (json['data'] is Map<String, dynamic>) {
+      json = json['data'] as Map<String, dynamic>;
+    } else if (json['result'] is Map<String, dynamic>) {
+      json = json['result'] as Map<String, dynamic>;
+    }
+
+    final idVal = json['id'];
+    final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
+
+    final partnerIdVal = json['partner_id'];
+    final partnerId = partnerIdVal is int ? partnerIdVal : (int.tryParse('$partnerIdVal') ?? 0);
+
+    final currencyTypeIdVal = json['currency_type_id'];
+    final currencyTypeId = currencyTypeIdVal is int ? currencyTypeIdVal : (int.tryParse('$currencyTypeIdVal') ?? 1);
+
+    final cancelledVal = json['is_cancelled'];
+    final isCancelled = cancelledVal == true || cancelledVal == 1 || cancelledVal == '1';
+
+    final activity = json['activity'] is Map<String, dynamic>
+        ? json['activity'] as Map<String, dynamic>
+        : null;
+    final performedBy = activity?['performed_by'] is Map<String, dynamic>
+        ? activity!['performed_by'] as Map<String, dynamic>
+        : null;
+
     return Wallet(
-      id: json['id'] as int,
-      partnerId: json['partner_id'] as int? ?? 0,
-      partnerName: json['partner_name'] as String? ?? '',
-      currencyTypeId: json['currency_type_id'] as int? ?? 1,
-      currencyTypeName: json['currency_type_name'] as String? ?? 'UZS',
+      id: id,
+      partnerId: partnerId,
+      partnerName: json['partner_name']?.toString() ?? '',
+      currencyTypeId: currencyTypeId,
+      currencyTypeName: json['currency_type_name']?.toString() ?? (currencyTypeId == 2 ? 'USD' : 'UZS'),
       summa: parseMoney(json['summa']),
-      description: json['description'] as String?,
-      returnDate: json['return_date'] != null
-          ? DateTime.tryParse(json['return_date'] as String)
-          : null,
-      type: json['type'] as String? ?? 'debt',
-      isCancelled: json['is_cancelled'] as bool? ?? false,
-      cancelReason: json['cancel_reason'] as String?,
-      createdAt: AppDateFormatter.parseFromBackend(json['created_at'] as String?),
-      deletedAt: AppDateFormatter.parseFromBackend(json['deleted_at'] as String?),
-      performedByName: performedBy?['name'] as String?,
+      description: json['description']?.toString(),
+      returnDate: AppDateFormatter.parseFromBackend(json['return_date']?.toString()),
+      type: json['type']?.toString() ?? 'debt',
+      isCancelled: isCancelled,
+      cancelReason: json['cancel_reason']?.toString(),
+      createdAt: AppDateFormatter.parseFromBackend(json['created_at']?.toString()),
+      deletedAt: AppDateFormatter.parseFromBackend(json['deleted_at']?.toString()),
+      performedByName: performedBy?['name']?.toString(),
     );
   }
 }

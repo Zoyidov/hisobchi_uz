@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants/app_durations.dart';
@@ -66,30 +67,34 @@ class _AppSearchFieldState extends State<AppSearchField> {
         fillColor: colors.surfaceSecondary.withValues(alpha: 0.8),
         prefixIcon: Padding(
           padding: const EdgeInsets.only(left: 14, right: 10),
-          child: Icon(Icons.search_rounded, color: colors.textTertiary, size: 20),
+          child: Icon(CupertinoIcons.search, color: colors.textTertiary, size: 20),
         ),
         prefixIconConstraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-        suffixIcon: _controller.text.isNotEmpty
-            ? Padding(
-                padding: const EdgeInsets.only(right: 6),
-                child: IconButton(
-                  icon: Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: colors.textTertiary.withValues(alpha: 0.25),
-                      shape: BoxShape.circle,
+        suffixIcon: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 150),
+          child: _controller.text.isNotEmpty
+              ? Padding(
+                  key: const ValueKey('clear_btn'),
+                  padding: const EdgeInsets.only(right: 6),
+                  child: IconButton(
+                    icon: Container(
+                      width: 22,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        color: colors.textTertiary.withValues(alpha: 0.25),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(CupertinoIcons.xmark, color: colors.textSecondary, size: 12),
                     ),
-                    child: Icon(Icons.close_rounded, color: colors.textSecondary, size: 13),
+                    onPressed: () {
+                      _controller.clear();
+                      widget.onChanged('');
+                      setState(() {});
+                    },
                   ),
-                  onPressed: () {
-                    _controller.clear();
-                    widget.onChanged('');
-                    setState(() {});
-                  },
-                ),
-              )
-            : null,
+                )
+              : const SizedBox.shrink(key: ValueKey('empty')),
+        ),
         contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),

@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/di/injector.dart';
 import '../../../core/errors/failure.dart';
+import '../../../core/events/data_refresh_bus.dart';
 import '../data/dashboard_models.dart';
 import '../data/dashboard_repository.dart';
 
@@ -32,9 +36,25 @@ class DashboardError extends DashboardState {
 
 /// Bosh sahifa — MOBILE_APP_TZ.md 7-bo'lim.
 class DashboardCubit extends Cubit<DashboardState> {
-  DashboardCubit(this._repository) : super(const DashboardLoading());
+  DashboardCubit(this._repository) : super(const DashboardLoading()) {
+    _refreshSub = getIt<DataRefreshBus>().events.listen((event) {
+      if (event is PartnersChangedEvent ||
+          event is WalletsChangedEvent ||
+          event is ProjectsChangedEvent ||
+          event is InstallmentsChangedEvent) {
+        refresh();
+      }
+    });
+  }
 
   final DashboardRepository _repository;
+  StreamSubscription<DataChangeEvent>? _refreshSub;
+
+  @override
+  Future<void> close() {
+    _refreshSub?.cancel();
+    return super.close();
+  }
 
   Future<void> load() async {
     emit(const DashboardLoading());

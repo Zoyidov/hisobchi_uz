@@ -78,6 +78,8 @@ class _PlansPageState extends State<PlansPage> {
   Widget _planCard(BuildContext context, PricingPlan plan) {
     final colors = context.colors;
     final price = _priceFor(plan);
+    final isCurrent = plan.currentlySubscribed;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
       child: AppCard(
@@ -87,54 +89,146 @@ class _PlansPageState extends State<PlansPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(plan.displayName, style: Theme.of(context).textTheme.titleLarge),
-                if (plan.currentlySubscribed)
-                  Text('Joriy tarifingiz', style: TextStyle(color: colors.primary, fontWeight: FontWeight.w600)),
+                Expanded(
+                  child: Text(
+                    plan.displayName,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                ),
+                if (isCurrent)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: colors.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: colors.primary.withValues(alpha: 0.25)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.check_circle_rounded, size: 14, color: colors.primary),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Joriy tarifingiz',
+                          style: TextStyle(
+                            color: colors.primary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
             if (price != null) ...[
-              const SizedBox(height: 4),
+              const SizedBox(height: 8),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
                 children: [
-                  Text(price.formatted, style: Theme.of(context).textTheme.headlineSmall),
+                  Text(
+                    price.formatted,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                  ),
                   if (price.discount != null && price.discount! > 0) ...[
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(color: colors.error.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-                      child: Text('-${price.discount}%', style: TextStyle(color: colors.error, fontWeight: FontWeight.w700)),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: colors.error.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '-${price.discount}%',
+                        style: TextStyle(
+                          color: colors.error,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 11,
+                        ),
+                      ),
                     ),
                   ],
                 ],
               ),
-              if (price.description != null && price.description!.isNotEmpty)
-                Text(price.description!, style: TextStyle(color: colors.textSecondary, fontSize: 12)),
+              if (price.description != null && price.description!.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(
+                  price.description!,
+                  style: TextStyle(color: colors.textSecondary, fontSize: 13),
+                ),
+              ],
             ],
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: AppSpacing.md),
             Wrap(
-              spacing: AppSpacing.md,
-              runSpacing: 4,
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.xs,
               children: [
-                Text('${plan.maxCustomers == -1 ? 'Cheksiz' : plan.maxCustomers} Hamkor'),
-                Text('${plan.maxProjects == -1 ? 'Cheksiz' : plan.maxProjects} Loyiha'),
-                Text('${plan.maxUsers == -1 ? 'Cheksiz' : plan.maxUsers} Xodim'),
-                Text('${plan.smsPerMonth} SMS'),
+                _featureChip(context, Icons.people_outline_rounded, '${plan.maxCustomers == -1 ? 'Cheksiz' : plan.maxCustomers} Hamkor'),
+                _featureChip(context, Icons.work_outline_rounded, '${plan.maxProjects == -1 ? 'Cheksiz' : plan.maxProjects} Loyiha'),
+                _featureChip(context, Icons.badge_outlined, '${plan.maxUsers == -1 ? 'Cheksiz' : plan.maxUsers} Xodim'),
+                _featureChip(context, Icons.sms_outlined, '${plan.smsPerMonth} SMS'),
               ],
             ),
-            const SizedBox(height: AppSpacing.md),
+            const SizedBox(height: AppSpacing.lg),
             if (!plan.canSubscribe) ...[
               for (final warning in plan.downgradeWarnings)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Text(warning, style: TextStyle(color: colors.error, fontSize: 12)),
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.info_outline_rounded, size: 14, color: colors.error),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          warning,
+                          style: TextStyle(color: colors.error, fontSize: 12, height: 1.3),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+              const SizedBox(height: AppSpacing.xs),
             ],
             AppButton.primary(
-              label: plan.currentlySubscribed ? 'Joriy tarif' : 'Tanlash',
-              onPressed: plan.canSubscribe && !plan.currentlySubscribed ? () => _selectPlan(context, plan) : null,
+              label: isCurrent ? 'Joriy tarif' : 'Tanlash',
+              onPressed: plan.canSubscribe && !isCurrent ? () => _selectPlan(context, plan) : null,
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _featureChip(BuildContext context, IconData icon, String label) {
+    final colors = context.colors;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: colors.surfaceSecondary,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: colors.borderSubtle),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: colors.textSecondary),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: colors.textPrimary,
+            ),
+          ),
+        ],
       ),
     );
   }

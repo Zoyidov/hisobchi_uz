@@ -1,7 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/di/injector.dart';
 import '../../../../core/errors/failure.dart';
+import '../../../../core/events/data_refresh_bus.dart';
 import '../../data/project_models.dart';
 import '../../data/projects_repository.dart';
 
@@ -83,7 +85,10 @@ class ProjectFormCubit extends Cubit<ProjectFormState> {
           );
 
     result.when(
-      success: (project) => emit(ProjectFormSuccess(project)),
+      success: (project) {
+        getIt<DataRefreshBus>().notifyProjectsChanged(projectId: project.id);
+        emit(ProjectFormSuccess(project));
+      },
       failure: (f) {
         if (f is ValidationFailure) {
           emit(ProjectFormValidationError(f.fieldErrors));

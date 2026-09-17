@@ -104,44 +104,65 @@ class AppButton extends StatelessWidget {
     final colors = context.colors;
     final disabled = onPressed == null || isLoading;
 
-    Widget child = isLoading
-        ? SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(
-              strokeWidth: 2.2,
-              valueColor: AlwaysStoppedAnimation(
-                variant == AppButtonVariant.secondary || variant == AppButtonVariant.text
-                    ? colors.primary
-                    : Colors.white,
+    final content = AnimatedSwitcher(
+      duration: const Duration(milliseconds: 200),
+      switchInCurve: Curves.easeOut,
+      switchOutCurve: Curves.easeIn,
+      child: isLoading
+          ? SizedBox(
+              key: const ValueKey('loading'),
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.2,
+                valueColor: AlwaysStoppedAnimation(
+                  variant == AppButtonVariant.secondary || variant == AppButtonVariant.text
+                      ? colors.primary
+                      : Colors.white,
+                ),
               ),
+            )
+          : Row(
+              key: const ValueKey('label'),
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null) ...[icon!, const SizedBox(width: 8)],
+                Text(label),
+              ],
             ),
-          )
-        : Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (icon != null) ...[icon!, const SizedBox(width: 8)],
-              Text(label),
-            ],
-          );
+    );
 
     final button = switch (variant) {
-      AppButtonVariant.primary => ElevatedButton(
-          onPressed: disabled ? null : onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: colors.primary,
-            foregroundColor: Colors.white,
-            disabledBackgroundColor: colors.disabled,
-            minimumSize: Size(0, _height),
-            elevation: disabled ? 0 : 2,
-            shadowColor: colors.primary.withValues(alpha: 0.35),
-            shape: RoundedRectangleBorder(borderRadius: AppRadius.mediumRadius),
-            textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.2,
+      AppButtonVariant.primary => Container(
+          decoration: disabled
+              ? null
+              : BoxDecoration(
+                  borderRadius: AppRadius.mediumRadius,
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors.primary.withValues(alpha: 0.28),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
+          child: ElevatedButton(
+            onPressed: disabled ? null : onPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colors.primary,
+              foregroundColor: Colors.white,
+              disabledBackgroundColor: colors.disabled,
+              minimumSize: Size(0, _height),
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.mediumRadius),
+              textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
+                  ),
+            ),
+            child: content,
           ),
-          child: child,
         ),
       AppButtonVariant.secondary => OutlinedButton(
           onPressed: disabled ? null : onPressed,
@@ -149,14 +170,14 @@ class AppButton extends StatelessWidget {
             backgroundColor: colors.surfaceSecondary.withValues(alpha: 0.6),
             foregroundColor: colors.textPrimary,
             minimumSize: Size(0, _height),
-            side: BorderSide(color: colors.border.withValues(alpha: 0.8), width: 1.2),
+            side: BorderSide(color: colors.border.withValues(alpha: 0.9), width: 1.2),
             shape: RoundedRectangleBorder(borderRadius: AppRadius.mediumRadius),
             textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.1,
                 ),
           ),
-          child: child,
+          child: content,
         ),
       AppButtonVariant.text => TextButton(
           onPressed: disabled ? null : onPressed,
@@ -166,27 +187,100 @@ class AppButton extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          child: child,
+          child: content,
         ),
-      AppButtonVariant.destructive => ElevatedButton(
-          onPressed: disabled ? null : onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: colors.error,
-            foregroundColor: Colors.white,
-            minimumSize: Size(0, _height),
-            elevation: disabled ? 0 : 2,
-            shadowColor: colors.error.withValues(alpha: 0.35),
-            shape: RoundedRectangleBorder(borderRadius: AppRadius.mediumRadius),
-            textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.2,
+      AppButtonVariant.destructive => Container(
+          decoration: disabled
+              ? null
+              : BoxDecoration(
+                  borderRadius: AppRadius.mediumRadius,
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors.error.withValues(alpha: 0.28),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
+          child: ElevatedButton(
+            onPressed: disabled ? null : onPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colors.error,
+              foregroundColor: Colors.white,
+              disabledBackgroundColor: colors.disabled,
+              minimumSize: Size(0, _height),
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: AppRadius.mediumRadius),
+              textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
+                  ),
+            ),
+            child: content,
           ),
-          child: child,
         ),
     };
 
-    if (!expand) return button;
-    return SizedBox(width: double.infinity, child: button);
+    final wrappedButton = AppButtonPressable(
+      enabled: !disabled,
+      child: button,
+    );
+
+    if (!expand) return wrappedButton;
+    return SizedBox(width: double.infinity, child: wrappedButton);
+  }
+}
+
+/// Tactile press scale micro-interaction wrapper
+class AppButtonPressable extends StatefulWidget {
+  const AppButtonPressable({super.key, required this.child, this.enabled = true});
+
+  final Widget child;
+  final bool enabled;
+
+  @override
+  State<AppButtonPressable> createState() => _AppButtonPressableState();
+}
+
+class _AppButtonPressableState extends State<AppButtonPressable> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+      reverseDuration: const Duration(milliseconds: 140),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.97).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      onPointerDown: (_) {
+        if (widget.enabled) _controller.forward();
+      },
+      onPointerUp: (_) {
+        if (widget.enabled) _controller.reverse();
+      },
+      onPointerCancel: (_) {
+        if (widget.enabled) _controller.reverse();
+      },
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: widget.child,
+      ),
+    );
   }
 }

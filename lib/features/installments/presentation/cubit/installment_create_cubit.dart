@@ -2,7 +2,9 @@ import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/di/injector.dart';
 import '../../../../core/errors/failure.dart';
+import '../../../../core/events/data_refresh_bus.dart';
 import '../../data/installment_models.dart';
 import '../../data/installment_scheduler.dart';
 import '../../data/installments_repository.dart';
@@ -189,7 +191,11 @@ class InstallmentCreateCubit extends Cubit<InstallmentCreateState> {
             fileIds: state.fileIds.isEmpty ? null : state.fileIds,
           );
     result.when(
-      success: (plan) => emit(state.copyWith(isSubmitting: false, createdPlan: plan)),
+      success: (plan) {
+        getIt<DataRefreshBus>().notifyInstallmentsChanged(installmentId: plan.id);
+        getIt<DataRefreshBus>().notifyWalletsChanged(partnerId: partnerId);
+        emit(state.copyWith(isSubmitting: false, createdPlan: plan));
+      },
       failure: (f) => emit(state.copyWith(isSubmitting: false, submitError: f)),
     );
   }

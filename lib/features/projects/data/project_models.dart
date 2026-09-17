@@ -53,18 +53,28 @@ class Project {
 
   bool get isDeleted => deletedAt != null;
 
-  factory Project.fromJson(Map<String, dynamic> json) => Project(
-        id: json['id'] as int,
-        projectName: json['project_name'] as String? ?? '',
-        projectOwner: json['project_owner'] as String? ?? '',
-        phone: json['phone'] as String? ?? '',
-        address: json['address'] as String?,
-        location: json['location'] as String?,
-        status: ProjectStatusX.fromApi(json['status'] as String?),
-        deletedAt: AppDateFormatter.parseFromBackend(json['deleted_at'] as String?),
-        createdAt: AppDateFormatter.parseFromBackend(json['created_at'] as String?),
-        accounts: json['accounts'] != null ? ProjectAccounts.fromJson(json['accounts'] as Map<String, dynamic>) : null,
-      );
+  factory Project.fromJson(Map<String, dynamic> rawJson) {
+    var json = rawJson;
+    if (json['project'] is Map<String, dynamic>) {
+      json = json['project'] as Map<String, dynamic>;
+    } else if (json['data'] is Map<String, dynamic>) {
+      json = json['data'] as Map<String, dynamic>;
+    }
+    final idVal = json['id'];
+    final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
+    return Project(
+      id: id,
+      projectName: json['project_name']?.toString() ?? '',
+      projectOwner: json['project_owner']?.toString() ?? '',
+      phone: json['phone']?.toString() ?? '',
+      address: json['address']?.toString(),
+      location: json['location']?.toString(),
+      status: ProjectStatusX.fromApi(json['status']?.toString()),
+      deletedAt: AppDateFormatter.parseFromBackend(json['deleted_at']?.toString()),
+      createdAt: AppDateFormatter.parseFromBackend(json['created_at']?.toString()),
+      accounts: json['accounts'] is Map<String, dynamic> ? ProjectAccounts.fromJson(json['accounts'] as Map<String, dynamic>) : null,
+    );
+  }
 }
 
 class ProjectCurrencyAccount {
@@ -113,14 +123,20 @@ class ProjectContract {
   final Decimal summa;
   final DateTime? createdAt;
 
-  factory ProjectContract.fromJson(Map<String, dynamic> json) => ProjectContract(
-        id: json['id'] as int,
-        workTypeId: json['work_type_id'] as int? ?? 0,
-        workTypeName: json['work_type_name'] as String? ?? '',
-        description: json['description'] as String? ?? '',
-        summa: parseMoney(json['summa']),
-        createdAt: AppDateFormatter.parseFromBackend(json['created_at'] as String?),
-      );
+  factory ProjectContract.fromJson(Map<String, dynamic> json) {
+    final idVal = json['id'];
+    final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
+    final workVal = json['work_type_id'];
+    final workTypeId = workVal is int ? workVal : (int.tryParse('$workVal') ?? 0);
+    return ProjectContract(
+      id: id,
+      workTypeId: workTypeId,
+      workTypeName: json['work_type_name']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      summa: parseMoney(json['summa']),
+      createdAt: AppDateFormatter.parseFromBackend(json['created_at']?.toString()),
+    );
+  }
 }
 
 /// Daromad (MOBILE_APP_TZ.md 10.4-B).
@@ -141,14 +157,20 @@ class ProjectIncome {
   final String? description;
   final DateTime? createdAt;
 
-  factory ProjectIncome.fromJson(Map<String, dynamic> json) => ProjectIncome(
-        id: json['id'] as int,
-        currencyTypeId: json['currency_type_id'] as int? ?? 1,
-        currencyTypeName: json['currency_type_name'] as String? ?? 'UZS',
-        summa: parseMoney(json['summa']),
-        description: json['description'] as String?,
-        createdAt: AppDateFormatter.parseFromBackend(json['created_at'] as String?),
-      );
+  factory ProjectIncome.fromJson(Map<String, dynamic> json) {
+    final idVal = json['id'];
+    final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
+    final currVal = json['currency_type_id'];
+    final currencyTypeId = currVal is int ? currVal : (int.tryParse('$currVal') ?? 1);
+    return ProjectIncome(
+      id: id,
+      currencyTypeId: currencyTypeId,
+      currencyTypeName: json['currency_type_name']?.toString() ?? (currencyTypeId == 2 ? 'USD' : 'UZS'),
+      summa: parseMoney(json['summa']),
+      description: json['description']?.toString(),
+      createdAt: AppDateFormatter.parseFromBackend(json['created_at']?.toString()),
+    );
+  }
 }
 
 /// Xarajat (MOBILE_APP_TZ.md 10.4-C).
@@ -177,18 +199,28 @@ class ProjectCost {
   final String? workerName;
   final DateTime? createdAt;
 
-  factory ProjectCost.fromJson(Map<String, dynamic> json) => ProjectCost(
-        id: json['id'] as int,
-        costTypeId: json['cost_type_id'] as int? ?? 0,
-        costTypeName: json['cost_type_name'] as String? ?? '',
-        currencyTypeId: json['currency_type_id'] as int? ?? 1,
-        currencyTypeName: json['currency_type_name'] as String? ?? 'UZS',
-        summa: parseMoney(json['summa']),
-        description: json['description'] as String?,
-        workerId: json['worker_id'] as int?,
-        workerName: json['worker_name'] as String?,
-        createdAt: AppDateFormatter.parseFromBackend(json['created_at'] as String?),
-      );
+  factory ProjectCost.fromJson(Map<String, dynamic> json) {
+    final idVal = json['id'];
+    final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
+    final costVal = json['cost_type_id'];
+    final costTypeId = costVal is int ? costVal : (int.tryParse('$costVal') ?? 0);
+    final currVal = json['currency_type_id'];
+    final currencyTypeId = currVal is int ? currVal : (int.tryParse('$currVal') ?? 1);
+    final workerVal = json['worker_id'];
+    final workerId = workerVal is int ? workerVal : int.tryParse('$workerVal');
+    return ProjectCost(
+      id: id,
+      costTypeId: costTypeId,
+      costTypeName: json['cost_type_name']?.toString() ?? '',
+      currencyTypeId: currencyTypeId,
+      currencyTypeName: json['currency_type_name']?.toString() ?? (currencyTypeId == 2 ? 'USD' : 'UZS'),
+      summa: parseMoney(json['summa']),
+      description: json['description']?.toString(),
+      workerId: workerId,
+      workerName: json['worker_name']?.toString(),
+      createdAt: AppDateFormatter.parseFromBackend(json['created_at']?.toString()),
+    );
+  }
 }
 
 /// Loyihaga biriktirilgan ishchi (MOBILE_APP_TZ.md 10.4-D).
@@ -199,10 +231,14 @@ class ProjectWorker {
   final String? phone;
   final String? positionName;
 
-  factory ProjectWorker.fromJson(Map<String, dynamic> json) => ProjectWorker(
-        id: json['id'] as int,
-        name: json['name'] as String? ?? '',
-        phone: json['phone'] as String?,
-        positionName: json['worker_position_name'] as String?,
-      );
+  factory ProjectWorker.fromJson(Map<String, dynamic> json) {
+    final idVal = json['id'];
+    final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
+    return ProjectWorker(
+      id: id,
+      name: json['name']?.toString() ?? '',
+      phone: json['phone']?.toString(),
+      positionName: json['worker_position_name']?.toString(),
+    );
+  }
 }

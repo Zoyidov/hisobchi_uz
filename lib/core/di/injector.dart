@@ -10,6 +10,7 @@ import '../cubits/owner_context_cubit.dart';
 import '../cubits/subscription_cubit.dart';
 import '../cubits/user_cubit.dart';
 import '../domain/repositories/auth_repository.dart';
+import '../events/data_refresh_bus.dart';
 import '../localization/locale_cubit.dart';
 import '../network/api_client.dart';
 import '../network/auth_session_controller.dart';
@@ -51,6 +52,7 @@ Future<void> setupInjector() async {
   getIt.registerSingleton<Connectivity>(Connectivity());
 
   // --- Global cubits (session-wide, provided at app root) ---
+  getIt.registerSingleton<DataRefreshBus>(DataRefreshBus());
   getIt.registerSingleton<AuthSessionController>(AuthSessionController());
   getIt.registerSingleton<OwnerContextCubit>(OwnerContextCubit(getIt()));
   getIt.registerSingleton<SubscriptionCubit>(SubscriptionCubit());

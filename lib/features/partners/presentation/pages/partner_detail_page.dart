@@ -1,4 +1,5 @@
 import 'package:decimal/decimal.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -93,7 +94,12 @@ class _Loaded extends StatelessWidget {
             permission: AppPermission.partnersEdit,
             child: IconButton(
               icon: const Icon(Icons.edit_outlined),
-              onPressed: () => context.push(RoutePaths.partnerEdit(partner.id), extra: partner),
+              onPressed: () async {
+                await context.push(RoutePaths.partnerEdit(partner.id), extra: partner);
+                if (context.mounted) {
+                  context.read<PartnerDetailCubit>().load();
+                }
+              },
             ),
           ),
         ],
@@ -150,6 +156,65 @@ class _Loaded extends StatelessWidget {
           ),
         ],
       ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(AppSpacing.md, 8, AppSpacing.md, 12),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            border: Border(top: BorderSide(color: colors.border.withValues(alpha: 0.6))),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: PermissionGuard(
+                  permission: AppPermission.walletsDebtCreate,
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: colors.success,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    onPressed: () async {
+                      final res = await showWalletFormSheet(context, type: 'debt', partner: partner);
+                      if (res != null && context.mounted) {
+                        context.read<PartnerDetailCubit>().load();
+                        context.read<WalletListCubit>().refresh();
+                      }
+                    },
+                    icon: const Icon(CupertinoIcons.arrow_down_left_circle_fill, size: 18),
+                    label: const Text('Kirim', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: PermissionGuard(
+                  permission: AppPermission.walletsCreditCreate,
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: colors.error,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    onPressed: () async {
+                      final res = await showWalletFormSheet(context, type: 'credit', partner: partner);
+                      if (res != null && context.mounted) {
+                        context.read<PartnerDetailCubit>().load();
+                        context.read<WalletListCubit>().refresh();
+                      }
+                    },
+                    icon: const Icon(CupertinoIcons.arrow_up_right_circle_fill, size: 18),
+                    label: const Text('Chiqim', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -190,16 +255,33 @@ class _QuickActionsRow extends StatelessWidget {
   }
 
   Widget _action(BuildContext context, IconData icon, String label, VoidCallback onTap) {
+    final colors = context.colors;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(14),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         child: Column(
           children: [
-            Icon(icon, color: context.colors.primary),
-            const SizedBox(height: 4),
-            Text(label, style: Theme.of(context).textTheme.labelSmall),
+            Container(
+              width: 42,
+              height: 42,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: colors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(13),
+                border: Border.all(color: colors.primary.withValues(alpha: 0.18)),
+              ),
+              child: Icon(icon, color: colors.primary, size: 20),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: colors.textPrimary,
+                  ),
+            ),
           ],
         ),
       ),
@@ -268,6 +350,7 @@ class _TransactionsTab extends StatelessWidget {
           success: (_) {
             AppSnackbar.success(context, 'Saqlandi');
             context.read<WalletListCubit>().refresh();
+            context.read<PartnerDetailCubit>().load();
           },
           failure: (f) => AppSnackbar.error(context, f.message),
         );
@@ -278,12 +361,16 @@ class _TransactionsTab extends StatelessWidget {
           success: (_) {
             AppSnackbar.success(context, 'Saqlandi');
             context.read<WalletListCubit>().refresh();
+            context.read<PartnerDetailCubit>().load();
           },
           failure: (f) => AppSnackbar.error(context, f.message),
         );
       case TransactionAction.edit:
-        await showWalletFormSheet(context, type: wallet.type, partner: partner, editingWallet: wallet);
-        if (context.mounted) context.read<WalletListCubit>().refresh();
+        final res = await showWalletFormSheet(context, type: wallet.type, partner: partner, editingWallet: wallet);
+        if (res != null && context.mounted) {
+          context.read<WalletListCubit>().refresh();
+          context.read<PartnerDetailCubit>().load();
+        }
     }
   }
 }

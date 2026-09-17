@@ -1,11 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 /// Bottom navigatsiya — `liquid_glass_widgets` orqali iOS 26 uslubidagi
-/// suzuvchi "liquid glass" panel (foydalanuvchi so'roviga ko'ra).
-/// 5 ta tab, har biri o'z navigatsiya holatini saqlaydi
-/// (E_HISOB_FLUTTER_UI_UX_TZ.md 18-bo'lim, MOBILE_APP_TZ.md 2.3).
+/// suzuvchi "liquid glass" panel, orqa fon to'liq ko'rinib turishi uchun
+/// shaffof (clear) rejimda sozlangan.
 class MainShellPage extends StatelessWidget {
   const MainShellPage({super.key, required this.navigationShell});
 
@@ -13,28 +13,28 @@ class MainShellPage extends StatelessWidget {
 
   static const _tabs = [
     GlassTab(
-      icon: Icon(Icons.home_outlined),
-      activeIcon: Icon(Icons.home_rounded),
-      label: 'Bosh sahifa',
+      icon: Icon(CupertinoIcons.house),
+      activeIcon: Icon(CupertinoIcons.house_fill),
+      label: 'Asosiy',
     ),
     GlassTab(
-      icon: Icon(Icons.people_outline_rounded),
-      activeIcon: Icon(Icons.people_rounded),
+      icon: Icon(CupertinoIcons.person_2),
+      activeIcon: Icon(CupertinoIcons.person_2_fill),
       label: 'Hamkorlar',
     ),
     GlassTab(
-      icon: Icon(Icons.work_outline_rounded),
-      activeIcon: Icon(Icons.work_rounded),
+      icon: Icon(CupertinoIcons.briefcase),
+      activeIcon: Icon(CupertinoIcons.briefcase_fill),
       label: 'Loyihalar',
     ),
     GlassTab(
-      icon: Icon(Icons.insert_chart_outlined_rounded),
-      activeIcon: Icon(Icons.insert_chart_rounded),
+      icon: Icon(CupertinoIcons.chart_bar_alt_fill),
+      activeIcon: Icon(CupertinoIcons.chart_bar_square_fill),
       label: 'Hisobotlar',
     ),
     GlassTab(
-      icon: Icon(Icons.account_circle_outlined),
-      activeIcon: Icon(Icons.account_circle_rounded),
+      icon: Icon(CupertinoIcons.person_crop_circle),
+      activeIcon: Icon(CupertinoIcons.person_crop_circle_fill),
       label: 'Profil',
     ),
   ];
@@ -42,12 +42,15 @@ class MainShellPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    final bottomOffset = bottomInset > 0 ? 14.0 : 8.0;
+
     return Scaffold(
       extendBody: true,
       body: navigationShell,
-      bottomNavigationBar: SafeArea(
-        top: false,
-        minimum: const EdgeInsets.only(bottom: 8),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: bottomOffset),
         child: GlassTabBar.bottom(
           tabs: _tabs,
           selectedIndex: navigationShell.currentIndex,
@@ -55,9 +58,23 @@ class MainShellPage extends StatelessWidget {
             index,
             initialLocation: index == navigationShell.currentIndex,
           ),
+          verticalPadding: 0,
+          horizontalPadding: 16,
+          barHeight: 58,
           selectedIconColor: theme.colorScheme.primary,
           selectedLabelColor: theme.colorScheme.primary,
+          unselectedIconColor: isDark ? Colors.white : null,
+          unselectedLabelColor: isDark ? Colors.white : null,
           adaptiveBrightness: true,
+          settings: LiquidGlassSettings(
+            thickness: 16,
+            blur: 10,
+            bodyMode: GlassBodyMode.clear,
+            standardOpacityMultiplier: 0.65,
+            glassColor: isDark
+                ? const Color.fromARGB(35, 255, 255, 255)
+                : const Color.fromARGB(45, 255, 255, 255),
+          ),
         ),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -42,11 +43,31 @@ class _PartnersListView extends StatelessWidget {
         title: const Text('Hamkorlar'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.file_download_outlined),
+            icon: const Icon(CupertinoIcons.arrow_down_doc, size: 21),
+            tooltip: 'Excel yuklash',
             onPressed: () => downloadAndShareExcel(
               context,
               download: () => getIt<PartnersRepository>().exportPartnersExcel(),
               fileName: 'hamkorlar.xlsx',
+            ),
+          ),
+          PermissionGuard(
+            permission: AppPermission.partnersCreate,
+            child: Padding(
+              padding: const EdgeInsets.only(right: AppSpacing.sm),
+              child: FilledButton.tonalIcon(
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  minimumSize: const Size(0, 36),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                onPressed: () async {
+                  await context.push(RoutePaths.partnerCreate);
+                  if (context.mounted) cubit.refresh();
+                },
+                icon: const Icon(CupertinoIcons.plus, size: 15),
+                label: const Text('Qo\'shish', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+              ),
             ),
           ),
         ],
@@ -64,7 +85,7 @@ class _PartnersListView extends StatelessWidget {
                   height: 44,
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: Theme.of(context).dividerColor),
                   ),
                   child: IconButton(
@@ -76,7 +97,8 @@ class _PartnersListView extends StatelessWidget {
                     icon: Badge(
                       isLabelVisible: cubit.hasActiveFilter,
                       smallSize: 8,
-                      child: const Icon(Icons.filter_list_rounded, size: 20),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      child: const Icon(CupertinoIcons.slider_horizontal_3, size: 19),
                     ),
                   ),
                 ),
@@ -86,7 +108,7 @@ class _PartnersListView extends StatelessWidget {
                   height: 44,
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: Theme.of(context).dividerColor),
                   ),
                   child: IconButton(
@@ -95,7 +117,7 @@ class _PartnersListView extends StatelessWidget {
                       final selected = await showPartnerSortSheet(context, cubit.sort);
                       if (selected != null) cubit.updateSort(selected);
                     },
-                    icon: const Icon(Icons.sort_rounded, size: 20),
+                    icon: const Icon(CupertinoIcons.arrow_up_arrow_down, size: 18),
                   ),
                 ),
               ],
@@ -106,31 +128,30 @@ class _PartnersListView extends StatelessWidget {
               builder: (context, state) {
                 return AppPagedListView<Partner>(
                   state: state,
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.xs, AppSpacing.md, 110),
                   onLoadMore: cubit.loadMore,
                   onRefresh: cubit.refresh,
                   onRetry: cubit.loadFirst,
-                  emptyIcon: Icons.people_outline_rounded,
+                  emptyIcon: CupertinoIcons.person_2,
                   emptyTitle: 'Hamkorlar topilmadi',
                   emptyDescription: 'Hozircha bu bo\'limda ma\'lumot yo\'q.',
                   emptyAction: 'Hamkor qo\'shish',
-                  onEmptyAction: () => context.push(RoutePaths.partnerCreate),
+                  onEmptyAction: () async {
+                    await context.push(RoutePaths.partnerCreate);
+                    if (context.mounted) cubit.refresh();
+                  },
                   itemBuilder: (context, partner, index) => PartnerCard(
                     partner: partner,
-                    onTap: () => context.push(RoutePaths.partnerDetail(partner.id)),
+                    onTap: () async {
+                      await context.push(RoutePaths.partnerDetail(partner.id));
+                      if (context.mounted) cubit.refresh();
+                    },
                   ),
                 );
               },
             ),
           ),
         ],
-      ),
-      floatingActionButton: PermissionGuard(
-        permission: AppPermission.partnersCreate,
-        child: FloatingActionButton.extended(
-          onPressed: () => context.push(RoutePaths.partnerCreate),
-          icon: const Icon(Icons.add),
-          label: const Text('Hamkor qo\'shish'),
-        ),
       ),
     );
   }

@@ -20,15 +20,23 @@ class StaffMember {
   final List<String> permissions;
   final DateTime? createdAt;
 
-  factory StaffMember.fromJson(Map<String, dynamic> json) => StaffMember(
-        id: json['id'] as int,
-        isActive: json['is_active'] as bool? ?? true,
-        userId: json['user_id'] as int? ?? 0,
-        name: json['name'] as String? ?? '',
-        phone: json['phone'] as String? ?? '',
-        permissions: (json['permissions'] as List? ?? const []).cast<String>(),
-        createdAt: AppDateFormatter.parseFromBackend(json['created_at'] as String?),
-      );
+  factory StaffMember.fromJson(Map<String, dynamic> json) {
+    final idVal = json['id'];
+    final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
+    final userVal = json['user_id'];
+    final userId = userVal is int ? userVal : (int.tryParse('$userVal') ?? 0);
+    final activeVal = json['is_active'];
+    final isActive = activeVal == null ? true : (activeVal == true || activeVal == 1 || activeVal == '1');
+    return StaffMember(
+      id: id,
+      isActive: isActive,
+      userId: userId,
+      name: json['name']?.toString() ?? '',
+      phone: json['phone']?.toString() ?? '',
+      permissions: (json['permissions'] as List? ?? const []).map((e) => e.toString()).toList(),
+      createdAt: AppDateFormatter.parseFromBackend(json['created_at']?.toString()),
+    );
+  }
 }
 
 /// Ruxsat elementi — `GET /auth/staff/permissions` kategoriya ichida.

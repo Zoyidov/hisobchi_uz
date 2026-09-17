@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/di/injector.dart';
+import '../../../../core/events/data_refresh_bus.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/feedback/app_snackbar.dart';
@@ -87,6 +88,7 @@ class _StaffEditPageState extends State<StaffEditPage> {
     setState(() => _saving = false);
     result.when(
       success: (_) {
+        getIt<DataRefreshBus>().notifyStaffChanged();
         AppSnackbar.success(context, 'Saqlandi');
         Navigator.of(context).pop();
       },

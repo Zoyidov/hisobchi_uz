@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/widgets/buttons/app_floating_action.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -36,7 +38,24 @@ class _View extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Xodimlar')),
+      appBar: AppBar(
+        title: const Text('Xodimlar'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: AppSpacing.sm),
+            child: FilledButton.tonalIcon(
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                minimumSize: const Size(0, 36),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+              onPressed: () => _openCreate(context),
+              icon: const Icon(CupertinoIcons.plus, size: 15),
+              label: const Text('Qo\'shish', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+            ),
+          ),
+        ],
+      ),
       body: BlocBuilder<StaffListCubit, StaffListState>(
         builder: (context, state) {
           return switch (state) {
@@ -52,7 +71,7 @@ class _View extends StatelessWidget {
                 : RefreshIndicator(
                     onRefresh: () => context.read<StaffListCubit>().load(),
                     child: ListView.separated(
-                      padding: const EdgeInsets.all(AppSpacing.md),
+                      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 110),
                       itemCount: items.length,
                       separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
                       itemBuilder: (context, i) => _StaffTile(staff: items[i]),
@@ -61,10 +80,11 @@ class _View extends StatelessWidget {
           };
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: AppFloatingAction(
+        heroTag: 'staff_create_fab',
         onPressed: () => _openCreate(context),
-        icon: const Icon(Icons.add),
-        label: const Text('Xodim'),
+        icon: CupertinoIcons.person_badge_plus,
+        label: 'Xodim qo\'shish',
       ),
     );
   }
@@ -83,6 +103,10 @@ class _StaffTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final initials = staff.name.trim().isNotEmpty
+        ? staff.name.trim().split(' ').map((e) => e.isNotEmpty ? e[0] : '').take(2).join().toUpperCase()
+        : '?';
+
     return AppCard(
       onTap: () async {
         await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => StaffEditPage(staff: staff)));
@@ -90,28 +114,66 @@ class _StaffTile extends StatelessWidget {
       },
       child: Row(
         children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [colors.primary, colors.accentViolet],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              initials,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(staff.name, style: Theme.of(context).textTheme.titleSmall),
-                Text(PhoneFormatter.toDisplay(staff.phone), style: TextStyle(color: colors.textSecondary, fontSize: 13)),
+                Text(
+                  staff.name,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  PhoneFormatter.toDisplay(staff.phone),
+                  style: TextStyle(
+                    color: colors.textSecondary,
+                    fontSize: 13,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text('${staff.permissions.length} ta ruxsat', style: TextStyle(color: colors.textTertiary, fontSize: 12)),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceSecondary,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    '${staff.permissions.length} ta ruxsat',
+                    style: TextStyle(color: colors.textTertiary, fontSize: 11, fontWeight: FontWeight.w500),
+                  ),
+                ),
               ],
             ),
           ),
-          Column(
-            children: [
-              Switch(
-                value: staff.isActive,
-                onChanged: (_) async {
-                  final error = await context.read<StaffListCubit>().toggleActive(staff);
-                  if (error != null && context.mounted) AppSnackbar.error(context, error.message);
-                },
-              ),
-              Text(staff.isActive ? 'Faol' : 'Nofaol', style: TextStyle(fontSize: 11, color: colors.textTertiary)),
-            ],
+          Switch(
+            value: staff.isActive,
+            onChanged: (_) async {
+              final error = await context.read<StaffListCubit>().toggleActive(staff);
+              if (error != null && context.mounted) AppSnackbar.error(context, error.message);
+            },
           ),
           IconButton(
             icon: Icon(Icons.delete_outline_rounded, color: colors.error),

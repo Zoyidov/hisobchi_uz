@@ -61,28 +61,70 @@ class _AppMoneyFieldState extends State<AppMoneyField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        TextField(
-          controller: _displayController,
-          autofocus: widget.autofocus,
-          keyboardType: const TextInputType.numberWithOptions(decimal: false),
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          onChanged: _onChanged,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.displaySmall,
-          decoration: InputDecoration(
-            hintText: '0',
-            filled: false,
-            border: InputBorder.none,
-            enabledBorder: InputBorder.none,
-            focusedBorder: InputBorder.none,
-            suffixText: widget.currencyLabel,
-            suffixStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: colors.textSecondary),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: colors.surfaceSecondary.withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: widget.errorText != null ? colors.error : colors.border.withValues(alpha: 0.8),
+              width: 1.2,
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _displayController,
+                  autofocus: widget.autofocus,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: false),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  onChanged: _onChanged,
+                  textAlign: TextAlign.start,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.3,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                  decoration: InputDecoration(
+                    hintText: '0',
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                    filled: false,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: colors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  widget.currencyLabel,
+                  style: TextStyle(
+                    color: colors.primary,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         if (widget.errorText != null)
           Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(widget.errorText!, style: TextStyle(color: colors.error, fontSize: 12)),
+            padding: const EdgeInsets.only(top: 6, left: 4),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                widget.errorText!,
+                style: TextStyle(color: colors.error, fontSize: 12, fontWeight: FontWeight.w500),
+              ),
+            ),
           ),
       ],
     );

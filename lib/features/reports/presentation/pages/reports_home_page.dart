@@ -19,7 +19,7 @@ class ReportsHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Hisobotlar')),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 100),
         children: [
           PermissionGuard(
             permission: AppPermission.reportPartnersView,
@@ -79,19 +79,20 @@ class _ReportCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
       child: AppCard(
         onTap: onTap,
-        padding: const EdgeInsets.all(AppSpacing.md),
-        borderRadius: BorderRadius.circular(18),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        borderRadius: BorderRadius.circular(20),
         child: Row(
           children: [
             Container(
-              width: 50,
-              height: 50,
+              width: 52,
+              height: 52,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: color.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: color.withValues(alpha: 0.2)),
               ),
-              child: Icon(icon, color: color, size: 24),
+              child: Icon(icon, color: color, size: 26),
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
@@ -104,7 +105,7 @@ class _ReportCard extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                         ),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 4),
                   Text(
                     subtitle,
                     style: TextStyle(color: colors.textSecondary, fontSize: 12, height: 1.3),

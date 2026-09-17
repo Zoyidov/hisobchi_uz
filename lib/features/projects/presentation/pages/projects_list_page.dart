@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -37,7 +38,27 @@ class _View extends StatelessWidget {
     final cubit = context.watch<ProjectsCubit>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Loyihalar')),
+      appBar: AppBar(
+        title: const Text('Loyihalar'),
+        actions: [
+          PermissionGuard(
+            permission: AppPermission.projectsCreate,
+            child: Padding(
+              padding: const EdgeInsets.only(right: AppSpacing.sm),
+              child: FilledButton.tonalIcon(
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  minimumSize: const Size(0, 36),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                onPressed: () => _openCreate(context),
+                icon: const Icon(CupertinoIcons.plus, size: 15),
+                label: const Text('Qo\'shish', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
@@ -74,10 +95,11 @@ class _View extends StatelessWidget {
               builder: (context, state) {
                 return AppPagedListView<Project>(
                   state: state,
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.xs, AppSpacing.md, 110),
                   onLoadMore: cubit.loadMore,
                   onRefresh: cubit.refresh,
                   onRetry: cubit.loadFirst,
-                  emptyIcon: Icons.work_outline_rounded,
+                  emptyIcon: CupertinoIcons.briefcase,
                   emptyTitle: 'Loyihalar topilmadi',
                   emptyAction: 'Loyiha qo\'shish',
                   onEmptyAction: () => _openCreate(context),
@@ -96,20 +118,12 @@ class _View extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: PermissionGuard(
-        permission: AppPermission.projectsCreate,
-        child: FloatingActionButton.extended(
-          onPressed: () => _openCreate(context),
-          icon: const Icon(Icons.add),
-          label: const Text('Loyiha'),
-        ),
-      ),
     );
   }
 
   Future<void> _openCreate(BuildContext context) async {
     final cubit = context.read<ProjectsCubit>();
     await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ProjectFormPage()));
-    cubit.refresh();
+    if (context.mounted) cubit.refresh();
   }
 }

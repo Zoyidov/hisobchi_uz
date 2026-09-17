@@ -62,14 +62,36 @@ class _View extends StatelessWidget {
                         itemBuilder: (context, i) {
                           final c = items[i];
                           return AppCard(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Row(
                               children: [
-                                Text(c.workTypeName, style: Theme.of(context).textTheme.titleSmall),
-                                const SizedBox(height: 4),
-                                Text(c.description, style: TextStyle(color: context.colors.textSecondary)),
-                                const SizedBox(height: 6),
-                                MoneyText(c.summa, size: MoneySize.list),
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: context.colors.primary.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(Icons.description_outlined, color: context.colors.primary, size: 20),
+                                ),
+                                const SizedBox(width: AppSpacing.md),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        c.workTypeName,
+                                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                                      ),
+                                      if (c.description.isNotEmpty)
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 2),
+                                          child: Text(c.description, style: TextStyle(color: context.colors.textSecondary, fontSize: 12)),
+                                        ),
+                                      const SizedBox(height: 4),
+                                      MoneyText(c.summa, size: MoneySize.list),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           );
@@ -81,6 +103,7 @@ class _View extends StatelessWidget {
               right: AppSpacing.md,
               bottom: AppSpacing.md,
               child: FloatingActionButton(
+                heroTag: null,
                 onPressed: () => _showContractForm(context, projectId),
                 child: const Icon(Icons.add),
               ),
