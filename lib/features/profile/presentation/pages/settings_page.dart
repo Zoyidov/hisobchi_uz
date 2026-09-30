@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/cubits/auth_cubit.dart';
+import '../../../../core/cubits/owner_context_cubit.dart';
 import '../../../../core/cubits/user_cubit.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/domain/repositories/auth_repository.dart';
-import '../../../../core/localization/locale_cubit.dart';
+import '../../../../core/errors/failure.dart';
+// import '../../../../core/localization/locale_cubit.dart';
 import '../../../../core/router/route_paths.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -13,6 +16,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/theme_cubit.dart';
 import '../../../../core/widgets/cards/app_grouped_section.dart';
 import '../../../../core/widgets/feedback/app_snackbar.dart';
+import '../../../../core/widgets/sheets/app_confirmation_sheet.dart';
 import '../../../../core/widgets/sheets/app_selection_sheet.dart';
 
 /// Til, mavzu, pincode boshqaruvi (E_HISOB_FLUTTER_UI_UX_TZ.md 63-bo'lim).
@@ -132,7 +136,6 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final themeMode = context.watch<ThemeCubit>().state;
-    final locale = context.watch<LocaleCubit>().state;
     final colors = context.colors;
 
     return Scaffold(
@@ -144,25 +147,25 @@ class _SettingsPageState extends State<SettingsPage> {
           const _SectionHeader(title: 'UMUMIY'),
           AppGroupedSection(
             children: [
-              AppGroupedTile(
-                icon: Icons.language_rounded,
-                label: 'Til',
-                value: locale.languageCode == 'ru' ? 'Русский' : 'O\'zbek',
-                onTap: () async {
-                  final selected = await showAppSelectionSheet<Locale>(
-                    context,
-                    title: 'Til',
-                    selectedValue: locale,
-                    items: const [
-                      AppSelectionItem(value: Locale('uz'), label: 'O\'zbek'),
-                      AppSelectionItem(value: Locale('ru'), label: 'Русский'),
-                    ],
-                  );
-                  if (selected != null && context.mounted) {
-                    context.read<LocaleCubit>().setLocale(selected);
-                  }
-                },
-              ),
+              // AppGroupedTile(
+              //   icon: Icons.language_rounded,
+              //   label: 'Til',
+              //   value: locale.languageCode == 'ru' ? 'Русский' : 'O\'zbek',
+              //   onTap: () async {
+              //     final selected = await showAppSelectionSheet<Locale>(
+              //       context,
+              //       title: 'Til',
+              //       selectedValue: locale,
+              //       items: const [
+              //         AppSelectionItem(value: Locale('uz'), label: 'O\'zbek'),
+              //         AppSelectionItem(value: Locale('ru'), label: 'Русский'),
+              //       ],
+              //     );
+              //     if (selected != null && context.mounted) {
+              //       context.read<LocaleCubit>().setLocale(selected);
+              //     }
+              //   },
+              // ),
               AppGroupedTile(
                 icon: Icons.dark_mode_outlined,
                 label: 'Mavzu',
@@ -248,47 +251,42 @@ class _SettingsPageState extends State<SettingsPage> {
       };
 
   Future<void> _confirmDeleteAccount(BuildContext context) async {
-    final controller = TextEditingController();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Hisobni o\'chirish'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Barcha hamkorlar, tranzaksiyalar, loyihalar va hisobotlar o\'chiriladi. Bu amalni qaytarib bo\'lmaydi.',
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: controller,
-              decoration: const InputDecoration(hintText: 'O\'CHIRISH deb yozing'),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Bekor qilish')),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(controller.text.trim().toUpperCase() == 'O\'CHIRISH'),
-            child: const Text('O\'chirish'),
-          ),
-        ],
-      ),
+    final confirmed = await showAppConfirmationSheet(
+      context,
+      title: 'Hisobni o\'chirish',
+      description: 'Barcha hamkorlar, tranzaksiyalar, loyihalar va hisobotlar butunlay o\'chiriladi. Bu amalni qaytarib bo\'lmaydi. Rostdan ham hisobingizni o\'chirmoqchimisiz?',
+      confirmLabel: 'Ha, o\'chirish',
+      destructive: true,
     );
-    if (confirmed != true || !context.mounted) return;
+    if (!confirmed || !context.mounted) return;
 
     final result = await getIt<AuthRepository>().deleteAccount();
     if (!context.mounted) return;
-    result.when(
-      success: (_) async {
-        await getIt<SecureStorageService>().clearAll();
-        if (!context.mounted) return;
-        context.read<UserCubit>().clear();
-        context.go(RoutePaths.phone);
-      },
-      failure: (f) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(f.message))),
+
+    final shouldLogout = result.when(
+      success: (_) => true,
+      failure: (f) => f is AuthFailure,
     );
+
+    if (shouldLogout) {
+      await getIt<SecureStorageService>().clearAll();
+      if (!context.mounted) return;
+      final userCubit = context.read<UserCubit>();
+      final ownerContextCubit = context.read<OwnerContextCubit>();
+      final authCubit = context.read<AuthCubit>();
+      userCubit.clear();
+      await ownerContextCubit.reset();
+      await authCubit.logout();
+      if (context.mounted) {
+        context.go(RoutePaths.phone);
+        AppSnackbar.success(context, 'Hisobingiz muvaffaqiyatli o\'chirildi');
+      }
+    } else {
+      result.when(
+        success: (_) {},
+        failure: (f) => AppSnackbar.error(context, f.message),
+      );
+    }
   }
 }
 

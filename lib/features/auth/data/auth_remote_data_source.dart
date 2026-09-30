@@ -77,8 +77,16 @@ class AuthRemoteDataSource {
     return _client.get(ApiEndpoints.logout(deviceToken), parse: (_) {});
   }
 
-  Future<ApiResult<void>> deleteAccount() {
-    return _client.delete(ApiEndpoints.deleteAccount, parse: (_) {});
+  Future<ApiResult<void>> deleteAccount() async {
+    final deleteResult = await _client.delete(ApiEndpoints.deleteAccount, parse: (_) {});
+    if (deleteResult.isSuccess) {
+      return deleteResult;
+    }
+    final postResult = await _client.post(ApiEndpoints.deleteAccount, parse: (_) {});
+    if (postResult.isSuccess) {
+      return postResult;
+    }
+    return deleteResult;
   }
 
   Future<ApiResult<void>> updateAppSettings(int userId, Map<String, dynamic> body) {

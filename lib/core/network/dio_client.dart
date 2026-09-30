@@ -6,7 +6,6 @@ import '../constants/app_durations.dart';
 /// kodga hardcode qilinmaydi (MOBILE_APP_TZ.md 4.1).
 const String _baseUrlFromEnv = String.fromEnvironment(
   'BASE_URL',
-  // defaultValue: 'https://api.e-hisob.uz/api',
   defaultValue: 'https://api.pulza.uz/api',
 );
 

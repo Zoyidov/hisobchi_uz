@@ -72,11 +72,14 @@ class _View extends StatelessWidget {
           };
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: null,
-        onPressed: () => _openForm(context),
-        icon: const Icon(Icons.add),
-        label: Text(entityLabel),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: 82.0 + MediaQuery.of(context).padding.bottom),
+        child: FloatingActionButton.extended(
+          heroTag: null,
+          onPressed: () => _openForm(context),
+          icon: const Icon(Icons.add),
+          label: Text(entityLabel),
+        ),
       ),
     );
   }

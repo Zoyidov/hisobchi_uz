@@ -13,14 +13,14 @@ class AppFloatingAction extends StatefulWidget {
     required this.label,
     this.icon = CupertinoIcons.plus,
     this.heroTag,
-    this.bottomOffset = 82.0,
+    this.bottomOffset,
   });
 
   final VoidCallback onPressed;
   final String label;
   final IconData icon;
   final Object? heroTag;
-  final double bottomOffset;
+  final double? bottomOffset;
 
   @override
   State<AppFloatingAction> createState() => _AppFloatingActionState();
@@ -125,8 +125,11 @@ class _AppFloatingActionState extends State<AppFloatingAction> with SingleTicker
       button = Hero(tag: widget.heroTag!, child: Material(type: MaterialType.transparency, child: button));
     }
 
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    final effectiveBottomOffset = widget.bottomOffset ?? (82.0 + bottomInset);
+
     return Padding(
-      padding: EdgeInsets.only(bottom: widget.bottomOffset),
+      padding: EdgeInsets.only(bottom: effectiveBottomOffset),
       child: button,
     );
   }

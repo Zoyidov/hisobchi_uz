@@ -9,7 +9,7 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
-  String get appName => 'E-Hisob';
+  String get appName => 'PNazorat';
 
   @override
   String get commonSave => 'Сохранить';

@@ -65,23 +65,24 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     // Kamida 1.2 soniya silliq splash animatsiyasi ko'rinishi uchun
     final minSplashWait = Future<void>.delayed(const Duration(milliseconds: 1200));
 
-    try {
-      final appVersion = await deviceInfo.appVersion.timeout(const Duration(seconds: 2));
-      final versionResult = await authRepository
-          .checkVersion(appVersion: appVersion, platformType: deviceInfo.deviceType)
-          .timeout(const Duration(seconds: 2));
-
-      final needsHardUpdate = versionResult.dataOrNull?.updateRequired == true &&
-          versionResult.dataOrNull?.updateStatus == 'hard';
-
-      if (!mounted) return;
-      if (needsHardUpdate) {
-        context.go(RoutePaths.forceUpdate);
-        return;
-      }
-    } catch (_) {
-      // Versiya tekshiruvi muvaffaqiyatsiz bo'lsa ham ilova to'xtab qolmaydi.
-    }
+    // TODO: Versiya tekshiruvini qayta yoqish kerak (app store ga chiqarilganda)
+    // try {
+    //   final appVersion = await deviceInfo.appVersion.timeout(const Duration(seconds: 2));
+    //   final versionResult = await authRepository
+    //       .checkVersion(appVersion: appVersion, platformType: deviceInfo.deviceType)
+    //       .timeout(const Duration(seconds: 2));
+    //
+    //   final needsHardUpdate = versionResult.dataOrNull?.updateRequired == true &&
+    //       versionResult.dataOrNull?.updateStatus == 'hard';
+    //
+    //   if (!mounted) return;
+    //   if (needsHardUpdate) {
+    //     context.go(RoutePaths.forceUpdate);
+    //     return;
+    //   }
+    // } catch (_) {
+    //   // Versiya tekshiruvi muvaffaqiyatsiz bo'lsa ham ilova to'xtab qolmaydi.
+    // }
 
     await authCubit.bootstrap();
     if (!mounted) return;

@@ -288,7 +288,7 @@ class _PlansPageState extends State<PlansPage> {
         planId: plan.id,
         billingCycle: _cycle,
         paymentProvider: provider,
-        returnUrl: 'ehisob://payment-result',
+        returnUrl: '',
       ),
       checkStatus: (orderNumber) => getIt<SubscriptionRepository>().checkOrderStatus(orderNumber),
     );

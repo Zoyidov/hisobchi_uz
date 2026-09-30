@@ -169,7 +169,7 @@ class _SmsPackagesPageState extends State<SmsPackagesPage> {
       createOrder: () => getIt<SubscriptionRepository>().purchaseSms(
         packageId: package.id,
         paymentProvider: provider,
-        returnUrl: 'ehisob://payment-result',
+        returnUrl: '',
       ),
       checkStatus: (orderNumber) =>
           getIt<SubscriptionRepository>().checkOrderStatus(orderNumber),

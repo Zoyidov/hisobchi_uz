@@ -107,7 +107,7 @@ class _View extends StatelessWidget {
             },
             Positioned(
               right: AppSpacing.md,
-              bottom: AppSpacing.md,
+              bottom: 82.0 + MediaQuery.of(context).padding.bottom,
               child: FloatingActionButton(
                 heroTag: null,
                 onPressed: () => _showCostForm(context, projectId),

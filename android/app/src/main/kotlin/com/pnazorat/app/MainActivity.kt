@@ -1,4 +1,4 @@
-package com.example.hisobchi_uz
+package com.pnazorat.app
 
 import io.flutter.embedding.android.FlutterActivity
 
