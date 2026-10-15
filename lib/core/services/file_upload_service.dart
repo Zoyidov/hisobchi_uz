@@ -12,13 +12,20 @@ class FileUploadService {
 
   final ApiClient _client;
 
-  Future<ApiResult<AppFile>> upload(File file) {
+  Future<ApiResult<AppFile>> upload(
+    File file, {
+    String? type,
+    void Function(int, int)? onProgress,
+  }) {
     return _client.uploadFile(
       ApiEndpoints.filesUpload,
       file,
+      type: type,
+      onSendProgress: onProgress,
       parse: (r) => AppFile.fromJson(r as Map<String, dynamic>),
     );
   }
 
-  Future<ApiResult<void>> delete(int id) => _client.delete(ApiEndpoints.fileDelete(id), parse: (_) {});
+  Future<ApiResult<void>> delete(int id) =>
+      _client.delete(ApiEndpoints.fileDelete(id), parse: (_) {});
 }

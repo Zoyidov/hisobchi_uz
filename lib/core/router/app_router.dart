@@ -217,6 +217,7 @@ GoRouter buildAppRouter(AuthCubit authCubit) {
           return PartnerDetailReportPage(
             partnerId: int.parse(state.pathParameters['id']!),
             partnerName: partner?.name ?? '',
+            partner: partner,
           );
         },
       ),

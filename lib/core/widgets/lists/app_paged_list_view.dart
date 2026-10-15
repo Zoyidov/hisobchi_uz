@@ -10,7 +10,7 @@ import '../states/app_skeleton.dart';
 
 /// Umumiy infinite-scroll ro'yxat — Loading/Empty/Error/Success 4 holati bilan
 /// (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 143, MOBILE_APP_TZ.md 4.7, 7-bandlar).
-class AppPagedListView<T> extends StatefulWidget {
+class AppPagedListView<T> extends StatelessWidget {
   const AppPagedListView({
     super.key,
     required this.state,
@@ -25,6 +25,9 @@ class AppPagedListView<T> extends StatefulWidget {
     this.onEmptyAction,
     this.padding = const EdgeInsets.all(AppSpacing.md),
     this.header,
+    this.controller,
+    this.primary,
+    this.physics,
   });
 
   final PagedListState<T> state;
@@ -39,60 +42,37 @@ class AppPagedListView<T> extends StatefulWidget {
   final VoidCallback? onEmptyAction;
   final EdgeInsetsGeometry padding;
   final Widget? header;
-
-  @override
-  State<AppPagedListView<T>> createState() => _AppPagedListViewState<T>();
-}
-
-class _AppPagedListViewState<T> extends State<AppPagedListView<T>> {
-  final _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    if (!_scrollController.hasClients) return;
-    final threshold = _scrollController.position.maxScrollExtent - (88 * AppPageSize.infiniteScrollThreshold);
-    if (_scrollController.position.pixels >= threshold) {
-      widget.onLoadMore();
-    }
-  }
+  final ScrollController? controller;
+  final bool? primary;
+  final ScrollPhysics? physics;
 
   @override
   Widget build(BuildContext context) {
-    final state = widget.state;
-
     if (state.isLoading && state.items.isEmpty) {
       return const AppSkeletonList();
     }
 
     if (state.failure != null && state.items.isEmpty) {
-      return AppErrorState(failure: state.failure, onRetry: widget.onRetry);
+      return AppErrorState(failure: state.failure, onRetry: onRetry);
     }
 
     if (state.items.isEmpty) {
       return RefreshIndicator(
-        onRefresh: widget.onRefresh,
+        onRefresh: onRefresh,
         child: ListView(
+          controller: controller,
+          primary: primary,
+          physics: physics ?? const AlwaysScrollableScrollPhysics(),
+          padding: padding,
           children: [
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.6,
               child: AppEmptyState(
-                title: widget.emptyTitle,
-                description: widget.emptyDescription,
-                icon: widget.emptyIcon,
-                actionLabel: widget.emptyAction,
-                onAction: widget.onEmptyAction,
+                title: emptyTitle,
+                description: emptyDescription,
+                icon: emptyIcon,
+                actionLabel: emptyAction,
+                onAction: onEmptyAction,
               ),
             ),
           ],
@@ -100,39 +80,56 @@ class _AppPagedListViewState<T> extends State<AppPagedListView<T>> {
       );
     }
 
-    return RefreshIndicator(
-      onRefresh: widget.onRefresh,
-      child: ListView.separated(
-        controller: _scrollController,
-        padding: widget.padding,
-        itemCount: (widget.header != null ? 1 : 0) + state.items.length + (state.hasNext || state.isLoadingMore ? 1 : 0),
-        separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
-        itemBuilder: (context, index) {
-          var i = index;
-          if (widget.header != null) {
-            if (i == 0) return widget.header!;
-            i -= 1;
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (notification.metrics.axis == Axis.vertical) {
+          final metrics = notification.metrics;
+          final threshold =
+              metrics.maxScrollExtent - (88 * AppPageSize.infiniteScrollThreshold);
+          if (metrics.pixels >= threshold && !state.isLoadingMore && state.hasNext) {
+            onLoadMore();
           }
-          if (i >= state.items.length) {
-            if (state.failure != null) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: AppButton.secondary(
-                    label: 'Qayta urinish',
-                    expand: false,
-                    onPressed: widget.onLoadMore,
+        }
+        return false;
+      },
+      child: RefreshIndicator(
+        onRefresh: onRefresh,
+        child: ListView.separated(
+          controller: controller,
+          primary: primary,
+          physics: physics ?? const AlwaysScrollableScrollPhysics(),
+          padding: padding,
+          itemCount: (header != null ? 1 : 0) +
+              state.items.length +
+              (state.hasNext || state.isLoadingMore ? 1 : 0),
+          separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
+          itemBuilder: (context, index) {
+            var i = index;
+            if (header != null) {
+              if (i == 0) return header!;
+              i -= 1;
+            }
+            if (i >= state.items.length) {
+              if (state.failure != null) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: AppButton.secondary(
+                      label: 'Qayta urinish',
+                      expand: false,
+                      onPressed: onLoadMore,
+                    ),
                   ),
-                ),
+                );
+              }
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+                child: Center(child: CircularProgressIndicator()),
               );
             }
-            return const Padding(
-              padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          }
-          return widget.itemBuilder(context, state.items[i], i);
-        },
+            return itemBuilder(context, state.items[i], i);
+          },
+        ),
       ),
     );
   }

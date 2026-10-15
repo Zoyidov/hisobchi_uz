@@ -10,8 +10,14 @@ import '../../data/partner_models.dart';
 /// `TransactionCard` — business component (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 25,
 /// MOBILE_APP_TZ.md 8.6).
 class TransactionTile extends StatelessWidget {
-  const TransactionTile({super.key, required this.wallet, required this.onTap});
+  const TransactionTile({
+    super.key,
+    required this.wallet,
+    required this.onTap,
+    this.compact = false,
+  });
 
+  final bool compact;
   final Wallet wallet;
   final VoidCallback onTap;
 
@@ -19,30 +25,35 @@ class TransactionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final isExpense = wallet.isExpense;
-    final color = wallet.isCancelled ? colors.textTertiary : (isExpense ? colors.error : colors.success);
+    final color = wallet.isCancelled
+        ? colors.textTertiary
+        : (isExpense ? colors.error : colors.success);
 
     return AppCard(
       onTap: onTap,
-      padding: const EdgeInsets.all(AppSpacing.md),
+      hasShadow: !compact,
+      padding: EdgeInsets.all(compact ? 10 : AppSpacing.md),
       borderRadius: BorderRadius.circular(18),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: compact ? 32 : 40,
+            height: compact ? 32 : 40,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
-              isExpense ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
+              isExpense
+                  ? Icons.arrow_upward_rounded
+                  : Icons.arrow_downward_rounded,
               color: color,
-              size: 20,
+              size: compact ? 16 : 20,
             ),
           ),
-          const SizedBox(width: AppSpacing.md),
+          SizedBox(width: compact ? 10 : AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,18 +61,29 @@ class TransactionTile extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      isExpense ? 'Chiqim' : 'Kirim',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: colors.textSecondary,
-                            fontWeight: FontWeight.w600,
-                            decoration: wallet.isCancelled ? TextDecoration.lineThrough : null,
-                          ),
+                    Expanded(
+                      child: Text(
+                        isExpense ? 'Chiqim' : 'Kirim',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colors.textSecondary,
+                          fontWeight: FontWeight.w600,
+                          decoration: wallet.isCancelled
+                              ? TextDecoration.lineThrough
+                              : null,
+                        ),
+                      ),
                     ),
                     if (wallet.createdAt != null)
                       Text(
-                        AppDateFormatter.relative(wallet.createdAt!, isRussian: false),
-                        style: TextStyle(color: colors.textTertiary, fontSize: 11, fontWeight: FontWeight.w500),
+                        AppDateFormatter.relative(
+                          wallet.createdAt!,
+                          isRussian: false,
+                        ),
+                        style: TextStyle(
+                          color: colors.textTertiary,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                   ],
                 ),
@@ -72,42 +94,63 @@ class TransactionTile extends StatelessWidget {
                     wallet.summa,
                     currencyTypeId: wallet.currencyTypeId,
                     signed: true,
-                    size: MoneySize.card,
+                    size: compact ? MoneySize.list : MoneySize.card,
                     colorOverride: isExpense ? colors.error : colors.success,
                   ),
                 ),
-                if (wallet.description != null && wallet.description!.isNotEmpty) ...[
+                if (wallet.description != null &&
+                    wallet.description!.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
                     wallet.description!,
-                    style: TextStyle(color: colors.textSecondary, fontSize: 13, height: 1.3),
+                    maxLines: compact ? 2 : null,
+                    overflow: compact ? TextOverflow.ellipsis : null,
+                    style: TextStyle(
+                      color: colors.textSecondary,
+                      fontSize: 13,
+                      height: 1.3,
+                    ),
                   ),
                 ],
                 if (wallet.returnDate != null) ...[
                   const SizedBox(height: 6),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: colors.info.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       'Qaytarish: ${AppDateFormatter.display(wallet.returnDate!)}',
-                      style: TextStyle(color: colors.info, fontSize: 11, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        color: colors.info,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
                 if (wallet.isCancelled) ...[
                   const SizedBox(height: 6),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: colors.error.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       'Bekor qilingan${wallet.cancelReason != null ? ': ${wallet.cancelReason}' : ''}',
-                      style: TextStyle(color: colors.error, fontSize: 11, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        color: colors.error,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],

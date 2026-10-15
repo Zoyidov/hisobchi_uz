@@ -22,7 +22,17 @@ class InstallmentReportSummary {
   final Decimal totalRemaining;
   final Decimal overdueAmount;
 
-  factory InstallmentReportSummary.fromJson(Map<String, dynamic> json) => InstallmentReportSummary(
+  bool get isEmpty =>
+      activeCount == 0 &&
+      completedCount == 0 &&
+      cancelledCount == 0 &&
+      totalGiven == Decimal.zero &&
+      totalPaid == Decimal.zero &&
+      totalRemaining == Decimal.zero &&
+      overdueAmount == Decimal.zero;
+
+  factory InstallmentReportSummary.fromJson(Map<String, dynamic> json) =>
+      InstallmentReportSummary(
         activeCount: json['active_count'] as int? ?? 0,
         completedCount: json['completed_count'] as int? ?? 0,
         cancelledCount: json['cancelled_count'] as int? ?? 0,
@@ -49,9 +59,11 @@ class InstallmentPartnerRanking {
   final Decimal remaining;
   final Decimal overdue;
 
-  factory InstallmentPartnerRanking.fromJson(Map<String, dynamic> json) => InstallmentPartnerRanking(
+  factory InstallmentPartnerRanking.fromJson(Map<String, dynamic> json) =>
+      InstallmentPartnerRanking(
         partnerId: json['partner_id'] as int? ?? json['id'] as int? ?? 0,
-        partnerName: json['partner_name'] as String? ?? json['name'] as String? ?? '',
+        partnerName:
+            json['partner_name'] as String? ?? json['name'] as String? ?? '',
         totalGiven: parseMoney(json['total_given']),
         remaining: parseMoney(json['remaining']),
         overdue: parseMoney(json['overdue']),
@@ -75,12 +87,14 @@ class RiskyPartner {
   final num averageDelayDays;
 
   factory RiskyPartner.fromJson(Map<String, dynamic> json) => RiskyPartner(
-        partnerId: json['partner_id'] as int? ?? json['id'] as int? ?? 0,
-        partnerName: json['partner_name'] as String? ?? json['name'] as String? ?? '',
-        riskScore: json['risk_score'] as num? ?? 0,
-        riskLevel: json['risk_level'] as String? ?? '',
-        averageDelayDays: json['average_delay_days'] as num? ?? json['avg_delay'] as num? ?? 0,
-      );
+    partnerId: json['partner_id'] as int? ?? json['id'] as int? ?? 0,
+    partnerName:
+        json['partner_name'] as String? ?? json['name'] as String? ?? '',
+    riskScore: json['risk_score'] as num? ?? 0,
+    riskLevel: json['risk_level'] as String? ?? '',
+    averageDelayDays:
+        json['average_delay_days'] as num? ?? json['avg_delay'] as num? ?? 0,
+  );
 }
 
 /// Undirish samaradorligi (MOBILE_APP_TZ.md 12.3).
@@ -100,14 +114,20 @@ class RecoveryReport {
   final Decimal overdueAmount;
 
   factory RecoveryReport.fromJson(Map<String, dynamic> json) => RecoveryReport(
-        recoveryRate: json['recovery_rate'] as num? ?? 0,
-        overdueRate: json['overdue_rate'] as num? ?? 0,
-        ratingLabel: json['rating_label'] as String? ?? '',
-        recoveredAmount: parseMoney(json['recovered'] ?? json['recovered_amount']),
-        overdueAmount: parseMoney(json['overdue'] ?? json['overdue_amount']),
-      );
+    recoveryRate: json['recovery_rate'] as num? ?? 0,
+    overdueRate: json['overdue_rate'] as num? ?? 0,
+    ratingLabel: json['rating_label'] as String? ?? '',
+    recoveredAmount: parseMoney(json['recovered'] ?? json['recovered_amount']),
+    overdueAmount: parseMoney(json['overdue'] ?? json['overdue_amount']),
+  );
 
-  static final zero = RecoveryReport(recoveryRate: 0, overdueRate: 0, ratingLabel: '', recoveredAmount: Decimal.zero, overdueAmount: Decimal.zero);
+  static final zero = RecoveryReport(
+    recoveryRate: 0,
+    overdueRate: 0,
+    ratingLabel: '',
+    recoveredAmount: Decimal.zero,
+    overdueAmount: Decimal.zero,
+  );
 }
 
 /// Oylik dinamika (MOBILE_APP_TZ.md 12.3).
@@ -116,7 +136,8 @@ class MonthlyInstallmentStat {
   final String month;
   final Decimal amount;
 
-  factory MonthlyInstallmentStat.fromJson(Map<String, dynamic> json) => MonthlyInstallmentStat(
+  factory MonthlyInstallmentStat.fromJson(Map<String, dynamic> json) =>
+      MonthlyInstallmentStat(
         month: json['month'] as String? ?? '',
         amount: parseMoney(json['amount'] ?? json['total']),
       );

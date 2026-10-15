@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:decimal/decimal.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injector.dart';
@@ -12,7 +13,7 @@ import '../../../../core/widgets/misc/app_segmented_control.dart';
 import '../../../../core/widgets/states/app_empty_state.dart';
 import '../../../../core/widgets/states/app_error_state.dart';
 import '../../../../core/widgets/states/app_skeleton.dart';
-import '../../../../core/widgets/typography/money_text.dart';
+import '../../../../core/utils/formatters/money_formatter.dart';
 import '../../data/installment_report_models.dart';
 import '../../data/reports_repository.dart';
 
@@ -32,26 +33,58 @@ class _InstallmentReportsPageState extends State<InstallmentReportsPage> {
     return DefaultTabController(
       length: 5,
       child: Scaffold(
+        backgroundColor: context.colors.background,
         appBar: AppBar(
           title: const Text('Bo\'lib to\'lash hisobotlari'),
-          bottom: const TabBar(
-            isScrollable: true,
-            tabs: [
-              Tab(text: 'Umumiy'),
-              Tab(text: 'Hamkorlar'),
-              Tab(text: 'Muammoli'),
-              Tab(text: 'Undirish'),
-              Tab(text: 'Oylik'),
-            ],
+          backgroundColor: context.colors.surface,
+          surfaceTintColor: Colors.transparent,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(52),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 2, 16, 8),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: context.colors.surfaceSecondary,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: TabBar(
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  dividerHeight: 0,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicatorPadding: const EdgeInsets.all(4),
+                  indicator: BoxDecoration(
+                    color: context.colors.primary,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  labelColor: Colors.white,
+                  unselectedLabelColor: context.colors.textSecondary,
+                  labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 14),
+                  tabs: const [
+                    Tab(text: 'Umumiy'),
+                    Tab(text: 'Hamkorlar'),
+                    Tab(text: 'Muammoli'),
+                    Tab(text: 'Undirish'),
+                    Tab(text: 'Oylik'),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
         body: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: AppSegmentedControl<int>(
                 value: _currencyTypeId,
-                segments: const [AppSegment(value: 1, label: 'UZS'), AppSegment(value: 2, label: 'USD')],
+                segments: const [
+                  AppSegment(value: 1, label: 'UZS'),
+                  AppSegment(value: 2, label: 'USD'),
+                ],
                 onChanged: (v) => setState(() => _currencyTypeId = v),
               ),
             ),
@@ -83,6 +116,7 @@ class _SummaryTab extends StatefulWidget {
 class _SummaryTabState extends State<_SummaryTab> {
   InstallmentReportSummary? _summary;
   String? _error;
+  int _request = 0;
 
   @override
   void initState() {
@@ -97,73 +131,208 @@ class _SummaryTabState extends State<_SummaryTab> {
   }
 
   Future<void> _load() async {
+    final request = ++_request;
     setState(() {
       _summary = null;
       _error = null;
     });
-    final result = await getIt<ReportsRepository>().getInstallmentSummary(widget.currencyTypeId);
-    if (!mounted) return;
-    result.when(success: (r) => setState(() => _summary = r), failure: (f) => setState(() => _error = f.message));
+    final result = await getIt<ReportsRepository>().getInstallmentSummary(
+      widget.currencyTypeId,
+    );
+    if (!mounted || request != _request) return;
+    result.when(
+      success: (r) => setState(() => _summary = r),
+      failure: (f) => setState(() => _error = f.message),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_error != null) return AppErrorState(title: 'Yuklab bo\'lmadi', description: _error, onRetry: _load);
+    if (_error != null) {
+      return AppErrorState(
+        title: 'Yuklab bo\'lmadi',
+        description: _error,
+        onRetry: _load,
+      );
+    }
     final s = _summary;
-    if (s == null) return const AppSkeletonList();
+    if (s == null) return const _SummarySkeleton();
+    if (s.isEmpty) {
+      return _EmptyReport(
+        onRefresh: _load,
+        currency: widget.currencyTypeId == 2 ? 'USD' : 'UZS',
+      );
+    }
     final currencyLabel = widget.currencyTypeId == 2 ? 'USD' : 'UZS';
     final colors = context.colors;
 
     return RefreshIndicator(
       onRefresh: _load,
       child: ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          Row(
-            children: [
-              Expanded(child: _statusCount(context, 'Faol', s.activeCount, colors.info)),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(child: _statusCount(context, 'Yopilgan', s.completedCount, colors.success)),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(child: _statusCount(context, 'Bekor', s.cancelledCount, colors.textTertiary)),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          AppCard(
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: colors.primaryContainer,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: colors.primary.withValues(alpha: .15)),
+            ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _row(context, 'Berilgan', s.totalGiven, currencyLabel),
-                const SizedBox(height: 8),
-                _row(context, 'To\'langan', s.totalPaid, currencyLabel, color: colors.success),
-                const SizedBox(height: 8),
-                _row(context, 'Qolgan', s.totalRemaining, currencyLabel, color: colors.warning),
-                const SizedBox(height: 8),
-                _row(context, 'Muddati o\'tgan', s.overdueAmount, currencyLabel, color: colors.error),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.credit_card_rounded,
+                      color: colors.primary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Qolgan to‘lovlar',
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: colors.textSecondary,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      currencyLabel,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: colors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  MoneyFormatter.format(
+                    s.totalRemaining,
+                    currencyLabel: currencyLabel,
+                  ),
+                  textAlign: TextAlign.right,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: colors.primary,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -.5,
+                  ),
+                ),
               ],
             ),
           ),
+          const SizedBox(height: 12),
+          AppCard(
+            hasShadow: false,
+            borderRadius: BorderRadius.circular(18),
+            child: Column(
+              children: [
+                _row(context, 'Berilgan', s.totalGiven, currencyLabel),
+                Divider(height: 24, color: colors.divider),
+                _row(
+                  context,
+                  'To‘langan',
+                  s.totalPaid,
+                  currencyLabel,
+                  color: colors.success,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: colors.error.withValues(alpha: .06),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: colors.error.withValues(alpha: .15)),
+            ),
+            child: _row(
+              context,
+              'Muddati o‘tgan',
+              s.overdueAmount,
+              currencyLabel,
+              color: colors.error,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: _statusCount(
+                  context,
+                  'Faol',
+                  s.activeCount,
+                  colors.info,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: _statusCount(
+                  context,
+                  'Yopilgan',
+                  s.completedCount,
+                  colors.success,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: _statusCount(
+                  context,
+                  'Bekor',
+                  s.cancelledCount,
+                  colors.textTertiary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
         ],
       ),
     );
   }
 
-  Widget _statusCount(BuildContext context, String label, int count, Color color) {
+  Widget _statusCount(
+    BuildContext context,
+    String label,
+    int count,
+    Color color,
+  ) {
     return AppCard(
+      hasShadow: false,
+      padding: const EdgeInsets.all(12),
+      borderRadius: BorderRadius.circular(16),
       child: Column(
         children: [
-          Text('$count', style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: color)),
-          Text(label, style: TextStyle(color: context.colors.textSecondary, fontSize: 12)),
+          Text(
+            '$count',
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(color: color),
+          ),
+          Text(
+            label,
+            style: TextStyle(color: context.colors.textSecondary, fontSize: 12),
+          ),
         ],
       ),
     );
   }
 
-  Widget _row(BuildContext context, String label, dynamic amount, String currencyLabel, {Color? color}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [Text(label), MoneyText(amount, currencyLabel: currencyLabel, colorOverride: color)],
-    );
-  }
+  Widget _row(
+    BuildContext context,
+    String label,
+    Decimal amount,
+    String currencyLabel, {
+    Color? color,
+  }) => _MoneyRow(
+    label: label,
+    amount: amount,
+    currency: currencyLabel,
+    color: color,
+  );
 }
 
 class _PartnersTab extends StatefulWidget {
@@ -194,17 +363,33 @@ class _PartnersTabState extends State<_PartnersTab> {
       _items = null;
       _error = null;
     });
-    final result = await getIt<ReportsRepository>().getInstallmentPartners(widget.currencyTypeId);
+    final result = await getIt<ReportsRepository>().getInstallmentPartners(
+      widget.currencyTypeId,
+    );
     if (!mounted) return;
-    result.when(success: (r) => setState(() => _items = r), failure: (f) => setState(() => _error = f.message));
+    result.when(
+      success: (r) => setState(() => _items = r),
+      failure: (f) => setState(() => _error = f.message),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_error != null) return AppErrorState(title: 'Yuklab bo\'lmadi', description: _error, onRetry: _load);
+    if (_error != null) {
+      return AppErrorState(
+        title: 'Yuklab bo\'lmadi',
+        description: _error,
+        onRetry: _load,
+      );
+    }
     final items = _items;
     if (items == null) return const AppSkeletonList();
-    if (items.isEmpty) return const AppEmptyState(title: 'Ma\'lumot yo\'q', icon: Icons.people_outline_rounded);
+    if (items.isEmpty) {
+      return const AppEmptyState(
+        title: 'Ma\'lumot yo\'q',
+        icon: Icons.people_outline_rounded,
+      );
+    }
 
     return RefreshIndicator(
       onRefresh: _load,
@@ -215,17 +400,42 @@ class _PartnersTabState extends State<_PartnersTab> {
         itemBuilder: (context, i) {
           final item = items[i];
           return AppCard(
-            onTap: () => context.push(RoutePaths.reportPartnerDetail(item.partnerId)),
+            hasShadow: false,
+            borderRadius: BorderRadius.circular(18),
+            padding: const EdgeInsets.all(14),
+            onTap: () =>
+                context.push(RoutePaths.reportPartnerDetail(item.partnerId)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item.partnerName, style: Theme.of(context).textTheme.titleSmall),
+                Text(
+                  item.partnerName,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
                 const SizedBox(height: 6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Qolgan:', style: TextStyle(color: context.colors.textSecondary)),
-                    MoneyText(item.remaining, currencyTypeId: widget.currencyTypeId),
+                    Expanded(
+                      child: Text(
+                        'Qolgan',
+                        style: TextStyle(color: context.colors.textSecondary),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Flexible(
+                      child: Text(
+                        MoneyFormatter.format(
+                          item.remaining,
+                          currencyTypeId: widget.currencyTypeId,
+                        ),
+                        textAlign: TextAlign.right,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: context.colors.primary,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -265,23 +475,39 @@ class _RiskyTabState extends State<_RiskyTab> {
       _items = null;
       _error = null;
     });
-    final result = await getIt<ReportsRepository>().getRiskyPartners(widget.currencyTypeId);
+    final result = await getIt<ReportsRepository>().getRiskyPartners(
+      widget.currencyTypeId,
+    );
     if (!mounted) return;
-    result.when(success: (r) => setState(() => _items = r), failure: (f) => setState(() => _error = f.message));
+    result.when(
+      success: (r) => setState(() => _items = r),
+      failure: (f) => setState(() => _error = f.message),
+    );
   }
 
   AppStatusChipTone _toneFor(String level) => switch (level.toLowerCase()) {
-        'yuqori' || 'high' => AppStatusChipTone.error,
-        'o\'rta' || 'medium' => AppStatusChipTone.warning,
-        _ => AppStatusChipTone.neutral,
-      };
+    'yuqori' || 'high' => AppStatusChipTone.error,
+    'o\'rta' || 'medium' => AppStatusChipTone.warning,
+    _ => AppStatusChipTone.neutral,
+  };
 
   @override
   Widget build(BuildContext context) {
-    if (_error != null) return AppErrorState(title: 'Yuklab bo\'lmadi', description: _error, onRetry: _load);
+    if (_error != null) {
+      return AppErrorState(
+        title: 'Yuklab bo\'lmadi',
+        description: _error,
+        onRetry: _load,
+      );
+    }
     final items = _items;
     if (items == null) return const AppSkeletonList();
-    if (items.isEmpty) return const AppEmptyState(title: 'Muammoli hamkorlar yo\'q', icon: Icons.check_circle_outline_rounded);
+    if (items.isEmpty) {
+      return const AppEmptyState(
+        title: 'Muammoli hamkorlar yo\'q',
+        icon: Icons.check_circle_outline_rounded,
+      );
+    }
 
     return RefreshIndicator(
       onRefresh: _load,
@@ -292,18 +518,33 @@ class _RiskyTabState extends State<_RiskyTab> {
         itemBuilder: (context, i) {
           final item = items[i];
           return AppCard(
+            hasShadow: false,
+            borderRadius: BorderRadius.circular(18),
+            padding: const EdgeInsets.all(14),
             child: Row(
               children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item.partnerName, style: Theme.of(context).textTheme.titleSmall),
-                      Text('O\'rtacha kechikish: ${item.averageDelayDays} kun', style: TextStyle(color: context.colors.textSecondary, fontSize: 12)),
+                      Text(
+                        item.partnerName,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      Text(
+                        'O\'rtacha kechikish: ${item.averageDelayDays} kun',
+                        style: TextStyle(
+                          color: context.colors.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                AppStatusChip(label: 'Risk: ${item.riskLevel}', tone: _toneFor(item.riskLevel)),
+                AppStatusChip(
+                  label: 'Risk: ${item.riskLevel}',
+                  tone: _toneFor(item.riskLevel),
+                ),
               ],
             ),
           );
@@ -341,14 +582,25 @@ class _RecoveryTabState extends State<_RecoveryTab> {
       _report = null;
       _error = null;
     });
-    final result = await getIt<ReportsRepository>().getRecoveryReport(widget.currencyTypeId);
+    final result = await getIt<ReportsRepository>().getRecoveryReport(
+      widget.currencyTypeId,
+    );
     if (!mounted) return;
-    result.when(success: (r) => setState(() => _report = r), failure: (f) => setState(() => _error = f.message));
+    result.when(
+      success: (r) => setState(() => _report = r),
+      failure: (f) => setState(() => _error = f.message),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_error != null) return AppErrorState(title: 'Yuklab bo\'lmadi', description: _error, onRetry: _load);
+    if (_error != null) {
+      return AppErrorState(
+        title: 'Yuklab bo\'lmadi',
+        description: _error,
+        onRetry: _load,
+      );
+    }
     final r = _report;
     if (r == null) return const AppSkeletonList();
     final currencyLabel = widget.currencyTypeId == 2 ? 'USD' : 'UZS';
@@ -356,13 +608,20 @@ class _RecoveryTabState extends State<_RecoveryTab> {
     return RefreshIndicator(
       onRefresh: _load,
       child: ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
           AppCard(
             child: Column(
               children: [
-                Text('${r.recoveryRate}%', style: Theme.of(context).textTheme.displaySmall),
-                Text(r.ratingLabel, style: TextStyle(color: context.colors.textSecondary)),
+                Text(
+                  '${r.recoveryRate}%',
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
+                Text(
+                  r.ratingLabel,
+                  style: TextStyle(color: context.colors.textSecondary),
+                ),
               ],
             ),
           ),
@@ -372,12 +631,30 @@ class _RecoveryTabState extends State<_RecoveryTab> {
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [const Text('Qaytarilgan'), MoneyText(r.recoveredAmount, currencyLabel: currencyLabel, colorOverride: context.colors.success)],
+                  children: [
+                    Expanded(
+                      child: _MoneyRow(
+                        label: 'Qaytarilgan',
+                        amount: r.recoveredAmount,
+                        currency: currencyLabel,
+                        color: context.colors.success,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [const Text('Muddati o\'tgan'), MoneyText(r.overdueAmount, currencyLabel: currencyLabel, colorOverride: context.colors.error)],
+                  children: [
+                    Expanded(
+                      child: _MoneyRow(
+                        label: 'Muddati o‘tgan',
+                        amount: r.overdueAmount,
+                        currency: currencyLabel,
+                        color: context.colors.error,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -416,24 +693,44 @@ class _MonthlyTabState extends State<_MonthlyTab> {
       _items = null;
       _error = null;
     });
-    final result = await getIt<ReportsRepository>().getMonthlyInstallments(year: DateTime.now().year, currencyTypeId: widget.currencyTypeId);
+    final result = await getIt<ReportsRepository>().getMonthlyInstallments(
+      year: DateTime.now().year,
+      currencyTypeId: widget.currencyTypeId,
+    );
     if (!mounted) return;
-    result.when(success: (r) => setState(() => _items = r), failure: (f) => setState(() => _error = f.message));
+    result.when(
+      success: (r) => setState(() => _items = r),
+      failure: (f) => setState(() => _error = f.message),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_error != null) return AppErrorState(title: 'Yuklab bo\'lmadi', description: _error, onRetry: _load);
+    if (_error != null) {
+      return AppErrorState(
+        title: 'Yuklab bo\'lmadi',
+        description: _error,
+        onRetry: _load,
+      );
+    }
     final items = _items;
     if (items == null) return const AppSkeletonList();
-    if (items.isEmpty) return const AppEmptyState(title: 'Ma\'lumot yo\'q', icon: Icons.bar_chart_rounded);
+    if (items.isEmpty) {
+      return const AppEmptyState(
+        title: 'Ma\'lumot yo\'q',
+        icon: Icons.bar_chart_rounded,
+      );
+    }
 
-    final maxY = items.map((e) => e.amount.toDouble()).fold(0.0, (a, b) => a > b ? a : b);
+    final maxY = items
+        .map((e) => e.amount.toDouble())
+        .fold(0.0, (a, b) => a > b ? a : b);
 
     return RefreshIndicator(
       onRefresh: _load,
       child: ListView(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
           AppCard(
             child: SizedBox(
@@ -443,9 +740,16 @@ class _MonthlyTabState extends State<_MonthlyTab> {
                   maxY: maxY == 0 ? 1 : maxY * 1.2,
                   barGroups: [
                     for (var i = 0; i < items.length; i++)
-                      BarChartGroupData(x: i, barRods: [
-                        BarChartRodData(toY: items[i].amount.toDouble(), color: context.colors.primary, width: 12),
-                      ]),
+                      BarChartGroupData(
+                        x: i,
+                        barRods: [
+                          BarChartRodData(
+                            toY: items[i].amount.toDouble(),
+                            color: context.colors.primary,
+                            width: 12,
+                          ),
+                        ],
+                      ),
                   ],
                   titlesData: FlTitlesData(
                     bottomTitles: AxisTitles(
@@ -453,17 +757,28 @@ class _MonthlyTabState extends State<_MonthlyTab> {
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
                           final index = value.toInt();
-                          if (index < 0 || index >= items.length) return const SizedBox.shrink();
+                          if (index < 0 || index >= items.length) {
+                            return const SizedBox.shrink();
+                          }
                           return Padding(
                             padding: const EdgeInsets.only(top: 4),
-                            child: Text(items[index].month, style: const TextStyle(fontSize: 10)),
+                            child: Text(
+                              items[index].month,
+                              style: const TextStyle(fontSize: 10),
+                            ),
                           );
                         },
                       ),
                     ),
-                    leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                   ),
                   gridData: const FlGridData(show: false),
                   borderData: FlBorderData(show: false),
@@ -475,4 +790,96 @@ class _MonthlyTabState extends State<_MonthlyTab> {
       ),
     );
   }
+}
+
+class _MoneyRow extends StatelessWidget {
+  const _MoneyRow({
+    required this.label,
+    required this.amount,
+    required this.currency,
+    this.color,
+  });
+  final String label;
+  final Decimal amount;
+  final String currency;
+  final Color? color;
+  @override
+  Widget build(BuildContext context) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Expanded(
+        child: Text(
+          label,
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: context.colors.textSecondary),
+        ),
+      ),
+      const SizedBox(width: 12),
+      Flexible(
+        child: Text(
+          MoneyFormatter.format(amount, currencyLabel: currency),
+          textAlign: TextAlign.right,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            color: color ?? context.colors.textPrimary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+class _EmptyReport extends StatelessWidget {
+  const _EmptyReport({required this.onRefresh, required this.currency});
+  final Future<void> Function() onRefresh;
+  final String currency;
+  @override
+  Widget build(BuildContext context) => RefreshIndicator(
+    onRefresh: onRefresh,
+    child: ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(16),
+      children: [
+        const SizedBox(height: 48),
+        AppEmptyState(
+          title: 'Bo‘lib to‘lash ma’lumoti yo‘q',
+          description: '$currency uchun hali hisobot mavjud emas.',
+          icon: Icons.credit_card_outlined,
+          actionLabel: 'Yangilash',
+          onAction: onRefresh,
+        ),
+      ],
+    ),
+  );
+}
+
+class _SummarySkeleton extends StatelessWidget {
+  const _SummarySkeleton();
+  @override
+  Widget build(BuildContext context) => ListView(
+    padding: const EdgeInsets.all(16),
+    children: [
+      AppSkeletonBox(height: 110, borderRadius: BorderRadius.circular(22)),
+      const SizedBox(height: 12),
+      AppSkeletonBox(height: 110, borderRadius: BorderRadius.circular(18)),
+      const SizedBox(height: 10),
+      AppSkeletonBox(height: 50, borderRadius: BorderRadius.circular(16)),
+      const SizedBox(height: 20),
+      Row(
+        children: [
+          for (var i = 0; i < 3; i++)
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(right: i < 2 ? 8 : 0),
+                child: AppSkeletonBox(
+                  height: 80,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+            ),
+        ],
+      ),
+    ],
+  );
 }

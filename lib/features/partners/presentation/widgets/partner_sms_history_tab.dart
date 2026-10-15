@@ -12,15 +12,28 @@ import '../../data/sms_models.dart';
 import '../cubit/partner_sms_cubit.dart';
 
 /// Tab 3: SMS tarixi (MOBILE_APP_TZ.md 8.9).
-class PartnerSmsHistoryTab extends StatelessWidget {
+class PartnerSmsHistoryTab extends StatefulWidget {
   const PartnerSmsHistoryTab({super.key, required this.partner});
 
   final Partner partner;
 
   @override
+  State<PartnerSmsHistoryTab> createState() => _PartnerSmsHistoryTabState();
+}
+
+class _PartnerSmsHistoryTabState extends State<PartnerSmsHistoryTab>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocProvider(
-      create: (_) => PartnerSmsHistoryCubit(getIt<PartnersRepository>(), partner.id)..loadFirst(),
+      create: (_) => PartnerSmsHistoryCubit(
+        getIt<PartnersRepository>(),
+        widget.partner.id,
+      )..loadFirst(),
       child: Builder(
         builder: (context) {
           final cubit = context.watch<PartnerSmsHistoryCubit>();
@@ -36,8 +49,12 @@ class PartnerSmsHistoryTab extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
-                    sms.isSuccess ? Icons.check_circle_outline_rounded : Icons.error_outline_rounded,
-                    color: sms.isSuccess ? context.colors.success : context.colors.error,
+                    sms.isSuccess
+                        ? Icons.check_circle_outline_rounded
+                        : Icons.error_outline_rounded,
+                    color: sms.isSuccess
+                        ? context.colors.success
+                        : context.colors.error,
                     size: 20,
                   ),
                   const SizedBox(width: 10),
@@ -46,10 +63,19 @@ class PartnerSmsHistoryTab extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (sms.sentAt != null)
-                          Text(AppDateFormatter.displayDateTime(sms.sentAt!),
-                              style: TextStyle(color: context.colors.textSecondary, fontSize: 12)),
+                          Text(
+                            AppDateFormatter.displayDateTime(sms.sentAt!),
+                            style: TextStyle(
+                              color: context.colors.textSecondary,
+                              fontSize: 12,
+                            ),
+                          ),
                         const SizedBox(height: 4),
-                        Text(sms.message, maxLines: 3, overflow: TextOverflow.ellipsis),
+                        Text(
+                          sms.message,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ],
                     ),
                   ),

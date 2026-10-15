@@ -141,9 +141,25 @@ class WorkerReportItem {
       );
 }
 
-/// Hamkor detal hisoboti — V2, grafiklar bilan (MOBILE_APP_TZ.md 12.2).
-class PartnerDetailReport {
-  const PartnerDetailReport({
+/// Hamkor detal hisoboti — V2, UZS va USD valyutalari bilan (GET /reports/partners-v2/partner-details/$id).
+class PartnerDetailsResult {
+  const PartnerDetailsResult({
+    required this.uzs,
+    required this.usd,
+  });
+
+  final PartnerDetailsCurrencyReport uzs;
+  final PartnerDetailsCurrencyReport usd;
+
+  factory PartnerDetailsResult.fromJson(Map<String, dynamic> json) => PartnerDetailsResult(
+        uzs: PartnerDetailsCurrencyReport.fromJson(json['UZS'] as Map<String, dynamic>? ?? const {}),
+        usd: PartnerDetailsCurrencyReport.fromJson(json['USD'] as Map<String, dynamic>? ?? const {}),
+      );
+}
+
+/// Har bir valyuta (UZS yoki USD) bo'yicha detal hisobot.
+class PartnerDetailsCurrencyReport {
+  const PartnerDetailsCurrencyReport({
     required this.balance,
     required this.income,
     required this.expense,
@@ -165,30 +181,48 @@ class PartnerDetailReport {
   final List<MonthlyStat> monthlyStatistics;
   final List<BalancePoint> balanceDynamics;
 
-  factory PartnerDetailReport.fromJson(Map<String, dynamic> json) => PartnerDetailReport(
-        balance: parseMoney(json['balance']),
-        income: parseMoney(json['income']),
-        expense: parseMoney(json['expense']),
-        operationsCount: json['operations_count'] as int? ?? 0,
-        qarzExpired: json['qarz_expired'] as int? ?? 0,
-        qarzToday: json['qarz_today'] as int? ?? 0,
-        qarz3Days: json['qarz_3_days'] as int? ?? 0,
-        monthlyStatistics: (json['monthly_statistics'] as List? ?? const [])
-            .cast<Map<String, dynamic>>()
-            .map(MonthlyStat.fromJson)
-            .toList(),
-        balanceDynamics: (json['balance_dynamics'] as List? ?? const [])
-            .cast<Map<String, dynamic>>()
-            .map(BalancePoint.fromJson)
-            .toList(),
-      );
+  double get balanceAmount => balance.toDouble();
+  double get incomeAmount => income.toDouble();
+  double get expenseAmount => expense.toDouble();
+
+  factory PartnerDetailsCurrencyReport.fromJson(Map<String, dynamic> json) {
+    int parseCount(dynamic v) {
+      if (v is Map) return (v['count'] as num?)?.toInt() ?? 0;
+      if (v is num) return v.toInt();
+      if (v is String) return int.tryParse(v) ?? 0;
+      return 0;
+    }
+
+    return PartnerDetailsCurrencyReport(
+      balance: parseMoney(json['balance']),
+      income: parseMoney(json['income']),
+      expense: parseMoney(json['expense']),
+      operationsCount: (json['operations_count'] as num?)?.toInt() ?? 0,
+      qarzExpired: parseCount(json['qarz_expired']),
+      qarzToday: parseCount(json['qarz_today']),
+      qarz3Days: parseCount(json['qarz_3_days']),
+      monthlyStatistics: (json['monthly_statistics'] as List? ?? const [])
+          .cast<Map<String, dynamic>>()
+          .map(MonthlyStat.fromJson)
+          .toList(),
+      balanceDynamics: (json['balance_dynamics'] as List? ?? const [])
+          .cast<Map<String, dynamic>>()
+          .map(BalancePoint.fromJson)
+          .toList(),
+    );
+  }
 }
+
+typedef PartnerDetailReport = PartnerDetailsCurrencyReport;
 
 class MonthlyStat {
   const MonthlyStat({required this.label, required this.income, required this.expense});
   final String label;
   final Decimal income;
   final Decimal expense;
+
+  double get incomeDouble => income.toDouble();
+  double get expenseDouble => expense.toDouble();
 
   factory MonthlyStat.fromJson(Map<String, dynamic> json) => MonthlyStat(
         label: json['month'] as String? ?? json['label'] as String? ?? '',
@@ -202,8 +236,11 @@ class BalancePoint {
   final String label;
   final Decimal balance;
 
+  double get balanceDouble => balance.toDouble();
+
   factory BalancePoint.fromJson(Map<String, dynamic> json) => BalancePoint(
         label: json['date'] as String? ?? json['label'] as String? ?? '',
         balance: parseMoney(json['balance']),
       );
 }
+

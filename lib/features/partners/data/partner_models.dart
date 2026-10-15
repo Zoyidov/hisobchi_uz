@@ -2,6 +2,7 @@ import 'package:decimal/decimal.dart';
 
 import '../../../core/utils/formatters/date_formatter.dart';
 import '../../../core/utils/money.dart';
+import '../../../core/domain/entities/app_file.dart';
 
 /// Hamkorlar ro'yxati elementi (MOBILE_APP_TZ.md 8.2).
 class Partner {
@@ -64,16 +65,30 @@ class Partner {
     final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
 
     final mainCurrencyVal = json['main_currency_type_id'];
-    final mainCurrencyTypeId = mainCurrencyVal is int ? mainCurrencyVal : (int.tryParse('$mainCurrencyVal') ?? 1);
+    final mainCurrencyTypeId = mainCurrencyVal is int
+        ? mainCurrencyVal
+        : (int.tryParse('$mainCurrencyVal') ?? 1);
 
     final sendOnKirimVal = json['send_on_kirim'];
-    final sendOnKirim = sendOnKirimVal == null ? true : (sendOnKirimVal == true || sendOnKirimVal == 1 || sendOnKirimVal == '1');
+    final sendOnKirim = sendOnKirimVal == null
+        ? true
+        : (sendOnKirimVal == true ||
+              sendOnKirimVal == 1 ||
+              sendOnKirimVal == '1');
 
     final sendOnChiqimVal = json['send_on_chiqim'];
-    final sendOnChiqim = sendOnChiqimVal == null ? true : (sendOnChiqimVal == true || sendOnChiqimVal == 1 || sendOnChiqimVal == '1');
+    final sendOnChiqim = sendOnChiqimVal == null
+        ? true
+        : (sendOnChiqimVal == true ||
+              sendOnChiqimVal == 1 ||
+              sendOnChiqimVal == '1');
 
-    final balance = json['balance'] is Map<String, dynamic> ? json['balance'] as Map<String, dynamic> : null;
-    final installment = json['installment_remaining'] is Map<String, dynamic> ? json['installment_remaining'] as Map<String, dynamic> : null;
+    final balance = json['balance'] is Map<String, dynamic>
+        ? json['balance'] as Map<String, dynamic>
+        : null;
+    final installment = json['installment_remaining'] is Map<String, dynamic>
+        ? json['installment_remaining'] as Map<String, dynamic>
+        : null;
 
     return Partner(
       id: id,
@@ -81,15 +96,44 @@ class Partner {
       phone: json['phone']?.toString() ?? '',
       additionalPhone: json['additional_phone']?.toString(),
       mainCurrencyTypeId: mainCurrencyTypeId,
-      mainCurrencyTypeName: json['main_currency_type_name']?.toString() ?? (mainCurrencyTypeId == 2 ? 'USD' : 'UZS'),
+      mainCurrencyTypeName:
+          json['main_currency_type_name']?.toString() ??
+          (mainCurrencyTypeId == 2 ? 'USD' : 'UZS'),
       balanceUzs: _currencyValue(balance, 'UZS'),
       balanceUsd: _currencyValue(balance, 'USD'),
       installmentRemainingUzs: _currencyValue(installment, 'UZS'),
       installmentRemainingUsd: _currencyValue(installment, 'USD'),
       sendOnKirim: sendOnKirim,
       sendOnChiqim: sendOnChiqim,
-      createdAt: AppDateFormatter.parseFromBackend(json['created_at']?.toString()),
-      deletedAt: AppDateFormatter.parseFromBackend(json['deleted_at']?.toString()),
+      createdAt: AppDateFormatter.parseFromBackend(
+        json['created_at']?.toString(),
+      ),
+      deletedAt: AppDateFormatter.parseFromBackend(
+        json['deleted_at']?.toString(),
+      ),
+    );
+  }
+
+  factory Partner.placeholder({
+    required int id,
+    String name = '',
+    String phone = '',
+    int mainCurrencyTypeId = 1,
+    String mainCurrencyTypeName = 'UZS',
+  }) {
+    return Partner(
+      id: id,
+      name: name,
+      phone: phone,
+      mainCurrencyTypeId: mainCurrencyTypeId,
+      mainCurrencyTypeName: mainCurrencyTypeName,
+      balanceUzs: Decimal.zero,
+      balanceUsd: Decimal.zero,
+      installmentRemainingUzs: Decimal.zero,
+      installmentRemainingUsd: Decimal.zero,
+      sendOnKirim: false,
+      sendOnChiqim: false,
+      createdAt: DateTime.now(),
     );
   }
 }
@@ -100,23 +144,29 @@ enum PartnerStatusFilter { all, creditor, debtor, overdueDebtor }
 
 extension PartnerStatusFilterX on PartnerStatusFilter {
   String? get apiValue => switch (this) {
-        PartnerStatusFilter.all => null,
-        PartnerStatusFilter.creditor => 'xaqdor',
-        PartnerStatusFilter.debtor => 'qarzdor',
-        PartnerStatusFilter.overdueDebtor => 'muddati_otgan_qarzdor',
-      };
+    PartnerStatusFilter.all => null,
+    PartnerStatusFilter.creditor => 'xaqdor',
+    PartnerStatusFilter.debtor => 'qarzdor',
+    PartnerStatusFilter.overdueDebtor => 'muddati_otgan_qarzdor',
+  };
 }
 
-enum PartnerSort { lastActivity, debtorUzs, debtorUsd, creditorUzs, creditorUsd }
+enum PartnerSort {
+  lastActivity,
+  debtorUzs,
+  debtorUsd,
+  creditorUzs,
+  creditorUsd,
+}
 
 extension PartnerSortX on PartnerSort {
   String? get apiValue => switch (this) {
-        PartnerSort.lastActivity => null,
-        PartnerSort.debtorUzs => 'qarzdor_uzs',
-        PartnerSort.debtorUsd => 'qarzdor_usd',
-        PartnerSort.creditorUzs => 'xaqdor_uzs',
-        PartnerSort.creditorUsd => 'xaqdor_usd',
-      };
+    PartnerSort.lastActivity => null,
+    PartnerSort.debtorUzs => 'qarzdor_uzs',
+    PartnerSort.debtorUsd => 'qarzdor_usd',
+    PartnerSort.creditorUzs => 'xaqdor_uzs',
+    PartnerSort.creditorUsd => 'xaqdor_usd',
+  };
 }
 
 /// Bitta valyuta bo'yicha hisob (MOBILE_APP_TZ.md 8.5).
@@ -133,7 +183,8 @@ class PartnerCurrencyAccount {
   final Decimal balance;
   final Decimal balanceWithInstallment;
 
-  factory PartnerCurrencyAccount.fromJson(Map<String, dynamic> json) => PartnerCurrencyAccount(
+  factory PartnerCurrencyAccount.fromJson(Map<String, dynamic> json) =>
+      PartnerCurrencyAccount(
         debt: parseMoney(json['debt']),
         credit: parseMoney(json['credit']),
         balance: parseMoney(json['balance']),
@@ -164,10 +215,14 @@ class PartnerAccount {
     }
     return PartnerAccount(
       uzs: source['uzs_account'] is Map<String, dynamic>
-          ? PartnerCurrencyAccount.fromJson(source['uzs_account'] as Map<String, dynamic>)
+          ? PartnerCurrencyAccount.fromJson(
+              source['uzs_account'] as Map<String, dynamic>,
+            )
           : PartnerCurrencyAccount.zero,
       usd: source['usd_account'] is Map<String, dynamic>
-          ? PartnerCurrencyAccount.fromJson(source['usd_account'] as Map<String, dynamic>)
+          ? PartnerCurrencyAccount.fromJson(
+              source['usd_account'] as Map<String, dynamic>,
+            )
           : PartnerCurrencyAccount.zero,
     );
   }
@@ -190,6 +245,7 @@ class Wallet {
     this.createdAt,
     this.deletedAt,
     this.performedByName,
+    this.files = const [],
   });
 
   final int id;
@@ -206,6 +262,7 @@ class Wallet {
   final DateTime? createdAt;
   final DateTime? deletedAt;
   final String? performedByName;
+  final List<AppFile> files;
 
   bool get isExpense => type == 'credit';
 
@@ -223,13 +280,18 @@ class Wallet {
     final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
 
     final partnerIdVal = json['partner_id'];
-    final partnerId = partnerIdVal is int ? partnerIdVal : (int.tryParse('$partnerIdVal') ?? 0);
+    final partnerId = partnerIdVal is int
+        ? partnerIdVal
+        : (int.tryParse('$partnerIdVal') ?? 0);
 
     final currencyTypeIdVal = json['currency_type_id'];
-    final currencyTypeId = currencyTypeIdVal is int ? currencyTypeIdVal : (int.tryParse('$currencyTypeIdVal') ?? 1);
+    final currencyTypeId = currencyTypeIdVal is int
+        ? currencyTypeIdVal
+        : (int.tryParse('$currencyTypeIdVal') ?? 1);
 
     final cancelledVal = json['is_cancelled'];
-    final isCancelled = cancelledVal == true || cancelledVal == 1 || cancelledVal == '1';
+    final isCancelled =
+        cancelledVal == true || cancelledVal == 1 || cancelledVal == '1';
 
     String? performedByName;
     final rawActivity = json['activity'];
@@ -249,16 +311,27 @@ class Wallet {
       partnerId: partnerId,
       partnerName: json['partner_name']?.toString() ?? '',
       currencyTypeId: currencyTypeId,
-      currencyTypeName: json['currency_type_name']?.toString() ?? (currencyTypeId == 2 ? 'USD' : 'UZS'),
+      currencyTypeName:
+          json['currency_type_name']?.toString() ??
+          (currencyTypeId == 2 ? 'USD' : 'UZS'),
       summa: parseMoney(json['summa']),
       description: json['description']?.toString(),
-      returnDate: AppDateFormatter.parseFromBackend(json['return_date']?.toString()),
+      returnDate: AppDateFormatter.parseFromBackend(
+        json['return_date']?.toString(),
+      ),
       type: json['type']?.toString() ?? 'debt',
       isCancelled: isCancelled,
       cancelReason: json['cancel_reason']?.toString(),
-      createdAt: AppDateFormatter.parseFromBackend(json['created_at']?.toString()),
-      deletedAt: AppDateFormatter.parseFromBackend(json['deleted_at']?.toString()),
+      createdAt: AppDateFormatter.parseFromBackend(
+        json['created_at']?.toString(),
+      ),
+      deletedAt: AppDateFormatter.parseFromBackend(
+        json['deleted_at']?.toString(),
+      ),
       performedByName: performedByName,
+      files: (json['files'] as List? ?? const [])
+          .map((file) => AppFile.fromJson(file as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

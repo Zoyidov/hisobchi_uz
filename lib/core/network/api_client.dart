@@ -24,9 +24,9 @@ class ApiClient {
     Map<String, dynamic>? query,
     required T Function(dynamic result) parse,
   }) => _guard(() async {
-        final res = await _dio.get(path, queryParameters: _clean(query));
-        return parse(_unwrap(res));
-      });
+    final res = await _dio.get(path, queryParameters: _clean(query));
+    return parse(_unwrap(res));
+  });
 
   Future<ApiResult<T>> post<T>(
     String path, {
@@ -34,9 +34,13 @@ class ApiClient {
     Map<String, dynamic>? query,
     required T Function(dynamic result) parse,
   }) => _guard(() async {
-        final res = await _dio.post(path, data: data, queryParameters: _clean(query));
-        return parse(_unwrap(res));
-      });
+    final res = await _dio.post(
+      path,
+      data: data,
+      queryParameters: _clean(query),
+    );
+    return parse(_unwrap(res));
+  });
 
   Future<ApiResult<T>> put<T>(
     String path, {
@@ -44,9 +48,13 @@ class ApiClient {
     Map<String, dynamic>? query,
     required T Function(dynamic result) parse,
   }) => _guard(() async {
-        final res = await _dio.put(path, data: data, queryParameters: _clean(query));
-        return parse(_unwrap(res));
-      });
+    final res = await _dio.put(
+      path,
+      data: data,
+      queryParameters: _clean(query),
+    );
+    return parse(_unwrap(res));
+  });
 
   Future<ApiResult<T>> delete<T>(
     String path, {
@@ -54,9 +62,13 @@ class ApiClient {
     Map<String, dynamic>? query,
     required T Function(dynamic result) parse,
   }) => _guard(() async {
-        final res = await _dio.delete(path, data: data, queryParameters: _clean(query));
-        return parse(_unwrap(res));
-      });
+    final res = await _dio.delete(
+      path,
+      data: data,
+      queryParameters: _clean(query),
+    );
+    return parse(_unwrap(res));
+  });
 
   /// `simplePaginate` javobi (MOBILE_APP_TZ.md 4.7-A).
   Future<ApiResult<SimplePage<T>>> getSimplePage<T>(
@@ -64,10 +76,10 @@ class ApiClient {
     Map<String, dynamic>? query,
     required T Function(JsonMap json) fromJson,
   }) => get<SimplePage<T>>(
-        path,
-        query: query,
-        parse: (result) => SimplePage.fromJson(result as JsonMap, fromJson),
-      );
+    path,
+    query: query,
+    parse: (result) => SimplePage.fromJson(result as JsonMap, fromJson),
+  );
 
   /// Standart `paginate` javobi — Activity Log (MOBILE_APP_TZ.md 4.7-B).
   Future<ApiResult<StandardPage<T>>> getStandardPage<T>(
@@ -75,10 +87,10 @@ class ApiClient {
     Map<String, dynamic>? query,
     required T Function(JsonMap json) fromJson,
   }) => get<StandardPage<T>>(
-        path,
-        query: query,
-        parse: (result) => StandardPage.fromJson(result as JsonMap, fromJson),
-      );
+    path,
+    query: query,
+    parse: (result) => StandardPage.fromJson(result as JsonMap, fromJson),
+  );
 
   /// Paginatsiyasiz massiv (MOBILE_APP_TZ.md 4.7-C).
   Future<ApiResult<List<T>>> getList<T>(
@@ -86,39 +98,50 @@ class ApiClient {
     Map<String, dynamic>? query,
     required T Function(JsonMap json) fromJson,
   }) => get<List<T>>(
-        path,
-        query: query,
-        parse: (result) => (result as List).cast<JsonMap>().map(fromJson).toList(),
-      );
+    path,
+    query: query,
+    parse: (result) => (result as List).cast<JsonMap>().map(fromJson).toList(),
+  );
 
   /// Fayl yuklash — avval alohida yuklanadi (MOBILE_APP_TZ.md 4.9).
   Future<ApiResult<T>> uploadFile<T>(
     String path,
     File file, {
     required T Function(dynamic result) parse,
+    String? type,
+    ProgressCallback? onSendProgress,
   }) => _guard(() async {
-        final formData = FormData.fromMap({
-          'file': await MultipartFile.fromFile(file.path),
-        });
-        final res = await _dio.post(path, data: formData);
-        return parse(_unwrap(res));
-      });
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(
+        file.path,
+        filename: file.uri.pathSegments.last,
+      ),
+      if (type != null) 'type': type,
+    });
+    final res = await _dio.post(
+      path,
+      data: formData,
+      options: Options(contentType: Headers.multipartFormDataContentType),
+      onSendProgress: onSendProgress,
+    );
+    return parse(_unwrap(res));
+  });
 
   /// Excel eksport — binar `.xlsx` javob (MOBILE_APP_TZ.md 4.10).
   Future<ApiResult<List<int>>> downloadBytes(
     String path, {
     Map<String, dynamic>? query,
   }) => _guard(() async {
-        final res = await _dio.get<List<int>>(
-          path,
-          queryParameters: _clean(query),
-          options: Options(
-            responseType: ResponseType.bytes,
-            receiveTimeout: const Duration(seconds: 120),
-          ),
-        );
-        return res.data ?? const [];
-      });
+    final res = await _dio.get<List<int>>(
+      path,
+      queryParameters: _clean(query),
+      options: Options(
+        responseType: ResponseType.bytes,
+        receiveTimeout: const Duration(seconds: 120),
+      ),
+    );
+    return res.data ?? const [];
+  });
 
   Map<String, dynamic>? _clean(Map<String, dynamic>? query) {
     if (query == null) return null;
@@ -135,7 +158,9 @@ class ApiClient {
       if (data.containsKey('result') && data['result'] != null) {
         return data['result'];
       }
-      if (data.containsKey('data') && data['data'] != null && data['status'] == true) {
+      if (data.containsKey('data') &&
+          data['data'] != null &&
+          data['status'] == true) {
         return data['data'];
       }
     }
@@ -146,7 +171,9 @@ class ApiClient {
     try {
       return ApiResult.success(await action());
     } on DioException catch (e) {
-      final failure = e.error is Failure ? e.error as Failure : const UnknownFailure();
+      final failure = e.error is Failure
+          ? e.error as Failure
+          : const UnknownFailure();
       return ApiResult.failure(failure);
     } catch (e, stack) {
       if (kDebugMode) {

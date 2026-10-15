@@ -17,6 +17,14 @@ class ProjectCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final image = project.files
+        .where(
+          (file) => RegExp(
+            r'\.(jpe?g|png|webp|gif)$',
+            caseSensitive: false,
+          ).hasMatch(Uri.tryParse(file.url)?.path ?? ''),
+        )
+        .firstOrNull;
     final tone = switch (project.status) {
       ProjectStatus.inProgress => AppStatusChipTone.info,
       ProjectStatus.frozen => AppStatusChipTone.warning,
@@ -37,6 +45,7 @@ class ProjectCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
+            clipBehavior: Clip.antiAlias,
             width: 44,
             height: 44,
             alignment: Alignment.center,
@@ -44,7 +53,16 @@ class ProjectCard extends StatelessWidget {
               color: statusColor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(Icons.work_rounded, color: statusColor, size: 22),
+            child: image == null
+                ? Icon(Icons.work_rounded, color: statusColor, size: 22)
+                : Image.network(
+                    image.url,
+                    width: 44,
+                    height: 44,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) =>
+                        Icon(Icons.work_rounded, color: statusColor, size: 22),
+                  ),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -58,8 +76,8 @@ class ProjectCard extends StatelessWidget {
                       child: Text(
                         project.projectName,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
+                          fontWeight: FontWeight.w700,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -71,15 +89,19 @@ class ProjectCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.person_outline_rounded, size: 14, color: colors.textSecondary),
+                    Icon(
+                      Icons.person_outline_rounded,
+                      size: 14,
+                      color: colors.textSecondary,
+                    ),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         project.projectOwner,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: colors.textSecondary,
-                              fontWeight: FontWeight.w500,
-                            ),
+                          color: colors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -89,11 +111,18 @@ class ProjectCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    Icon(Icons.phone_outlined, size: 13, color: colors.textTertiary),
+                    Icon(
+                      Icons.phone_outlined,
+                      size: 13,
+                      color: colors.textTertiary,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       project.phone,
-                      style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
@@ -101,12 +130,19 @@ class ProjectCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(Icons.location_on_outlined, size: 13, color: colors.textTertiary),
+                      Icon(
+                        Icons.location_on_outlined,
+                        size: 13,
+                        color: colors.textTertiary,
+                      ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           project.address!,
-                          style: TextStyle(color: colors.textTertiary, fontSize: 12),
+                          style: TextStyle(
+                            color: colors.textTertiary,
+                            fontSize: 12,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -118,7 +154,11 @@ class ProjectCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 4),
-          Icon(Icons.chevron_right_rounded, color: colors.textTertiary, size: 20),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: colors.textTertiary,
+            size: 20,
+          ),
         ],
       ),
     );

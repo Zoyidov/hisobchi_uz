@@ -6,6 +6,8 @@ class SimplePage<T> {
   final List<T> items;
   final bool hasNext;
 
+  bool get hasMore => hasNext;
+
   factory SimplePage.fromJson(
     Map<String, dynamic> json,
     T Function(Map<String, dynamic>) fromJson,

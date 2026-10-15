@@ -2,27 +2,30 @@ import 'package:decimal/decimal.dart';
 
 import '../../../core/utils/formatters/date_formatter.dart';
 import '../../../core/utils/money.dart';
+import '../../../core/domain/entities/app_file.dart';
 
 enum ProjectStatus { inProgress, frozen, completed }
 
 extension ProjectStatusX on ProjectStatus {
-  static ProjectStatus fromApi(String? value) => switch (value) {
-        'frozen' => ProjectStatus.frozen,
-        'completed' => ProjectStatus.completed,
-        _ => ProjectStatus.inProgress,
-      };
+  static ProjectStatus fromApi(String? value) => switch (value
+      ?.trim()
+      .toLowerCase()) {
+    'frozen' || 'muzlatilgan' => ProjectStatus.frozen,
+    'completed' || 'tugallangan' || 'yakunlangan' => ProjectStatus.completed,
+    _ => ProjectStatus.inProgress,
+  };
 
   String get apiValue => switch (this) {
-        ProjectStatus.inProgress => 'in_progress',
-        ProjectStatus.frozen => 'frozen',
-        ProjectStatus.completed => 'completed',
-      };
+    ProjectStatus.inProgress => 'in_progress',
+    ProjectStatus.frozen => 'frozen',
+    ProjectStatus.completed => 'completed',
+  };
 
   String get label => switch (this) {
-        ProjectStatus.inProgress => 'Jarayonda',
-        ProjectStatus.frozen => 'Muzlatilgan',
-        ProjectStatus.completed => 'Tugallangan',
-      };
+    ProjectStatus.inProgress => 'Jarayonda',
+    ProjectStatus.frozen => 'Muzlatilgan',
+    ProjectStatus.completed => 'Tugallangan',
+  };
 }
 
 /// Loyiha (MOBILE_APP_TZ.md 10.2).
@@ -38,6 +41,7 @@ class Project {
     this.deletedAt,
     this.createdAt,
     this.accounts,
+    this.files = const [],
   });
 
   final int id;
@@ -50,6 +54,7 @@ class Project {
   final DateTime? deletedAt;
   final DateTime? createdAt;
   final ProjectAccounts? accounts;
+  final List<AppFile> files;
 
   bool get isDeleted => deletedAt != null;
 
@@ -69,21 +74,38 @@ class Project {
       phone: json['phone']?.toString() ?? '',
       address: json['address']?.toString(),
       location: json['location']?.toString(),
+      files: (json['files'] as List? ?? const [])
+          .map((file) => AppFile.fromJson(file as Map<String, dynamic>))
+          .toList(),
       status: ProjectStatusX.fromApi(json['status']?.toString()),
-      deletedAt: AppDateFormatter.parseFromBackend(json['deleted_at']?.toString()),
-      createdAt: AppDateFormatter.parseFromBackend(json['created_at']?.toString()),
-      accounts: json['accounts'] is Map<String, dynamic> ? ProjectAccounts.fromJson(json['accounts'] as Map<String, dynamic>) : null,
+      deletedAt: AppDateFormatter.parseFromBackend(
+        json['deleted_at']?.toString(),
+      ),
+      createdAt: AppDateFormatter.parseFromBackend(
+        json['created_at']?.toString(),
+      ),
+      accounts: json['accounts'] is Map<String, dynamic>
+          ? ProjectAccounts.fromJson(json['accounts'] as Map<String, dynamic>)
+          : null,
     );
   }
 }
 
 class ProjectCurrencyAccount {
-  const ProjectCurrencyAccount({required this.income, required this.cost, required this.balance});
+  const ProjectCurrencyAccount({
+    required this.income,
+    required this.cost,
+    required this.balance,
+  });
   final Decimal income;
   final Decimal cost;
   final Decimal balance;
 
-  static final zero = ProjectCurrencyAccount(income: Decimal.zero, cost: Decimal.zero, balance: Decimal.zero);
+  static final zero = ProjectCurrencyAccount(
+    income: Decimal.zero,
+    cost: Decimal.zero,
+    balance: Decimal.zero,
+  );
 }
 
 class ProjectAccounts {
@@ -91,16 +113,42 @@ class ProjectAccounts {
   final ProjectCurrencyAccount uzs;
   final ProjectCurrencyAccount usd;
 
-  factory ProjectAccounts.fromJson(Map<String, dynamic> json) => ProjectAccounts(
+  static dynamic _nestedAmount(
+    Map<String, dynamic> json,
+    String key,
+    String currency,
+  ) {
+    final amounts = json[key];
+    return amounts is Map ? amounts[currency] : null;
+  }
+
+  factory ProjectAccounts.fromJson(Map<String, dynamic> json) =>
+      ProjectAccounts(
         uzs: ProjectCurrencyAccount(
-          income: parseMoney(json['income_uzs']),
-          cost: parseMoney(json['costs_uzs'] ?? json['cost_uzs']),
-          balance: parseMoney(json['balance_uzs']),
+          income: parseMoney(
+            _nestedAmount(json, 'debt', 'UZS') ?? json['income_uzs'],
+          ),
+          cost: parseMoney(
+            _nestedAmount(json, 'credit', 'UZS') ??
+                json['costs_uzs'] ??
+                json['cost_uzs'],
+          ),
+          balance: parseMoney(
+            _nestedAmount(json, 'balance', 'UZS') ?? json['balance_uzs'],
+          ),
         ),
         usd: ProjectCurrencyAccount(
-          income: parseMoney(json['income_usd']),
-          cost: parseMoney(json['costs_usd'] ?? json['cost_usd']),
-          balance: parseMoney(json['balance_usd']),
+          income: parseMoney(
+            _nestedAmount(json, 'debt', 'USD') ?? json['income_usd'],
+          ),
+          cost: parseMoney(
+            _nestedAmount(json, 'credit', 'USD') ??
+                json['costs_usd'] ??
+                json['cost_usd'],
+          ),
+          balance: parseMoney(
+            _nestedAmount(json, 'balance', 'USD') ?? json['balance_usd'],
+          ),
         ),
       );
 }
@@ -127,14 +175,18 @@ class ProjectContract {
     final idVal = json['id'];
     final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
     final workVal = json['work_type_id'];
-    final workTypeId = workVal is int ? workVal : (int.tryParse('$workVal') ?? 0);
+    final workTypeId = workVal is int
+        ? workVal
+        : (int.tryParse('$workVal') ?? 0);
     return ProjectContract(
       id: id,
       workTypeId: workTypeId,
       workTypeName: json['work_type_name']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
       summa: parseMoney(json['summa']),
-      createdAt: AppDateFormatter.parseFromBackend(json['created_at']?.toString()),
+      createdAt: AppDateFormatter.parseFromBackend(
+        json['created_at']?.toString(),
+      ),
     );
   }
 }
@@ -148,6 +200,7 @@ class ProjectIncome {
     required this.summa,
     this.description,
     this.createdAt,
+    this.files = const [],
   });
 
   final int id;
@@ -156,19 +209,30 @@ class ProjectIncome {
   final Decimal summa;
   final String? description;
   final DateTime? createdAt;
+  final List<AppFile> files;
 
   factory ProjectIncome.fromJson(Map<String, dynamic> json) {
     final idVal = json['id'];
     final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
     final currVal = json['currency_type_id'];
-    final currencyTypeId = currVal is int ? currVal : (int.tryParse('$currVal') ?? 1);
+    final currencyTypeId = currVal is int
+        ? currVal
+        : (int.tryParse('$currVal') ?? 1);
     return ProjectIncome(
       id: id,
       currencyTypeId: currencyTypeId,
-      currencyTypeName: json['currency_type_name']?.toString() ?? (currencyTypeId == 2 ? 'USD' : 'UZS'),
+      currencyTypeName:
+          json['currency_type_name']?.toString() ??
+          json['currency_type']?.toString() ??
+          (currencyTypeId == 2 ? 'USD' : 'UZS'),
       summa: parseMoney(json['summa']),
       description: json['description']?.toString(),
-      createdAt: AppDateFormatter.parseFromBackend(json['created_at']?.toString()),
+      files: (json['files'] as List? ?? const [])
+          .map((file) => AppFile.fromJson(file as Map<String, dynamic>))
+          .toList(),
+      createdAt: AppDateFormatter.parseFromBackend(
+        json['created_at']?.toString(),
+      ),
     );
   }
 }
@@ -186,6 +250,7 @@ class ProjectCost {
     this.workerId,
     this.workerName,
     this.createdAt,
+    this.files = const [],
   });
 
   final int id;
@@ -198,14 +263,19 @@ class ProjectCost {
   final int? workerId;
   final String? workerName;
   final DateTime? createdAt;
+  final List<AppFile> files;
 
   factory ProjectCost.fromJson(Map<String, dynamic> json) {
     final idVal = json['id'];
     final id = idVal is int ? idVal : (int.tryParse('$idVal') ?? 0);
     final costVal = json['cost_type_id'];
-    final costTypeId = costVal is int ? costVal : (int.tryParse('$costVal') ?? 0);
+    final costTypeId = costVal is int
+        ? costVal
+        : (int.tryParse('$costVal') ?? 0);
     final currVal = json['currency_type_id'];
-    final currencyTypeId = currVal is int ? currVal : (int.tryParse('$currVal') ?? 1);
+    final currencyTypeId = currVal is int
+        ? currVal
+        : (int.tryParse('$currVal') ?? 1);
     final workerVal = json['worker_id'];
     final workerId = workerVal is int ? workerVal : int.tryParse('$workerVal');
     return ProjectCost(
@@ -213,19 +283,32 @@ class ProjectCost {
       costTypeId: costTypeId,
       costTypeName: json['cost_type_name']?.toString() ?? '',
       currencyTypeId: currencyTypeId,
-      currencyTypeName: json['currency_type_name']?.toString() ?? (currencyTypeId == 2 ? 'USD' : 'UZS'),
+      currencyTypeName:
+          json['currency_type_name']?.toString() ??
+          json['currency_type']?.toString() ??
+          (currencyTypeId == 2 ? 'USD' : 'UZS'),
       summa: parseMoney(json['summa']),
       description: json['description']?.toString(),
+      files: (json['files'] as List? ?? const [])
+          .map((file) => AppFile.fromJson(file as Map<String, dynamic>))
+          .toList(),
       workerId: workerId,
       workerName: json['worker_name']?.toString(),
-      createdAt: AppDateFormatter.parseFromBackend(json['created_at']?.toString()),
+      createdAt: AppDateFormatter.parseFromBackend(
+        json['created_at']?.toString(),
+      ),
     );
   }
 }
 
 /// Loyihaga biriktirilgan ishchi (MOBILE_APP_TZ.md 10.4-D).
 class ProjectWorker {
-  const ProjectWorker({required this.id, required this.name, this.phone, this.positionName});
+  const ProjectWorker({
+    required this.id,
+    required this.name,
+    this.phone,
+    this.positionName,
+  });
   final int id;
   final String name;
   final String? phone;

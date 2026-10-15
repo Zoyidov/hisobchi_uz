@@ -67,7 +67,9 @@ class _AppMoneyFieldState extends State<AppMoneyField> {
             color: colors.surfaceSecondary.withValues(alpha: 0.6),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: widget.errorText != null ? colors.error : colors.border.withValues(alpha: 0.8),
+              color: widget.errorText != null
+                  ? colors.error
+                  : colors.border.withValues(alpha: 0.8),
               width: 1.2,
             ),
           ),
@@ -77,15 +79,17 @@ class _AppMoneyFieldState extends State<AppMoneyField> {
                 child: TextField(
                   controller: _displayController,
                   autofocus: widget.autofocus,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: false),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: false,
+                  ),
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   onChanged: _onChanged,
                   textAlign: TextAlign.start,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.3,
-                        fontFeatures: const [FontFeature.tabularFigures()],
-                      ),
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.3,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
                   decoration: InputDecoration(
                     hintText: '0',
                     isDense: true,
@@ -97,21 +101,25 @@ class _AppMoneyFieldState extends State<AppMoneyField> {
                   ),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: colors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  widget.currencyLabel,
-                  style: TextStyle(
-                    color: colors.primary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13,
+              if (widget.currencyLabel.trim().isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    widget.currencyLabel,
+                    style: TextStyle(
+                      color: colors.primary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),
@@ -122,7 +130,11 @@ class _AppMoneyFieldState extends State<AppMoneyField> {
               alignment: Alignment.centerLeft,
               child: Text(
                 widget.errorText!,
-                style: TextStyle(color: colors.error, fontSize: 12, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  color: colors.error,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),

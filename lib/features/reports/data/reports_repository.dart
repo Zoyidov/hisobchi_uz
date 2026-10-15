@@ -4,6 +4,8 @@ import '../../../core/network/api_result.dart';
 import '../../../core/network/paged_result.dart';
 import '../../../core/utils/formatters/date_formatter.dart';
 import 'installment_report_models.dart';
+import 'partner_installment_report_models.dart';
+import 'partner_operation_models.dart';
 import 'partner_report_models.dart';
 import 'project_report_models.dart';
 
@@ -14,18 +16,23 @@ class ReportsRepository {
 
   // ---------------- Partners V3 ----------------
 
-  Future<ApiResult<PartnerSummaryReport>> getPartnersSummary(int currencyTypeId) {
+  Future<ApiResult<PartnerSummaryReport>> getPartnersSummary(
+    int currencyTypeId,
+  ) {
     return _client.get(
       ApiEndpoints.partnersV3Summary,
       parse: (r) {
         final map = r as Map<String, dynamic>;
         final key = currencyTypeId == 2 ? 'USD' : 'UZS';
-        return PartnerSummaryReport.fromJson(map[key] as Map<String, dynamic>? ?? const {});
+        return PartnerSummaryReport.fromJson(
+          map[key] as Map<String, dynamic>? ?? const {},
+        );
       },
     );
   }
 
-  Future<ApiResult<SimplePage<PartnerReportDetailItem>>> getPartnersSummaryDetails({
+  Future<ApiResult<SimplePage<PartnerReportDetailItem>>>
+  getPartnersSummaryDetails({
     required String type,
     required int currencyTypeId,
     int page = 1,
@@ -43,12 +50,19 @@ class ReportsRepository {
   }) {
     return _client.get(
       ApiEndpoints.partnersV3Periods,
-      query: {'date[0]': AppDateFormatter.toApiFilterDate(from), 'date[1]': AppDateFormatter.toApiFilterDate(to)},
+      query: {
+        'date[0]': AppDateFormatter.toApiFilterDate(from),
+        'date[1]': AppDateFormatter.toApiFilterDate(to),
+      },
       parse: (r) {
         final map = r as Map<String, dynamic>;
         return {
-          'UZS': PeriodSummary.fromJson(map['UZS'] as Map<String, dynamic>? ?? const {}),
-          'USD': PeriodSummary.fromJson(map['USD'] as Map<String, dynamic>? ?? const {}),
+          'UZS': PeriodSummary.fromJson(
+            map['UZS'] as Map<String, dynamic>? ?? const {},
+          ),
+          'USD': PeriodSummary.fromJson(
+            map['USD'] as Map<String, dynamic>? ?? const {},
+          ),
         };
       },
     );
@@ -80,14 +94,19 @@ class ReportsRepository {
       parse: (r) {
         final map = r as Map<String, dynamic>;
         return {
-          'UZS': WarrantyPeriodsSummary.fromJson(map['UZS'] as Map<String, dynamic>? ?? const {}),
-          'USD': WarrantyPeriodsSummary.fromJson(map['USD'] as Map<String, dynamic>? ?? const {}),
+          'UZS': WarrantyPeriodsSummary.fromJson(
+            map['UZS'] as Map<String, dynamic>? ?? const {},
+          ),
+          'USD': WarrantyPeriodsSummary.fromJson(
+            map['USD'] as Map<String, dynamic>? ?? const {},
+          ),
         };
       },
     );
   }
 
-  Future<ApiResult<SimplePage<PartnerReportDetailItem>>> getWarrantyPeriodsDetails({
+  Future<ApiResult<SimplePage<PartnerReportDetailItem>>>
+  getWarrantyPeriodsDetails({
     required String type,
     required int currencyTypeId,
     int page = 1,
@@ -99,34 +118,84 @@ class ReportsRepository {
     );
   }
 
-  Future<ApiResult<List<WorkerReportItem>>> getWorkersReport({required DateTime from, required DateTime to}) {
+  Future<ApiResult<List<WorkerReportItem>>> getWorkersReport({
+    required DateTime from,
+    required DateTime to,
+  }) {
     return _client.getList(
       ApiEndpoints.partnersV3WorkersLists,
-      query: {'date[0]': AppDateFormatter.toApiFilterDate(from), 'date[1]': AppDateFormatter.toApiFilterDate(to)},
+      query: {
+        'date[0]': AppDateFormatter.toApiFilterDate(from),
+        'date[1]': AppDateFormatter.toApiFilterDate(to),
+      },
       fromJson: WorkerReportItem.fromJson,
     );
   }
 
   // ---------------- Partner detail V2 ----------------
 
-  Future<ApiResult<PartnerDetailReport>> getPartnerDetailReport(int partnerId) {
+  Future<ApiResult<PartnerDetailsResult>> getPartnerDetailReport(
+    int partnerId,
+  ) {
     return _client.get(
       ApiEndpoints.partnerDetailsV2(partnerId),
-      parse: (r) => PartnerDetailReport.fromJson(r as Map<String, dynamic>),
+      parse: (r) => PartnerDetailsResult.fromJson(r as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApiResult<PartnerInstallmentReportModel>> getPartnerInstallmentReport(
+    int partnerId, {
+    int? currencyTypeId,
+    String? status,
+    int? year,
+  }) {
+    return _client.get(
+      ApiEndpoints.installmentReportPartner(partnerId),
+      query: {
+        if (currencyTypeId != null) 'currency_type_id': currencyTypeId,
+        if (status != null && status != 'all') 'status': status,
+        if (year != null) 'year': year,
+      },
+      parse: (r) =>
+          PartnerInstallmentReportModel.fromJson(r as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApiResult<SimplePage<PartnerOperation>>> getPartnerDebtOperations({
+    required int partnerId,
+    required String type,
+    required int currencyTypeId,
+    int page = 1,
+  }) {
+    return _client.getSimplePage(
+      ApiEndpoints.partnerDetailsSectionOne,
+      query: {
+        'partner_id': partnerId,
+        'type': type,
+        'currency_type_id': currencyTypeId,
+        'page': page,
+      },
+      fromJson: PartnerOperation.fromJson,
     );
   }
 
   // ---------------- Installments ----------------
 
-  Future<ApiResult<InstallmentReportSummary>> getInstallmentSummary(int currencyTypeId) {
+  Future<ApiResult<InstallmentReportSummary>> getInstallmentSummary(
+    int currencyTypeId,
+  ) {
     return _client.get(
       ApiEndpoints.installmentReportSummary,
       query: {'currency_type_id': currencyTypeId},
-      parse: (r) => InstallmentReportSummary.fromJson(r as Map<String, dynamic>),
+      parse: (r) => InstallmentReportSummary.fromJson(
+        r is List && r.isEmpty ? const {} : r as Map<String, dynamic>,
+      ),
     );
   }
 
-  Future<ApiResult<List<InstallmentPartnerRanking>>> getInstallmentPartners(int currencyTypeId) {
+  Future<ApiResult<List<InstallmentPartnerRanking>>> getInstallmentPartners(
+    int currencyTypeId,
+  ) {
     return _client.getList(
       ApiEndpoints.installmentReportPartners,
       query: {'currency_type_id': currencyTypeId},
@@ -150,10 +219,16 @@ class ReportsRepository {
     );
   }
 
-  Future<ApiResult<List<MonthlyInstallmentStat>>> getMonthlyInstallments({required int year, int? currencyTypeId}) {
+  Future<ApiResult<List<MonthlyInstallmentStat>>> getMonthlyInstallments({
+    required int year,
+    int? currencyTypeId,
+  }) {
     return _client.getList(
       ApiEndpoints.installmentReportMonthly,
-      query: {'year': year, if (currencyTypeId != null) 'currency_type_id': currencyTypeId},
+      query: {
+        'year': year,
+        if (currencyTypeId != null) 'currency_type_id': currencyTypeId,
+      },
       fromJson: MonthlyInstallmentStat.fromJson,
     );
   }
@@ -168,7 +243,9 @@ class ReportsRepository {
     );
   }
 
-  Future<ApiResult<List<WorkerCostItem>>> getProjectWorkersCosts(int projectId) {
+  Future<ApiResult<List<WorkerCostItem>>> getProjectWorkersCosts(
+    int projectId,
+  ) {
     return _client.getList(
       ApiEndpoints.projectReportWorkersCosts,
       query: {'project_id': projectId},

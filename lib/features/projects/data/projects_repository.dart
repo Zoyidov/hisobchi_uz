@@ -30,8 +30,10 @@ class ProjectsRepository {
     );
   }
 
-  Future<ApiResult<Project>> getProject(int id) =>
-      _client.get(ApiEndpoints.projectById(id), parse: (r) => Project.fromJson(r as Map<String, dynamic>));
+  Future<ApiResult<Project>> getProject(int id) => _client.get(
+    ApiEndpoints.projectById(id),
+    parse: (r) => Project.fromJson(r as Map<String, dynamic>),
+  );
 
   Future<ApiResult<Project>> createProject({
     required String projectName,
@@ -79,7 +81,10 @@ class ProjectsRepository {
   }
 
   Future<ApiResult<void>> deleteProject(int id) async {
-    final res = await _client.delete(ApiEndpoints.projectById(id), parse: (_) {});
+    final res = await _client.delete(
+      ApiEndpoints.projectById(id),
+      parse: (_) {},
+    );
     if (res.isSuccess) {
       getIt<DataRefreshBus>().notifyProjectsChanged(projectId: id);
     }
@@ -87,7 +92,10 @@ class ProjectsRepository {
   }
 
   Future<ApiResult<void>> restoreProject(int id) async {
-    final res = await _client.post(ApiEndpoints.projectRestore(id), parse: (_) {});
+    final res = await _client.post(
+      ApiEndpoints.projectRestore(id),
+      parse: (_) {},
+    );
     if (res.isSuccess) {
       getIt<DataRefreshBus>().notifyProjectsChanged(projectId: id);
     }
@@ -95,7 +103,10 @@ class ProjectsRepository {
   }
 
   Future<ApiResult<void>> forceDeleteProject(int id) async {
-    final res = await _client.delete(ApiEndpoints.projectForceDelete(id), parse: (_) {});
+    final res = await _client.delete(
+      ApiEndpoints.projectForceDelete(id),
+      parse: (_) {},
+    );
     if (res.isSuccess) {
       getIt<DataRefreshBus>().notifyProjectsChanged(projectId: id);
     }
@@ -103,7 +114,11 @@ class ProjectsRepository {
   }
 
   Future<ApiResult<void>> updateStatus(int id, ProjectStatus status) async {
-    final res = await _client.put(ApiEndpoints.projectUpdateStatus(id), data: {'status': status.apiValue}, parse: (_) {});
+    final res = await _client.put(
+      ApiEndpoints.projectUpdateStatus(id),
+      data: {'status': status.apiValue},
+      parse: (_) {},
+    );
     if (res.isSuccess) {
       getIt<DataRefreshBus>().notifyProjectsChanged(projectId: id);
     }
@@ -112,10 +127,16 @@ class ProjectsRepository {
 
   // ---------------- Contracts ----------------
 
-  Future<ApiResult<List<ProjectContract>>> getContracts(int projectId, {String? search}) {
+  Future<ApiResult<List<ProjectContract>>> getContracts(
+    int projectId, {
+    String? search,
+  }) {
     return _client.getList(
       ApiEndpoints.projectContracts,
-      query: {'project_id': projectId, if (search != null && search.isNotEmpty) 'search': search},
+      query: {
+        'project_id': projectId,
+        if (search != null && search.isNotEmpty) 'search': search,
+      },
       fromJson: ProjectContract.fromJson,
     );
   }
@@ -142,10 +163,18 @@ class ProjectsRepository {
 
   // ---------------- Incomes ----------------
 
-  Future<ApiResult<List<ProjectIncome>>> getIncomes(int projectId, {String? search}) {
-    return _client.getList(
+  Future<ApiResult<SimplePage<ProjectIncome>>> getIncomes(
+    int projectId, {
+    int page = 1,
+    String? search,
+  }) {
+    return _client.getSimplePage(
       ApiEndpoints.projectIncomes,
-      query: {'project_id': projectId, if (search != null && search.isNotEmpty) 'search': search},
+      query: {
+        'project_id': projectId,
+        'page': page,
+        if (search != null && search.isNotEmpty) 'search': search,
+      },
       fromJson: ProjectIncome.fromJson,
     );
   }
@@ -163,7 +192,8 @@ class ProjectsRepository {
         'project_id': projectId,
         'currency_type_id': currencyTypeId,
         'summa': moneyToApi(summa),
-        if (description != null && description.isNotEmpty) 'description': description,
+        if (description != null && description.isNotEmpty)
+          'description': description,
         if (fileIds != null) 'file_id': fileIds,
       },
       parse: (r) => ProjectIncome.fromJson(r as Map<String, dynamic>),
@@ -172,11 +202,17 @@ class ProjectsRepository {
 
   // ---------------- Costs ----------------
 
-  Future<ApiResult<List<ProjectCost>>> getCosts(int projectId, {String? search, int? costTypeId}) {
-    return _client.getList(
+  Future<ApiResult<SimplePage<ProjectCost>>> getCosts(
+    int projectId, {
+    int page = 1,
+    String? search,
+    int? costTypeId,
+  }) {
+    return _client.getSimplePage(
       ApiEndpoints.projectCosts,
       query: {
         'project_id': projectId,
+        'page': page,
         if (search != null && search.isNotEmpty) 'search': search,
         if (costTypeId != null) 'cost_type_id': costTypeId,
       },
@@ -200,7 +236,8 @@ class ProjectsRepository {
         'cost_type_id': costTypeId,
         'currency_type_id': currencyTypeId,
         'summa': moneyToApi(summa),
-        if (description != null && description.isNotEmpty) 'description': description,
+        if (description != null && description.isNotEmpty)
+          'description': description,
         if (workerId != null) 'worker_id': workerId,
         if (fileIds != null) 'file_id': fileIds,
       },
@@ -211,10 +248,16 @@ class ProjectsRepository {
   // ---------------- Workers ----------------
 
   Future<ApiResult<List<ProjectWorker>>> getProjectWorkers(int projectId) {
-    return _client.getList(ApiEndpoints.projectWorkers(projectId), fromJson: ProjectWorker.fromJson);
+    return _client.getList(
+      ApiEndpoints.projectWorkers(projectId),
+      fromJson: ProjectWorker.fromJson,
+    );
   }
 
-  Future<ApiResult<void>> addWorkersToProject(int projectId, List<int> workerIds) {
+  Future<ApiResult<void>> addWorkersToProject(
+    int projectId,
+    List<int> workerIds,
+  ) {
     return _client.post(
       ApiEndpoints.workerAddToProject,
       data: {'worker_ids': workerIds, 'project_id': projectId},

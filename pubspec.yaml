@@ -1,7 +1,7 @@
 name: hisobchi_uz
 description: "E-Nazorat — kichik va o'rta biznes uchun moliyaviy hisobdorlik platformasi"
 publish_to: 'none'
-version: 1.0.0+2
+version: 1.0.0+3
 
 environment:
   sdk: ^3.12.2
