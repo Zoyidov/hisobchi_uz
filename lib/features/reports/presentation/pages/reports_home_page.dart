@@ -36,8 +36,8 @@ class ReportsHomePage extends StatelessWidget {
             child: _ReportCard(
               icon: Icons.calendar_month_rounded,
               color: const Color(0xFF8B5CF6),
-              title: 'Bo\'lib to\'lash hisoboti',
-              subtitle: 'Umumiy tahlil, muammoli grafiklar, undirish dinamikasi',
+              title: 'Muddatli to‘lov hisoboti',
+              subtitle: 'Umumiy tahlil, kutilayotgan to‘lovlar va undirish dinamikasi',
               onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const InstallmentReportsPage())),
             ),
           ),

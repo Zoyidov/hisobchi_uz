@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/widgets/icons/app_edit_icon.dart';
 import '../../../../core/constants/app_permission.dart';
 import '../../../../core/cubits/user_cubit.dart';
 import '../../../../core/di/injector.dart';
@@ -129,7 +130,7 @@ class _Loaded extends StatelessWidget {
             permission: AppPermission.partnersEdit,
             child: IconButton(
               tooltip: 'Hamkorni tahrirlash',
-              icon: const Icon(Icons.edit_outlined, size: 20),
+              icon: const AppEditIcon(size: 20),
               onPressed: () async {
                 await context.push(
                   RoutePaths.partnerEdit(partner.id),
@@ -929,65 +930,57 @@ class _TransactionsTab extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md,
-            AppSpacing.sm,
-            AppSpacing.md,
-            AppSpacing.xs,
+          padding: const EdgeInsets.only(
+            top: AppSpacing.sm,
+            bottom: AppSpacing.xs,
           ),
-          child: Row(
-            children: [
-              Expanded(
-                child: SizedBox(
-                  height: MediaQuery.textScalerOf(context).scale(14) + 24,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      for (final filter in WalletFilterStatus.values)
-                        Padding(
-                          padding: const EdgeInsets.only(right: AppSpacing.xs),
-                          child: AppFilterChip(
-                            label: filter.label,
-                            selected: cubit.filter == filter,
-                            onTap: () => cubit.updateFilter(filter),
-                          ),
-                        ),
-                    ],
+          child: SizedBox(
+            height: MediaQuery.textScalerOf(context).scale(14) + 24,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              children: [
+                for (final filter in WalletFilterStatus.values)
+                  Padding(
+                    padding: const EdgeInsets.only(right: AppSpacing.xs),
+                    child: AppFilterChip(
+                      label: filter.label,
+                      selected: cubit.filter == filter,
+                      onTap: () => cubit.updateFilter(filter),
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(width: AppSpacing.xs),
-              Container(
-                height: 36,
-                decoration: BoxDecoration(
-                  color: cubit.hasDateFilter
-                      ? colors.primary.withValues(alpha: 0.12)
-                      : Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
+                Container(
+                  height: 36,
+                  decoration: BoxDecoration(
                     color: cubit.hasDateFilter
-                        ? colors.primary
-                        : Theme.of(context).dividerColor,
+                        ? colors.primary.withValues(alpha: 0.12)
+                        : Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: cubit.hasDateFilter
+                          ? colors.primary
+                          : Theme.of(context).dividerColor,
+                    ),
+                  ),
+                  child: IconButton(
+                    tooltip: 'Sana bo‘yicha filtr',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 38,
+                      minHeight: 36,
+                    ),
+                    icon: Icon(
+                      CupertinoIcons.calendar,
+                      size: 18,
+                      color: cubit.hasDateFilter
+                          ? colors.primary
+                          : colors.textSecondary,
+                    ),
+                    onPressed: () => _pickDateRange(context, cubit),
                   ),
                 ),
-                child: IconButton(
-                  tooltip: 'Sana bo‘yicha filtr',
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 38,
-                    minHeight: 36,
-                  ),
-                  icon: Icon(
-                    CupertinoIcons.calendar,
-                    size: 18,
-                    color: cubit.hasDateFilter
-                        ? colors.primary
-                        : colors.textSecondary,
-                  ),
-                  onPressed: () => _pickDateRange(context, cubit),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         if (cubit.hasDateFilter)

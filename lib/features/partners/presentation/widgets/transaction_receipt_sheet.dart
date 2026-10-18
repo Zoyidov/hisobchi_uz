@@ -94,12 +94,25 @@ class _BankReceiptSheet extends StatelessWidget {
     return buffer.toString();
   }
 
-  void _shareReceipt() {
+  Future<void> _shareReceipt(BuildContext context) async {
+    final box = context.findRenderObject();
+    if (box is! RenderBox || !box.hasSize || box.size.isEmpty) return;
+    final origin = box.localToGlobal(Offset.zero) & box.size;
     HapticFeedback.mediumImpact();
-    Share.share(
-      _buildShareText(),
-      subject: 'To\'lov cheki № ${wallet.id.toString().padLeft(8, '0')}',
-    );
+    try {
+      await Share.share(
+        _buildShareText(),
+        subject: 'To‘lov cheki № ${wallet.id.toString().padLeft(8, '0')}',
+        sharePositionOrigin: origin,
+      );
+    } catch (_) {
+      if (context.mounted) {
+        AppSnackbar.error(
+          context,
+          'Chekni ulashib bo‘lmadi. Qayta urinib ko‘ring.',
+        );
+      }
+    }
   }
 
   void _copyReceipt(BuildContext context) {
@@ -625,51 +638,55 @@ class _BankReceiptSheet extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: AppButtonPressable(
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            height: 52,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  colors.primary,
-                                  colors.primary.withValues(alpha: 0.9),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: colors.primary.withValues(alpha: 0.35),
-                                  blurRadius: 16,
-                                  offset: const Offset(0, 6),
-                                ),
-                              ],
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(16),
-                                onTap: _shareReceipt,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    Icon(
-                                      CupertinoIcons.share,
-                                      color: Colors.white,
-                                      size: 19,
-                                    ),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      'Chekni ulashish',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 15,
-                                      ),
-                                    ),
+                        child: Builder(
+                          builder: (shareContext) => AppButtonPressable(
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              height: 52,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    colors.primary,
+                                    colors.primary.withValues(alpha: 0.9),
                                   ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: colors.primary.withValues(
+                                      alpha: 0.35,
+                                    ),
+                                    blurRadius: 16,
+                                    offset: const Offset(0, 6),
+                                  ),
+                                ],
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(16),
+                                  onTap: () => _shareReceipt(shareContext),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Icon(
+                                        CupertinoIcons.share,
+                                        color: Colors.white,
+                                        size: 19,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'Chekni ulashish',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

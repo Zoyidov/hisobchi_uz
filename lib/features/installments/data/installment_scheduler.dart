@@ -18,27 +18,42 @@ abstract final class InstallmentScheduler {
 
     Decimal remainingForInstallments = totalAmount;
     if (hasAdvance && advanceAmount != null) {
-      items.add(InstallmentPreviewItem(
-        itemNumber: itemNumber++,
-        amount: advanceAmount,
-        dueDate: startDate,
-        isAdvance: true,
-      ));
+      items.add(
+        InstallmentPreviewItem(
+          itemNumber: 0,
+          amount: advanceAmount,
+          dueDate: startDate,
+          isAdvance: true,
+        ),
+      );
       remainingForInstallments = totalAmount - advanceAmount;
     }
 
     if (installmentCount <= 0) return items;
 
-    final baseAmount = (remainingForInstallments / Decimal.fromInt(installmentCount))
-        .toDecimal(scaleOnInfinitePrecision: 0);
+    final baseAmount =
+        (remainingForInstallments / Decimal.fromInt(installmentCount))
+            .toDecimal(scaleOnInfinitePrecision: 2)
+            .round(scale: 2);
     var allocated = baseAmount * Decimal.fromInt(installmentCount);
     final lastAmount = baseAmount + (remainingForInstallments - allocated);
 
     for (var i = 0; i < installmentCount; i++) {
       final monthOffset = hasAdvance ? i + 1 : i;
-      final dueDate = DateTime(startDate.year, startDate.month + monthOffset, startDate.day);
+      final dueDate = DateTime(
+        startDate.year,
+        startDate.month + monthOffset,
+        startDate.day,
+      );
       final amount = i == installmentCount - 1 ? lastAmount : baseAmount;
-      items.add(InstallmentPreviewItem(itemNumber: itemNumber++, amount: amount, dueDate: dueDate, isAdvance: false));
+      items.add(
+        InstallmentPreviewItem(
+          itemNumber: itemNumber++,
+          amount: amount,
+          dueDate: dueDate,
+          isAdvance: false,
+        ),
+      );
     }
 
     return items;
@@ -46,9 +61,17 @@ abstract final class InstallmentScheduler {
 
   /// To'lov FIFO bo'yicha eng eski muddatli qismdan boshlab taqsimlanadi
   /// (MOBILE_APP_TZ.md 9.6). Faqat oldindan ko'rsatish (preview) uchun.
-  static List<String> previewFifoAllocation(List<InstallmentItem> items, Decimal paymentAmount) {
-    final unpaid = items.where((i) => i.status != InstallmentItemStatus.paid).toList()
-      ..sort((a, b) => (a.dueDate ?? DateTime(2100)).compareTo(b.dueDate ?? DateTime(2100)));
+  static List<String> previewFifoAllocation(
+    List<InstallmentItem> items,
+    Decimal paymentAmount,
+  ) {
+    final unpaid =
+        items.where((i) => i.status != InstallmentItemStatus.paid).toList()
+          ..sort(
+            (a, b) => (a.dueDate ?? DateTime(2100)).compareTo(
+              b.dueDate ?? DateTime(2100),
+            ),
+          );
 
     var remaining = paymentAmount;
     final descriptions = <String>[];

@@ -33,7 +33,9 @@ class InstallmentDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => InstallmentDetailCubit(getIt<InstallmentsRepository>(), planId)..load(),
+      create: (_) =>
+          InstallmentDetailCubit(getIt<InstallmentsRepository>(), planId)
+            ..load(),
       child: const _View(),
     );
   }
@@ -50,14 +52,18 @@ class _View extends StatelessWidget {
         actions: [
           BlocBuilder<InstallmentDetailCubit, InstallmentDetailState>(
             builder: (context, state) {
-              if (state is! InstallmentDetailLoaded) return const SizedBox.shrink();
+              if (state is! InstallmentDetailLoaded ||
+                  state.plan.status != InstallmentPlanStatus.active ||
+                  context.watch<UserCubit>().currentUserOrNull?.isOwner != true) {
+                return const SizedBox.shrink();
+              }
               return PopupMenuButton<String>(
-                onSelected: (value) => _handleMenu(context, value, state.plan),
-                itemBuilder: (context) => [
-                  const PopupMenuItem(value: 'edit', child: Text('Tahrirlash')),
-                  if (context.read<UserCubit>().currentUserOrNull?.isOwner == true &&
-                      state.plan.status == InstallmentPlanStatus.active)
-                    const PopupMenuItem(value: 'cancel', child: Text('Bekor qilish')),
+                onSelected: (value) => _handleMenu(context, value),
+                itemBuilder: (context) => const [
+                  PopupMenuItem(
+                    value: 'cancel',
+                    child: Text('Bekor qilish'),
+                  ),
                 ],
               );
             },
@@ -69,8 +75,10 @@ class _View extends StatelessWidget {
         builder: (context, state) {
           return switch (state) {
             InstallmentDetailLoading() => const AppSkeletonList(),
-            InstallmentDetailError(:final failure) =>
-              AppErrorState(failure: failure, onRetry: () => context.read<InstallmentDetailCubit>().load()),
+            InstallmentDetailError(:final failure) => AppErrorState(
+              failure: failure,
+              onRetry: () => context.read<InstallmentDetailCubit>().load(),
+            ),
             InstallmentDetailLoaded(:final plan) => _Loaded(plan: plan),
           };
         },
@@ -78,7 +86,10 @@ class _View extends StatelessWidget {
     );
   }
 
-  void _handleMenu(BuildContext context, String action, InstallmentPlan plan) async {
+  void _handleMenu(
+    BuildContext context,
+    String action,
+  ) async {
     if (action == 'cancel') {
       final confirmed = await showAppConfirmationSheet(
         context,
@@ -87,7 +98,9 @@ class _View extends StatelessWidget {
       );
       if (!confirmed || !context.mounted) return;
       final error = await context.read<InstallmentDetailCubit>().cancelPlan();
-      if (error != null && context.mounted) AppSnackbar.error(context, error.message);
+      if (error != null && context.mounted) {
+        AppSnackbar.error(context, error.message);
+      }
     }
   }
 }
@@ -115,15 +128,19 @@ class _Loaded extends StatelessWidget {
                       child: Text(
                         plan.partnerName,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                     _statusChip(plan.status, plan.statusLabel),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                MoneyText(plan.totalAmount, currencyTypeId: plan.currencyTypeId, size: MoneySize.display),
+                MoneyText(
+                  plan.totalAmount,
+                  currencyTypeId: plan.currencyTypeId,
+                  size: MoneySize.display,
+                ),
                 const SizedBox(height: AppSpacing.md),
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.sm),
@@ -137,21 +154,47 @@ class _Loaded extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('To\'langan', style: TextStyle(color: colors.textSecondary, fontSize: 12)),
+                            Text(
+                              'To\'langan',
+                              style: TextStyle(
+                                color: colors.textSecondary,
+                                fontSize: 12,
+                              ),
+                            ),
                             const SizedBox(height: 2),
-                            MoneyText(plan.paidAmount, currencyTypeId: plan.currencyTypeId, size: MoneySize.card, colorOverride: colors.success),
+                            MoneyText(
+                              plan.paidAmount,
+                              currencyTypeId: plan.currencyTypeId,
+                              size: MoneySize.card,
+                              colorOverride: colors.success,
+                            ),
                           ],
                         ),
                       ),
-                      Container(width: 1, height: 32, color: colors.borderSubtle),
+                      Container(
+                        width: 1,
+                        height: 32,
+                        color: colors.borderSubtle,
+                      ),
                       const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Qolgan', style: TextStyle(color: colors.textSecondary, fontSize: 12)),
+                            Text(
+                              'Qolgan',
+                              style: TextStyle(
+                                color: colors.textSecondary,
+                                fontSize: 12,
+                              ),
+                            ),
                             const SizedBox(height: 2),
-                            MoneyText(plan.remaining, currencyTypeId: plan.currencyTypeId, size: MoneySize.card, colorOverride: colors.error),
+                            MoneyText(
+                              plan.remaining,
+                              currencyTypeId: plan.currencyTypeId,
+                              size: MoneySize.card,
+                              colorOverride: colors.error,
+                            ),
                           ],
                         ),
                       ),
@@ -162,7 +205,10 @@ class _Loaded extends StatelessWidget {
                 AppProgressBar(value: plan.progress),
                 if (plan.note != null && plan.note!.isNotEmpty) ...[
                   const SizedBox(height: AppSpacing.md),
-                  Text(plan.note!, style: TextStyle(color: colors.textSecondary, fontSize: 13)),
+                  Text(
+                    plan.note!,
+                    style: TextStyle(color: colors.textSecondary, fontSize: 13),
+                  ),
                 ],
               ],
             ),
@@ -173,7 +219,9 @@ class _Loaded extends StatelessWidget {
             children: [
               Text(
                 'To\'lov grafigi',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
               Text(
                 '${plan.items.length} ta bosqich',
@@ -182,7 +230,8 @@ class _Loaded extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
-          for (final item in plan.items) _ScheduleTile(item: item, currencyTypeId: plan.currencyTypeId),
+          for (final item in plan.items)
+            _ScheduleTile(item: item, currencyTypeId: plan.currencyTypeId),
           const SizedBox(height: AppSpacing.xl),
           if (plan.status == InstallmentPlanStatus.active)
             PermissionGuard(
@@ -193,7 +242,10 @@ class _Loaded extends StatelessWidget {
                   child: AppButton.primary(
                     label: 'To\'lov qabul qilish',
                     onPressed: () async {
-                      final updated = await showInstallmentPaymentSheet(context, plan);
+                      final updated = await showInstallmentPaymentSheet(
+                        context,
+                        plan,
+                      );
                       if (updated != null && context.mounted) {
                         context.read<InstallmentDetailCubit>().refresh();
                       }
@@ -204,7 +256,10 @@ class _Loaded extends StatelessWidget {
             ),
           AppButton.secondary(
             label: 'To\'lovlar tarixi',
-            onPressed: () => context.push(RoutePaths.installmentPaymentHistory(plan.id), extra: plan.currencyTypeId),
+            onPressed: () => context.push(
+              RoutePaths.installmentPaymentHistory(plan.id),
+              extra: plan.currencyTypeId,
+            ),
           ),
           const SizedBox(height: 80),
         ],
@@ -231,11 +286,26 @@ class _ScheduleTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final (tone, label) = switch (item.status) {
-      InstallmentItemStatus.paid => (AppStatusChipTone.success, item.statusLabel),
-      InstallmentItemStatus.partial => (AppStatusChipTone.info, item.statusLabel),
-      InstallmentItemStatus.overdue => (AppStatusChipTone.error, item.statusLabel),
-      InstallmentItemStatus.near => (AppStatusChipTone.warning, item.statusLabel),
-      InstallmentItemStatus.pending => (AppStatusChipTone.neutral, item.statusLabel),
+      InstallmentItemStatus.paid => (
+        AppStatusChipTone.success,
+        item.statusLabel,
+      ),
+      InstallmentItemStatus.partial => (
+        AppStatusChipTone.info,
+        item.statusLabel,
+      ),
+      InstallmentItemStatus.overdue => (
+        AppStatusChipTone.error,
+        item.statusLabel,
+      ),
+      InstallmentItemStatus.near => (
+        AppStatusChipTone.warning,
+        item.statusLabel,
+      ),
+      InstallmentItemStatus.pending => (
+        AppStatusChipTone.neutral,
+        item.statusLabel,
+      ),
     };
 
     final isOverdue = item.status == InstallmentItemStatus.overdue;
@@ -244,10 +314,14 @@ class _ScheduleTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
-        color: isOverdue ? colors.errorContainer.withValues(alpha: 0.15) : colors.surface,
+        color: isOverdue
+            ? colors.errorContainer.withValues(alpha: 0.15)
+            : colors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isOverdue ? colors.error.withValues(alpha: 0.3) : colors.borderSubtle,
+          color: isOverdue
+              ? colors.error.withValues(alpha: 0.3)
+              : colors.borderSubtle,
         ),
       ),
       child: Row(
@@ -256,7 +330,9 @@ class _ScheduleTile extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: isOverdue ? colors.error.withValues(alpha: 0.1) : colors.surfaceSecondary,
+              color: isOverdue
+                  ? colors.error.withValues(alpha: 0.1)
+                  : colors.surfaceSecondary,
               borderRadius: BorderRadius.circular(10),
             ),
             alignment: Alignment.center,
@@ -274,7 +350,11 @@ class _ScheduleTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                MoneyText(item.amount, currencyTypeId: currencyTypeId, size: MoneySize.list),
+                MoneyText(
+                  item.amount,
+                  currencyTypeId: currencyTypeId,
+                  size: MoneySize.list,
+                ),
                 if (item.dueDate != null)
                   Text(
                     '${item.dueDate!.day.toString().padLeft(2, '0')}.${item.dueDate!.month.toString().padLeft(2, '0')}.${item.dueDate!.year}'

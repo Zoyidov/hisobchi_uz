@@ -65,7 +65,8 @@ class ProjectIncomesCubit extends PagedListCubit<ProjectIncome> {
 
 /// Xarajatlar tabi (MOBILE_APP_TZ.md 10.4-C).
 class ProjectCostsCubit extends PagedListCubit<ProjectCost> {
-  ProjectCostsCubit(this._repository, this.projectId);
+  ProjectCostsCubit(this._repository, this.projectId, {this.costTypeId});
+  final int? costTypeId;
   final ProjectsRepository _repository;
   final int projectId;
 
@@ -73,7 +74,7 @@ class ProjectCostsCubit extends PagedListCubit<ProjectCost> {
 
   @override
   Future<ApiResult<SimplePage<ProjectCost>>> fetchPage(int page) =>
-      _repository.getCosts(projectId, page: page);
+      _repository.getCosts(projectId, page: page, costTypeId: costTypeId);
 }
 
 /// Ishchilar tabi (MOBILE_APP_TZ.md 10.4-D).

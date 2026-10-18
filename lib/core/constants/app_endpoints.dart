@@ -19,7 +19,8 @@ abstract final class ApiEndpoints {
   static const updateProfileInfo = '/auth/update-profile-info';
   static const updatePassword = '/auth/update-password';
   static const updateProfilePhoneVerify = '/auth/update-profile-phone-verify';
-  static const updateProfilePhoneCheckOtp = '/auth/update-profile-phone-check-otp';
+  static const updateProfilePhoneCheckOtp =
+      '/auth/update-profile-phone-check-otp';
   static const activateOwnAccount = '/auth/activate-own-account';
 
   // Dashboard / reports
@@ -32,21 +33,34 @@ abstract final class ApiEndpoints {
       '/reports/partners/sended-sms/$partnerId';
 
   // Reports — Partners V3
-  static const partnersV3SummaryTypes = '/reports/partners-v3/summary-report-types';
+  static const partnersV3SummaryTypes =
+      '/reports/partners-v3/summary-report-types';
   static const partnersV3Summary = '/reports/partners-v3/summary';
-  static const partnersV3SummaryDetails = '/reports/partners-v3/summary-qarzdor-xaqdor-details';
+  static const partnersV3SummaryDetails =
+      '/reports/partners-v3/summary-qarzdor-xaqdor-details';
   static const partnersV3Periods = '/reports/partners-v3/periods';
-  static const partnersV3PeriodsOperations = '/reports/partners-v3/periods-operations';
-  static const partnersV3WarrantyPeriods = '/reports/partners-v3/warranty-periods';
-  static const partnersV3WarrantyPeriodsDetails = '/reports/partners-v3/warranty-periods-details';
+  static const partnersV3PeriodsOperations =
+      '/reports/partners-v3/periods-operations';
+  static const partnersV3WarrantyPeriods =
+      '/reports/partners-v3/warranty-periods';
+  static const partnersV3WarrantyPeriodsDetails =
+      '/reports/partners-v3/warranty-periods-details';
   static const partnersV3Workers = '/reports/partners-v3/workers';
   static const partnersV3WorkersLists = '/reports/partners-v3/workers-lists';
-  static const partnersV3WorkersSummary = '/reports/partners-v3/workers-details->summary';
-  static const partnersV3WorkersOperations = '/reports/partners-v3/workers-details->operations';
+  static const partnersV3WorkersSummary =
+      '/reports/partners-v3/workers-details->summary';
+  static const partnersV3WorkersOperations =
+      '/reports/partners-v3/workers-details->operations';
 
   // Reports — Partner detail V2
-  static String partnerDetailsV2(int partnerId) => '/reports/partners-v2/partner-details/$partnerId';
-  static const partnerDetailsSectionOne = '/reports/partners-v2/partner-details-section-one';
+  static String partnerDetailsV2(int partnerId) =>
+      '/reports/partners-v2/partner-details/$partnerId';
+  static const partnerSummarySectionOne =
+      '/reports/partners-v2/summary-details-section-one';
+  static const partnerSummarySectionTwo =
+      '/reports/partners-v2/summary-details-section-two';
+  static const partnerDetailsSectionOne =
+      '/reports/partners-v2/partner-details-section-one';
 
   // Reports — Installments
   static const installmentReportSummary = '/reports/installments/summary';
@@ -56,14 +70,16 @@ abstract final class ApiEndpoints {
   static const installmentReportRecovery = '/reports/installments/recovery';
   static const installmentReportMonthly = '/reports/installments/monthly';
   static const installmentReportItems = '/reports/installments/items';
-  static String installmentReportPartner(int partnerId) => '/reports/installments/partner/$partnerId';
+  static String installmentReportPartner(int partnerId) =>
+      '/reports/installments/partner/$partnerId';
 
   // Reports — Projects
   static const projectReportBalance = '/reports/projects/balance';
   static const projectReportIncomeDetails = '/reports/projects/income-details';
   static const projectReportCostDetails = '/reports/projects/cost-details';
   static const projectReportWorkersCosts = '/reports/projects/workers-costs';
-  static const projectReportWorkersCostsDetails = '/reports/projects/workers-costs-details';
+  static const projectReportWorkersCostsDetails =
+      '/reports/projects/workers-costs-details';
 
   // Partners
   static const partnersAccount = '/partners/partners/account';
@@ -128,25 +144,30 @@ abstract final class ApiEndpoints {
   static const workType = '/documents/work-type';
   static String workTypeById(int id) => '/documents/work-type/$id';
   static String workTypeRestore(int id) => '/documents/work-type/$id/restore';
-  static String workTypeForceDelete(int id) => '/documents/work/$id/force-delete';
+  static String workTypeForceDelete(int id) =>
+      '/documents/work/$id/force-delete';
 
   static const costTypes = '/documents/cost-types';
   static const costType = '/documents/cost-type';
   static String costTypeById(int id) => '/documents/cost-type/$id';
   static String costTypeRestore(int id) => '/documents/cost-type/$id/restore';
-  static String costTypeForceDelete(int id) => '/documents/cost-type/$id/force-delete';
+  static String costTypeForceDelete(int id) =>
+      '/documents/cost-type/$id/force-delete';
 
   static const positions = '/documents/worker-positions';
   static const position = '/documents/worker-position';
   static String positionById(int id) => '/documents/worker-position/$id';
-  static String positionRestore(int id) => '/documents/worker-position/$id/restore';
-  static String positionForceDelete(int id) => '/documents/worker-position/$id/force-delete';
+  static String positionRestore(int id) =>
+      '/documents/worker-position/$id/restore';
+  static String positionForceDelete(int id) =>
+      '/documents/worker-position/$id/force-delete';
 
   static const workers = '/documents/workers';
   static const worker = '/documents/worker';
   static String workerById(int id) => '/documents/worker/$id';
   static String workerRestore(int id) => '/documents/worker/$id/restore';
-  static String workerForceDelete(int id) => '/documents/worker/$id/force-delete';
+  static String workerForceDelete(int id) =>
+      '/documents/worker/$id/force-delete';
 
   static const currencyExchangeRates = '/documents/currencys-exchange-rates';
   static String cbuRatesByDate(String date) => '/currency-calc/cbu-rates/$date';
@@ -161,7 +182,8 @@ abstract final class ApiEndpoints {
   static const pricingPlans = '/pricing-plans';
   static String pricingPlanById(int id) => '/pricing-plans/$id';
   static const subscriptionPurchase = '/subscription/purchase';
-  static String checkOrderStatus(String orderNumber) => '/subscription/check-order-status/$orderNumber';
+  static String checkOrderStatus(String orderNumber) =>
+      '/subscription/check-order-status/$orderNumber';
   static const pricingSms = '/pricing-sms';
   static const pricingSmsPurchase = '/pricing-sms/purchase';
 
@@ -174,7 +196,8 @@ abstract final class ApiEndpoints {
   // Notifications
   static const notifications = '/notifications';
   static const notificationsUnreadCount = '/notifications/unread-count';
-  static String notificationMarkAsRead(int id) => '/notifications/$id/mark-as-read';
+  static String notificationMarkAsRead(int id) =>
+      '/notifications/$id/mark-as-read';
 
   // Activity log
   static const activityLog = '/activity-logs';

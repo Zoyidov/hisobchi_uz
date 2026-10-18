@@ -7,7 +7,7 @@ import 'package:hisobchi_uz/core/theme/app_colors.dart';
 import 'package:hisobchi_uz/features/reports/data/reports_repository.dart';
 import 'package:hisobchi_uz/features/reports/presentation/pages/installment_reports_page.dart';
 
-ReportsRepository repository() {
+ReportsRepository repository({Object? result}) {
   final dio = Dio();
   dio.interceptors.add(
     InterceptorsWrapper(
@@ -18,17 +18,19 @@ ReportsRepository repository() {
             statusCode: 200,
             data: {
               'status': true,
-              'result': options.queryParameters['currency_type_id'] == 1
-                  ? []
-                  : {
-                      'active_count': 5,
-                      'completed_count': 2,
-                      'cancelled_count': 1,
-                      'total_given': '99940592.00',
-                      'total_paid': '88828492.00',
-                      'total_remaining': '11112100.00',
-                      'overdue_amount': '100000.00',
-                    },
+              'result':
+                  result ??
+                  (options.queryParameters['currency_type_id'] == 1
+                      ? []
+                      : {
+                          'active_count': 5,
+                          'completed_count': 2,
+                          'cancelled_count': 1,
+                          'total_given': '99940592.00',
+                          'total_paid': '88828492.00',
+                          'total_remaining': '11112100.00',
+                          'overdue_amount': '100000.00',
+                        }),
             },
           ),
         );
@@ -52,6 +54,50 @@ void main() {
       expect(filled.dataOrNull!.activeCount, 5);
     },
   );
+  test(
+    'summary accepts the production list and selects the requested currency',
+    () async {
+      final reports = repository(
+        result: [
+          {
+            'currency_type_id': 2,
+            'active_plans': 9,
+            'total_remaining': '999.00',
+          },
+          {
+            'currency_type_id': 1,
+            'currency_type_name': 'UZS',
+            'active_plans': 1,
+            'completed_plans': 0,
+            'cancelled_plans': 0,
+            'total_given': '80000.00',
+            'total_paid': '8000.00',
+            'total_remaining': '72000.00',
+            'overdue_amount': '0.00',
+          },
+        ],
+      );
+      final result = await reports.getInstallmentSummary(1);
+      expect(result.isSuccess, isTrue);
+      final summary = result.dataOrNull!;
+      expect(summary.activeCount, 1);
+      expect(summary.completedCount, 0);
+      expect(summary.cancelledCount, 0);
+      expect(summary.totalGiven.toString(), '80000');
+      expect(summary.totalPaid.toString(), '8000');
+      expect(summary.totalRemaining.toString(), '72000');
+      expect(summary.isEmpty, isFalse);
+      final usd = await reports.getInstallmentSummary(2);
+      expect(usd.dataOrNull!.activeCount, 9);
+      final missing = await repository(
+        result: [
+          {'currency_type_id': 2, 'active_plans': 9},
+        ],
+      ).getInstallmentSummary(1);
+      expect(missing.dataOrNull!.isEmpty, isTrue);
+    },
+  );
+
   testWidgets(
     'shows friendly empty state and compact summary on a small screen',
     (tester) async {
@@ -72,7 +118,7 @@ void main() {
       expect(find.textContaining('type'), findsNothing);
       await tester.tap(find.text('USD'));
       await tester.pumpAndSettle();
-      expect(find.text('Qolgan to‘lovlar'), findsOneWidget);
+      expect(find.text('Qolgan'), findsOneWidget);
       expect(find.text('11 112 100 USD'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },

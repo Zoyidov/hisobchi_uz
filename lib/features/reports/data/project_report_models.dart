@@ -4,13 +4,27 @@ import '../../../core/utils/money.dart';
 
 /// Xarajat turi bo'yicha ulush (MOBILE_APP_TZ.md 12.4).
 class CostBreakdownItem {
-  const CostBreakdownItem({required this.costTypeName, required this.amount});
+  const CostBreakdownItem({
+    required this.costTypeName,
+    required this.amount,
+    this.amountUsd,
+    this.costTypeId = 0,
+  });
+  final int costTypeId;
+  final Decimal? amountUsd;
+  Decimal get summaUsd => amountUsd ?? Decimal.zero;
   final String costTypeName;
   final Decimal amount;
 
-  factory CostBreakdownItem.fromJson(Map<String, dynamic> json) => CostBreakdownItem(
-        costTypeName: json['cost_type_name'] as String? ?? json['name'] as String? ?? '',
-        amount: parseMoney(json['amount'] ?? json['summa']),
+  factory CostBreakdownItem.fromJson(Map<String, dynamic> json) =>
+      CostBreakdownItem(
+        costTypeName:
+            json['cost_type_name'] as String? ?? json['name'] as String? ?? '',
+        amount: parseMoney(
+          json['summa_uzs'] ?? json['amount'] ?? json['summa'],
+        ),
+        amountUsd: parseMoney(json['summa_usd']),
+        costTypeId: int.tryParse('${json['cost_type_id']}') ?? 0,
       );
 }
 
@@ -39,8 +53,12 @@ class ProjectBalanceReport {
     return ProjectBalanceReport(
       incomeUzs: parseMoney(json['income_uzs']),
       incomeUsd: parseMoney(json['income_usd']),
-      costsUzs: parseMoney(costs['total_uzs'] ?? json['costs_uzs']),
-      costsUsd: parseMoney(costs['total_usd'] ?? json['costs_usd']),
+      costsUzs: parseMoney(
+        costs['cost_uzs'] ?? costs['total_uzs'] ?? json['costs_uzs'],
+      ),
+      costsUsd: parseMoney(
+        costs['cost_usd'] ?? costs['total_usd'] ?? json['costs_usd'],
+      ),
       balanceUzs: parseMoney(json['balance_uzs']),
       balanceUsd: parseMoney(json['balance_usd']),
       details: ((costs['details'] ?? json['details']) as List? ?? const [])
@@ -53,14 +71,18 @@ class ProjectBalanceReport {
 
 /// Ishchi xarajati (MOBILE_APP_TZ.md 12.4).
 class WorkerCostItem {
-  const WorkerCostItem({required this.workerId, required this.workerName, required this.totalAmount});
+  const WorkerCostItem({
+    required this.workerId,
+    required this.workerName,
+    required this.totalAmount,
+  });
   final int workerId;
   final String workerName;
   final Decimal totalAmount;
 
   factory WorkerCostItem.fromJson(Map<String, dynamic> json) => WorkerCostItem(
-        workerId: json['worker_id'] as int? ?? json['id'] as int? ?? 0,
-        workerName: json['worker_name'] as String? ?? json['name'] as String? ?? '',
-        totalAmount: parseMoney(json['total_amount'] ?? json['summa']),
-      );
+    workerId: json['worker_id'] as int? ?? json['id'] as int? ?? 0,
+    workerName: json['worker_name'] as String? ?? json['name'] as String? ?? '',
+    totalAmount: parseMoney(json['total_amount'] ?? json['summa']),
+  );
 }

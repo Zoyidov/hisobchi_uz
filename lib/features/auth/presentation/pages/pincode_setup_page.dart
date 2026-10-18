@@ -18,7 +18,10 @@ class PincodeSetupPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => PincodeSetupCubit(getIt<AuthRepository>(), getIt<SecureStorageService>()),
+      create: (_) => PincodeSetupCubit(
+        getIt<AuthRepository>(),
+        getIt<SecureStorageService>(),
+      ),
       child: const _PincodeSetupView(),
     );
   }
@@ -117,13 +120,15 @@ class _PincodeSetupViewState extends State<_PincodeSetupView> {
           final user = context.watch<UserCubit>().currentUserOrNull;
           final firstName = user?.name.trim().split(RegExp(r'\s+')).firstOrNull;
           final title = (firstName != null && firstName.isNotEmpty)
-              ? 'Hi, $firstName!'
-              : 'Hi, Faruxjon!';
+              ? 'Salom, $firstName!'
+              : 'Xush kelibsiz!';
 
-          final subtitle = _firstCode == null ? 'Enter new PIN' : 'Confirm your PIN';
+          final subtitle = _firstCode == null
+              ? 'Yangi PIN-kod yarating'
+              : 'PIN-kodni takrorlang';
 
           return PincodeScreenLayout(
-            topLabel: 'Security check',
+            topLabel: 'Xavfsiz kirish',
             onExit: _onExitOrSkip,
             exitIcon: Icons.close_rounded,
             title: title,
@@ -134,7 +139,7 @@ class _PincodeSetupViewState extends State<_PincodeSetupView> {
             onBackspace: _onBackspace,
             onLongPressBackspace: _onLongPressBackspace,
             showBiometrics: false,
-            pillButtonLabel: 'Skip for now',
+            pillButtonLabel: 'Hozircha o‘tkazib yuborish',
             onPillButtonTap: _onExitOrSkip,
             capsulesKey: _capsulesKey,
             isError: _error != null,

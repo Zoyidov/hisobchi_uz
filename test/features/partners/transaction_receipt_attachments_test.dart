@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hisobchi_uz/core/theme/app_colors.dart';
 import 'package:hisobchi_uz/core/widgets/media/app_file_preview.dart';
@@ -54,6 +55,28 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(AppFilePreview), findsOneWidget);
     expect(find.text('Biriktirilgan fayllar (2)'), findsOneWidget);
+    Map<dynamic, dynamic>? shareArguments;
+    const channel = MethodChannel('dev.fluttercommunity.plus/share');
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, (
+      call,
+    ) async {
+      shareArguments = call.arguments as Map<dynamic, dynamic>;
+      return 'success';
+    });
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        channel,
+        null,
+      ),
+    );
+    await tester.ensureVisible(find.text('Chekni ulashish'));
+    await tester.tap(find.text('Chekni ulashish'));
+    await tester.pumpAndSettle();
+    expect(shareArguments, isNotNull);
+    expect(shareArguments!['originWidth'], greaterThan(0));
+    expect(shareArguments!['originHeight'], greaterThan(0));
+    expect(shareArguments!['originX'], greaterThanOrEqualTo(0));
+    expect(shareArguments!['originY'], greaterThanOrEqualTo(0));
     expect(tester.takeException(), isNull);
   });
 }

@@ -22,9 +22,14 @@ class ApiClient {
   Future<ApiResult<T>> get<T>(
     String path, {
     Map<String, dynamic>? query,
+    Object? data,
     required T Function(dynamic result) parse,
   }) => _guard(() async {
-    final res = await _dio.get(path, queryParameters: _clean(query));
+    final res = await _dio.get(
+      path,
+      queryParameters: _clean(query),
+      data: data,
+    );
     return parse(_unwrap(res));
   });
 

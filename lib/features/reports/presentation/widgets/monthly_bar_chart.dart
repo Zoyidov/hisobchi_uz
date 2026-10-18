@@ -16,7 +16,36 @@ class MonthlyBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (stats.isEmpty) return const SizedBox.shrink();
+    if (stats.isEmpty) {
+      return Container(
+        width: double.infinity,
+        margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: context.colors.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: context.colors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Oylik statistika',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Hozircha ma’lumot yo‘q',
+              style: TextStyle(
+                fontSize: 13,
+                color: context.colors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+        ),
+      );
+    }
 
     final colors = context.colors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -97,8 +126,12 @@ class MonthlyBarChart extends StatelessWidget {
                       reservedSize: 42,
                     ),
                   ),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                 ),
                 gridData: FlGridData(
                   show: true,
@@ -111,8 +144,14 @@ class MonthlyBarChart extends StatelessWidget {
                 borderData: FlBorderData(
                   show: true,
                   border: Border(
-                    bottom: BorderSide(color: colors.border.withValues(alpha: 0.8), width: 1),
-                    left: BorderSide(color: colors.border.withValues(alpha: 0.8), width: 1),
+                    bottom: BorderSide(
+                      color: colors.border.withValues(alpha: 0.8),
+                      width: 1,
+                    ),
+                    left: BorderSide(
+                      color: colors.border.withValues(alpha: 0.8),
+                      width: 1,
+                    ),
                   ),
                 ),
                 barGroups: stats.asMap().entries.map((entry) {
@@ -195,7 +234,11 @@ class MonthlyBarChart extends StatelessWidget {
   }
 
   Widget _getBottomTitles(double value, TitleMeta meta) {
-    const style = TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w600, fontSize: 10.5);
+    const style = TextStyle(
+      color: Color(0xFF94A3B8),
+      fontWeight: FontWeight.w600,
+      fontSize: 10.5,
+    );
     final index = value.toInt();
     if (index >= 0 && index < stats.length) {
       return SideTitleWidget(
@@ -210,7 +253,11 @@ class MonthlyBarChart extends StatelessWidget {
   Widget _getLeftTitles(double value, TitleMeta meta) {
     if (value == meta.max) return const SizedBox.shrink();
 
-    const style = TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w600, fontSize: 10);
+    const style = TextStyle(
+      color: Color(0xFF94A3B8),
+      fontWeight: FontWeight.w600,
+      fontSize: 10,
+    );
 
     String text;
     if (value >= 1000000) {

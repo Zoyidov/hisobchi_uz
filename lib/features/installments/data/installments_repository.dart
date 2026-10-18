@@ -9,6 +9,7 @@ import '../../../core/network/paged_result.dart';
 import '../../../core/utils/formatters/date_formatter.dart';
 import '../../../core/utils/money.dart';
 import 'installment_models.dart';
+import 'installment_scheduler.dart';
 
 class InstallmentsRepository {
   InstallmentsRepository(this._client);
@@ -36,12 +37,20 @@ class InstallmentsRepository {
   }
 
   /// Hamkorning barcha rejalari — paginatsiyasiz (MOBILE_APP_TZ.md 9.9).
-  Future<ApiResult<List<InstallmentPlan>>> getPartnerInstallments(int partnerId) {
-    return _client.getList(ApiEndpoints.partnerInstallments(partnerId), fromJson: InstallmentPlan.fromJson);
+  Future<ApiResult<List<InstallmentPlan>>> getPartnerInstallments(
+    int partnerId,
+  ) {
+    return _client.getList(
+      ApiEndpoints.partnerInstallments(partnerId),
+      fromJson: InstallmentPlan.fromJson,
+    );
   }
 
   Future<ApiResult<InstallmentPlan>> getInstallment(int id) {
-    return _client.get(ApiEndpoints.installmentById(id), parse: (r) => InstallmentPlan.fromJson(r as Map<String, dynamic>));
+    return _client.get(
+      ApiEndpoints.installmentById(id),
+      parse: (r) => InstallmentPlan.fromJson(r as Map<String, dynamic>),
+    );
   }
 
   Future<ApiResult<InstallmentPlan>> createEqual({
@@ -63,9 +72,25 @@ class InstallmentsRepository {
         'total_amount': moneyToApi(totalAmount),
         'schedule_type': 'equal',
         'has_advance': hasAdvance,
-        if (hasAdvance && advanceAmount != null) 'advance_amount': moneyToApi(advanceAmount),
+        if (hasAdvance && advanceAmount != null)
+          'advance_amount': moneyToApi(advanceAmount),
         'start_date': AppDateFormatter.toApiDate(startDate),
         'installment_count': installmentCount,
+        'items':
+            InstallmentScheduler.generateEqualSchedule(
+                  totalAmount: totalAmount,
+                  hasAdvance: hasAdvance,
+                  advanceAmount: advanceAmount,
+                  startDate: startDate,
+                  installmentCount: installmentCount,
+                )
+                .map(
+                  (i) => {
+                    'amount': moneyToApi(i.amount),
+                    'due_date': i.dueDate.toIso8601String(),
+                  },
+                )
+                .toList(),
         if (note != null && note.isNotEmpty) 'note': note,
         if (fileIds != null) 'file_ids': fileIds,
       },
@@ -91,14 +116,27 @@ class InstallmentsRepository {
         'total_amount': moneyToApi(totalAmount),
         'schedule_type': 'custom',
         'has_advance': hasAdvance,
-        if (hasAdvance && advanceAmount != null) 'advance_amount': moneyToApi(advanceAmount),
-        'items': items
-            .map((i) => {
-                  'amount': moneyToApi(i.amount),
-                  'due_date': AppDateFormatter.toApiDate(i.dueDate),
-                  if (i.note != null) 'note': i.note,
-                })
-            .toList(),
+        if (hasAdvance && advanceAmount != null)
+          'advance_amount': moneyToApi(advanceAmount),
+        'items':
+            [
+                  if (hasAdvance && advanceAmount != null)
+                    InstallmentPreviewItem(
+                      itemNumber: 0,
+                      amount: advanceAmount,
+                      dueDate: DateTime.now(),
+                      isAdvance: true,
+                    ),
+                  ...items.where((i) => !i.isAdvance),
+                ]
+                .map(
+                  (i) => {
+                    'amount': moneyToApi(i.amount),
+                    'due_date': i.dueDate.toIso8601String(),
+                    if (i.note != null) 'note': i.note,
+                  },
+                )
+                .toList(),
         if (note != null && note.isNotEmpty) 'note': note,
         if (fileIds != null) 'file_ids': fileIds,
       },
@@ -107,16 +145,26 @@ class InstallmentsRepository {
   }
 
   /// Faqat `note` va `file_ids` tahrirlanadi (MOBILE_APP_TZ.md 9.8).
-  Future<ApiResult<InstallmentPlan>> updateNote(int id, {String? note, List<int>? fileIds}) {
+  Future<ApiResult<InstallmentPlan>> updateNote(
+    int id, {
+    String? note,
+    List<int>? fileIds,
+  }) {
     return _client.put(
       ApiEndpoints.installmentById(id),
-      data: {if (note != null) 'note': note, if (fileIds != null) 'file_ids': fileIds},
+      data: {
+        if (note != null) 'note': note,
+        if (fileIds != null) 'file_ids': fileIds,
+      },
       parse: (r) => InstallmentPlan.fromJson(r as Map<String, dynamic>),
     );
   }
 
   Future<ApiResult<void>> cancel(int id) async {
-    final res = await _client.delete(ApiEndpoints.installmentById(id), parse: (_) {});
+    final res = await _client.delete(
+      ApiEndpoints.installmentById(id),
+      parse: (_) {},
+    );
     if (res.isSuccess) {
       getIt<DataRefreshBus>().notifyInstallmentsChanged(installmentId: id);
       getIt<DataRefreshBus>().notifyWalletsChanged();
@@ -124,7 +172,12 @@ class InstallmentsRepository {
     return res;
   }
 
-  Future<ApiResult<InstallmentPlan>> makePayment(int id, {required Decimal amount, String? note, required DateTime paidAt}) async {
+  Future<ApiResult<InstallmentPlan>> makePayment(
+    int id, {
+    required Decimal amount,
+    String? note,
+    required DateTime paidAt,
+  }) async {
     final res = await _client.post(
       ApiEndpoints.installmentPayment(id),
       data: {
@@ -142,11 +195,17 @@ class InstallmentsRepository {
   }
 
   Future<ApiResult<List<InstallmentPaymentRecord>>> getPaymentHistory(int id) {
-    return _client.getList(ApiEndpoints.installmentPaymentHistory(id), fromJson: InstallmentPaymentRecord.fromJson);
+    return _client.getList(
+      ApiEndpoints.installmentPaymentHistory(id),
+      fromJson: InstallmentPaymentRecord.fromJson,
+    );
   }
 
   Future<ApiResult<void>> cancelPayment(int planId, int paymentId) async {
-    final res = await _client.delete(ApiEndpoints.installmentPaymentCancel(planId, paymentId), parse: (_) {});
+    final res = await _client.delete(
+      ApiEndpoints.installmentPaymentCancel(planId, paymentId),
+      parse: (_) {},
+    );
     if (res.isSuccess) {
       getIt<DataRefreshBus>().notifyInstallmentsChanged(installmentId: planId);
       getIt<DataRefreshBus>().notifyWalletsChanged();

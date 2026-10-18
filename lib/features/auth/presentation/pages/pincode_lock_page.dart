@@ -100,20 +100,21 @@ class _PincodeLockViewState extends State<_PincodeLockView> {
         final user = context.watch<UserCubit>().currentUserOrNull;
         final firstName = user?.name.trim().split(RegExp(r'\s+')).firstOrNull;
         final title = (firstName != null && firstName.isNotEmpty)
-            ? 'Hi, $firstName!'
-            : 'Hi, Faruxjon!';
+            ? 'Salom, $firstName!'
+            : 'Xush kelibsiz!';
 
         String? errorMessage;
         if (state is PincodeLockWrong) {
-          errorMessage = 'Noto\'g\'ri PIN. Qolgan urinishlar: ${state.remainingAttempts}';
+          errorMessage =
+              'Noto\'g\'ri PIN. Qolgan urinishlar: ${state.remainingAttempts}';
         }
 
         return PincodeScreenLayout(
-          topLabel: 'Security check',
+          topLabel: 'Xavfsiz kirish',
           onExit: _onExitOrForgotPin,
           exitIcon: Icons.logout_rounded,
           title: title,
-          subtitle: 'Enter your PIN',
+          subtitle: 'PIN-kodingizni kiriting',
           errorMessage: errorMessage,
           code: _code,
           onDigit: _onDigit,
@@ -121,7 +122,7 @@ class _PincodeLockViewState extends State<_PincodeLockView> {
           onLongPressBackspace: _onLongPressBackspace,
           onBiometrics: () => context.read<PincodeLockCubit>().tryBiometrics(),
           showBiometrics: true,
-          pillButtonLabel: 'Forgot PIN',
+          pillButtonLabel: 'PIN-kodni unutdingizmi?',
           onPillButtonTap: _onExitOrForgotPin,
           capsulesKey: _capsulesKey,
           isError: state is PincodeLockWrong,

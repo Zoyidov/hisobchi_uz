@@ -9,14 +9,19 @@ import '../../../../core/widgets/cards/app_card.dart';
 import '../../../../core/widgets/lists/app_paged_list_view.dart';
 import '../../../../core/widgets/typography/money_text.dart';
 import '../../data/partner_report_models.dart';
+import 'partner_detail_report_page.dart';
 
 class _DetailCubit extends PagedListCubit<PartnerReportDetailItem> {
   _DetailCubit(this._fetcher);
 
-  final Future<ApiResult<SimplePage<PartnerReportDetailItem>>> Function(int page) _fetcher;
+  final Future<ApiResult<SimplePage<PartnerReportDetailItem>>> Function(
+    int page,
+  )
+  _fetcher;
 
   @override
-  Future<ApiResult<SimplePage<PartnerReportDetailItem>>> fetchPage(int page) => _fetcher(page);
+  Future<ApiResult<SimplePage<PartnerReportDetailItem>>> fetchPage(int page) =>
+      _fetcher(page);
 }
 
 /// KPI karta bosilganda ochiladigan umumiy hisobot detali
@@ -30,7 +35,10 @@ class ReportDetailListPage extends StatelessWidget {
   });
 
   final String title;
-  final Future<ApiResult<SimplePage<PartnerReportDetailItem>>> Function(int page) fetcher;
+  final Future<ApiResult<SimplePage<PartnerReportDetailItem>>> Function(
+    int page,
+  )
+  fetcher;
   final int currencyTypeId;
 
   @override
@@ -39,29 +47,49 @@ class ReportDetailListPage extends StatelessWidget {
       create: (_) => _DetailCubit(fetcher)..loadFirst(),
       child: Scaffold(
         appBar: AppBar(title: Text(title)),
-        body: BlocBuilder<_DetailCubit, PagedListState<PartnerReportDetailItem>>(
-          builder: (context, state) {
-            final cubit = context.read<_DetailCubit>();
-            return AppPagedListView<PartnerReportDetailItem>(
-              state: state,
-              onLoadMore: cubit.loadMore,
-              onRefresh: cubit.refresh,
-              onRetry: cubit.loadFirst,
-              emptyIcon: Icons.people_outline_rounded,
-              emptyTitle: 'Ma\'lumot topilmadi',
-              padding: const EdgeInsets.all(AppSpacing.md),
-              itemBuilder: (context, item, index) => AppCard(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(child: Text(item.partnerName)),
-                    MoneyText(item.balance, currencyTypeId: currencyTypeId, signed: true),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
+        body:
+            BlocBuilder<_DetailCubit, PagedListState<PartnerReportDetailItem>>(
+              builder: (context, state) {
+                final cubit = context.read<_DetailCubit>();
+                return AppPagedListView<PartnerReportDetailItem>(
+                  state: state,
+                  onLoadMore: cubit.loadMore,
+                  onRefresh: cubit.refresh,
+                  onRetry: cubit.loadFirst,
+                  emptyIcon: Icons.people_outline_rounded,
+                  emptyTitle: 'Ma\'lumot topilmadi',
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  itemBuilder: (context, item, index) => AppCard(
+                    onTap: item.partnerId <= 0
+                        ? null
+                        : () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => PartnerDetailReportPage(
+                                partnerId: item.partnerId,
+                                partnerName: item.partnerName,
+                              ),
+                            ),
+                          ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(child: Text(item.partnerName)),
+                        const SizedBox(width: 12),
+                        Flexible(
+                          child: MoneyText(
+                            item.balance,
+                            currencyTypeId: currencyTypeId,
+                            signed: true,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Icon(Icons.chevron_right_rounded, size: 18),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
       ),
     );
   }

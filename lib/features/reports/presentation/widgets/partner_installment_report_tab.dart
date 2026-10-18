@@ -106,7 +106,9 @@ class _PartnerInstallmentReportTabState
 
   String _formatPrice(String raw) {
     final value = double.tryParse(raw) ?? 0.0;
-    return value.toStringAsFixed(0).replaceAllMapped(
+    return value
+        .toStringAsFixed(0)
+        .replaceAllMapped(
           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (Match m) => '${m[1]} ',
         );
@@ -115,7 +117,6 @@ class _PartnerInstallmentReportTabState
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Column(
       children: [
@@ -132,11 +133,7 @@ class _PartnerInstallmentReportTabState
             child: Row(
               children: [
                 _buildCurrencyTabItem('UZS Hisob', 0),
-                Container(
-                  width: 1,
-                  height: 20,
-                  color: colors.border,
-                ),
+                Container(width: 1, height: 20, color: colors.border),
                 _buildCurrencyTabItem('USD Hisob', 1),
               ],
             ),
@@ -291,7 +288,9 @@ class _PartnerInstallmentReportTabState
 
   // ---------------- 1. STATS ----------------
   Widget _buildStatsSection(
-      PartnerInstallmentStatModel stat, String currencyLabel) {
+    PartnerInstallmentStatModel stat,
+    String currencyLabel,
+  ) {
     final colors = context.colors;
 
     return Container(
@@ -313,8 +312,11 @@ class _PartnerInstallmentReportTabState
                   color: colors.primary.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(9),
                 ),
-                child: Icon(Icons.dashboard_rounded,
-                    size: 16, color: colors.primary),
+                child: Icon(
+                  Icons.dashboard_rounded,
+                  size: 16,
+                  color: colors.primary,
+                ),
               ),
               const SizedBox(width: 8),
               Text(
@@ -402,8 +404,11 @@ class _PartnerInstallmentReportTabState
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.hourglass_bottom_rounded,
-                        color: Color(0xFFD97706), size: 18),
+                    const Icon(
+                      Icons.hourglass_bottom_rounded,
+                      color: Color(0xFFD97706),
+                      size: 18,
+                    ),
                     const SizedBox(width: 8),
                     const Text(
                       'Qolgan',
@@ -442,8 +447,11 @@ class _PartnerInstallmentReportTabState
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.error_outline_rounded,
-                      color: Color(0xFFEF4444), size: 18),
+                  const Icon(
+                    Icons.error_outline_rounded,
+                    color: Color(0xFFEF4444),
+                    size: 18,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -561,7 +569,9 @@ class _PartnerInstallmentReportTabState
 
   // ---------------- 2. PLANS ----------------
   Widget _buildPlansSection(
-      List<PartnerInstallmentPlanModel> plans, String currencyLabel) {
+    List<PartnerInstallmentPlanModel> plans,
+    String currencyLabel,
+  ) {
     final colors = context.colors;
 
     return Container(
@@ -576,47 +586,41 @@ class _PartnerInstallmentReportTabState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(7),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6366F1).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    child: const Icon(Icons.calendar_month_rounded,
-                        size: 16, color: Color(0xFF6366F1)),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Muddatli to\'lov rejalari',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
-                      color: colors.textPrimary,
-                    ),
-                  ),
-                ],
+              Container(
+                padding: const EdgeInsets.all(7),
+                decoration: BoxDecoration(
+                  color: colors.accentViolet.withValues(alpha: .12),
+                  borderRadius: BorderRadius.circular(9),
+                ),
+                child: Icon(
+                  Icons.calendar_month_rounded,
+                  size: 16,
+                  color: colors.accentViolet,
+                ),
               ),
-              if (plans.isNotEmpty)
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF6366F1).withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    '${plans.length}',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF6366F1),
-                    ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Muddatli to‘lov rejalari',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: colors.textPrimary,
                   ),
                 ),
+              ),
+              if (plans.isNotEmpty) ...[
+                const SizedBox(width: 8),
+                Text(
+                  '${plans.length}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: colors.accentViolet,
+                  ),
+                ),
+              ],
             ],
           ),
           const SizedBox(height: 12),
@@ -627,9 +631,10 @@ class _PartnerInstallmentReportTabState
                 child: Text(
                   'Rejalar mavjud emas',
                   style: TextStyle(
-                      color: colors.textSecondary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500),
+                    color: colors.textSecondary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             )
@@ -641,7 +646,9 @@ class _PartnerInstallmentReportTabState
   }
 
   Widget _buildPlanItem(
-      PartnerInstallmentPlanModel plan, String currencyLabel) {
+    PartnerInstallmentPlanModel plan,
+    String currencyLabel,
+  ) {
     final colors = context.colors;
 
     return Container(
@@ -650,9 +657,7 @@ class _PartnerInstallmentReportTabState
       decoration: BoxDecoration(
         color: colors.surfaceSecondary,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: plan.statusColor.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: plan.statusColor.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -694,10 +699,7 @@ class _PartnerInstallmentReportTabState
                 children: [
                   Text(
                     'Jami summa',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: colors.textTertiary,
-                    ),
+                    style: TextStyle(fontSize: 10, color: colors.textTertiary),
                   ),
                   Text(
                     '${_formatPrice(plan.totalAmount)} $currencyLabel',
@@ -714,10 +716,7 @@ class _PartnerInstallmentReportTabState
                 children: [
                   Text(
                     'Qismlar',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: colors.textTertiary,
-                    ),
+                    style: TextStyle(fontSize: 10, color: colors.textTertiary),
                   ),
                   Text(
                     '${plan.itemsCount} ta',
@@ -770,7 +769,9 @@ class _PartnerInstallmentReportTabState
 
   // ---------------- 3. PAYMENTS ----------------
   Widget _buildPaymentsSection(
-      List<PartnerInstallmentPaymentModel> payments, String currencyLabel) {
+    List<PartnerInstallmentPaymentModel> payments,
+    String currencyLabel,
+  ) {
     final colors = context.colors;
 
     return Container(
@@ -792,8 +793,11 @@ class _PartnerInstallmentReportTabState
                   color: const Color(0xFF22C55E).withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(9),
                 ),
-                child: const Icon(Icons.history_rounded,
-                    size: 16, color: Color(0xFF22C55E)),
+                child: const Icon(
+                  Icons.history_rounded,
+                  size: 16,
+                  color: Color(0xFF22C55E),
+                ),
               ),
               const SizedBox(width: 8),
               Text(
@@ -823,8 +827,11 @@ class _PartnerInstallmentReportTabState
                       color: const Color(0xFF22C55E).withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.check_rounded,
-                        color: Color(0xFF22C55E), size: 14),
+                    child: const Icon(
+                      Icons.check_rounded,
+                      color: Color(0xFF22C55E),
+                      size: 14,
+                    ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -869,7 +876,9 @@ class _PartnerInstallmentReportTabState
 
   // ---------------- 4. SCHEDULE ITEMS ----------------
   Widget _buildScheduleItemsSection(
-      List<PartnerInstallmentItemModel> items, String currencyLabel) {
+    List<PartnerInstallmentItemModel> items,
+    String currencyLabel,
+  ) {
     final colors = context.colors;
 
     return Container(
@@ -891,8 +900,11 @@ class _PartnerInstallmentReportTabState
                   color: const Color(0xFF3B82F6).withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(9),
                 ),
-                child: const Icon(Icons.event_note_rounded,
-                    size: 16, color: Color(0xFF3B82F6)),
+                child: const Icon(
+                  Icons.event_note_rounded,
+                  size: 16,
+                  color: Color(0xFF3B82F6),
+                ),
               ),
               const SizedBox(width: 8),
               Text(
@@ -938,8 +950,10 @@ class _PartnerInstallmentReportTabState
             ...items.take(8).map((it) {
               return Container(
                 margin: const EdgeInsets.only(bottom: 8),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: colors.surfaceSecondary,
                   borderRadius: BorderRadius.circular(12),
@@ -989,7 +1003,9 @@ class _PartnerInstallmentReportTabState
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: it.statusBgColor,
                         borderRadius: BorderRadius.circular(6),
@@ -1021,9 +1037,7 @@ class _PartnerInstallmentReportTabState
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: isSelected
-              ? colors.primary
-              : colors.surfaceSecondary,
+          color: isSelected ? colors.primary : colors.surfaceSecondary,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
@@ -1040,7 +1054,9 @@ class _PartnerInstallmentReportTabState
 
   // ---------------- 5. MONTHLY DYNAMICS ----------------
   Widget _buildMonthlyDynamicsSection(
-      List<PartnerMonthlyDynamicModel> dynamics, String currencyLabel) {
+    List<PartnerMonthlyDynamicModel> dynamics,
+    String currencyLabel,
+  ) {
     final colors = context.colors;
 
     return Container(
@@ -1062,8 +1078,11 @@ class _PartnerInstallmentReportTabState
                   color: const Color(0xFF8B5CF6).withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(9),
                 ),
-                child: const Icon(Icons.bar_chart_rounded,
-                    size: 16, color: Color(0xFF8B5CF6)),
+                child: const Icon(
+                  Icons.bar_chart_rounded,
+                  size: 16,
+                  color: Color(0xFF8B5CF6),
+                ),
               ),
               const SizedBox(width: 8),
               Text(
@@ -1081,7 +1100,9 @@ class _PartnerInstallmentReportTabState
             final double planned = d.plannedAmount;
             final double collected = d.collectedAmount;
             final double max = planned > collected ? planned : collected;
-            final double progress = max > 0 ? (collected / max).clamp(0.0, 1.0) : 0.0;
+            final double progress = max > 0
+                ? (collected / max).clamp(0.0, 1.0)
+                : 0.0;
 
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),

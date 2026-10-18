@@ -1,793 +1,1192 @@
+import 'package:decimal/decimal.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:decimal/decimal.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injector.dart';
+import '../../../../core/network/api_result.dart';
+import '../../../../core/network/paged_result.dart';
 import '../../../../core/router/route_paths.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/utils/formatters/date_formatter.dart';
+import '../../../../core/utils/formatters/money_formatter.dart';
 import '../../../../core/widgets/cards/app_card.dart';
-import '../../../../core/widgets/chips/app_status_chip.dart';
 import '../../../../core/widgets/misc/app_segmented_control.dart';
 import '../../../../core/widgets/states/app_empty_state.dart';
 import '../../../../core/widgets/states/app_error_state.dart';
 import '../../../../core/widgets/states/app_skeleton.dart';
-import '../../../../core/utils/formatters/money_formatter.dart';
 import '../../data/installment_report_models.dart';
 import '../../data/reports_repository.dart';
 
-/// Bo'lib to'lash hisobotlari — 5 tabli (MOBILE_APP_TZ.md 12.3).
-class InstallmentReportsPage extends StatefulWidget {
+ReportsRepository get _repository => getIt<ReportsRepository>();
+String _money(Decimal amount, int currency) =>
+    MoneyFormatter.format(amount, currencyTypeId: currency);
+void _open(BuildContext context, Widget page) =>
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
+
+/// Currency overview with the same report hierarchy as the legacy application.
+class InstallmentReportsPage extends StatelessWidget {
   const InstallmentReportsPage({super.key});
-
   @override
-  State<InstallmentReportsPage> createState() => _InstallmentReportsPageState();
-}
-
-class _InstallmentReportsPageState extends State<InstallmentReportsPage> {
-  var _currencyTypeId = 1;
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 5,
-      child: Scaffold(
-        backgroundColor: context.colors.background,
-        appBar: AppBar(
-          title: const Text('Bo\'lib to\'lash hisobotlari'),
-          backgroundColor: context.colors.surface,
-          surfaceTintColor: Colors.transparent,
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(52),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 2, 16, 8),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: context.colors.surfaceSecondary,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: TabBar(
-                  isScrollable: true,
-                  tabAlignment: TabAlignment.start,
-                  dividerHeight: 0,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicatorPadding: const EdgeInsets.all(4),
-                  indicator: BoxDecoration(
-                    color: context.colors.primary,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  labelColor: Colors.white,
-                  unselectedLabelColor: context.colors.textSecondary,
-                  labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                  labelPadding: const EdgeInsets.symmetric(horizontal: 14),
-                  tabs: const [
-                    Tab(text: 'Umumiy'),
-                    Tab(text: 'Hamkorlar'),
-                    Tab(text: 'Muammoli'),
-                    Tab(text: 'Undirish'),
-                    Tab(text: 'Oylik'),
-                  ],
-                ),
+  Widget build(BuildContext context) => _CurrencyReportPage(
+    title: 'Muddatli to‘lov hisoboti',
+    builder: (currency) => _ReportLoader<InstallmentReportSummary>(
+      key: ValueKey(currency),
+      load: () => _repository.getInstallmentSummary(currency),
+      builder: (context, summary, reload) => _ReportList(
+        onRefresh: reload,
+        children: [
+          if (summary.isEmpty)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 16),
+              child: Text(
+                'Bo‘lib to‘lash ma’lumoti yo‘q',
+                textAlign: TextAlign.center,
               ),
+            ),
+          _SummaryCard(summary: summary, currency: currency),
+          const SizedBox(height: 22),
+          Text(
+            'Hisobot bo‘limlari',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: context.colors.textSecondary,
             ),
           ),
-        ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: AppSegmentedControl<int>(
-                value: _currencyTypeId,
-                segments: const [
-                  AppSegment(value: 1, label: 'UZS'),
-                  AppSegment(value: 2, label: 'USD'),
-                ],
-                onChanged: (v) => setState(() => _currencyTypeId = v),
-              ),
-            ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  _SummaryTab(currencyTypeId: _currencyTypeId),
-                  _PartnersTab(currencyTypeId: _currencyTypeId),
-                  _RiskyTab(currencyTypeId: _currencyTypeId),
-                  _RecoveryTab(currencyTypeId: _currencyTypeId),
-                  _MonthlyTab(currencyTypeId: _currencyTypeId),
-                ],
-              ),
-            ),
-          ],
+          const SizedBox(height: 10),
+          _ReportEntry(
+            icon: Icons.trending_up_rounded,
+            color: context.colors.success,
+            title: 'Undirish samaradorligi',
+            subtitle: 'To‘lov samaradorligi va undirilgan summalar',
+            onTap: () =>
+                _open(context, _RecoveryPage(initialCurrency: currency)),
+          ),
+          _ReportEntry(
+            icon: Icons.calendar_month_rounded,
+            color: context.colors.accentViolet,
+            title: 'Kutilayotgan to‘lovlar',
+            subtitle: '30/60/90 kunlik prognoz',
+            onTap: () =>
+                _open(context, _ForecastPage(initialCurrency: currency)),
+          ),
+          _ReportEntry(
+            icon: Icons.bar_chart_rounded,
+            color: context.colors.primary,
+            title: 'Oylik dinamika',
+            subtitle: 'Oylar bo‘yicha to‘lov grafigi',
+            onTap: () =>
+                _open(context, _MonthlyPage(initialCurrency: currency)),
+          ),
+          _ReportEntry(
+            icon: Icons.warning_amber_rounded,
+            color: context.colors.error,
+            title: 'Muammoli mijozlar',
+            subtitle: 'Kechiktirilgan va xavfli mijozlar ro‘yxati',
+            onTap: () => _open(context, _RiskyPage(initialCurrency: currency)),
+          ),
+          _ReportEntry(
+            icon: Icons.people_alt_outlined,
+            color: context.colors.warning,
+            title: 'Mijozlar bo‘yicha',
+            subtitle: 'Mijoz bo‘yicha muddatli to‘lov hisoboti',
+            onTap: () =>
+                _open(context, _PartnersPage(initialCurrency: currency)),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+class _CurrencyReportPage extends StatefulWidget {
+  const _CurrencyReportPage({
+    required this.title,
+    required this.builder,
+    this.initialCurrency = 1,
+  });
+  final String title;
+  final Widget Function(int currency) builder;
+  final int initialCurrency;
+  @override
+  State<_CurrencyReportPage> createState() => _CurrencyReportPageState();
+}
+
+class _CurrencyReportPageState extends State<_CurrencyReportPage> {
+  late int _currency = widget.initialCurrency;
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    backgroundColor: context.colors.background,
+    appBar: AppBar(
+      centerTitle: true,
+      backgroundColor: context.colors.surface,
+      title: Text(
+        widget.title,
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+      ),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(64),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+          child: AppSegmentedControl<int>(
+            value: _currency,
+            segments: const [
+              AppSegment(value: 1, label: 'UZS'),
+              AppSegment(value: 2, label: 'USD'),
+            ],
+            onChanged: (value) => setState(() => _currency = value),
+          ),
         ),
       ),
-    );
-  }
+    ),
+    body: SafeArea(top: false, child: widget.builder(_currency)),
+  );
 }
 
-class _SummaryTab extends StatefulWidget {
-  const _SummaryTab({required this.currencyTypeId});
-  final int currencyTypeId;
+/// A keyed loader owns its request, so changing a filter cannot show stale data.
+class _ReportLoader<T> extends StatefulWidget {
+  const _ReportLoader({super.key, required this.load, required this.builder});
+  final Future<ApiResult<T>> Function() load;
+  final Widget Function(BuildContext, T, Future<void> Function()) builder;
   @override
-  State<_SummaryTab> createState() => _SummaryTabState();
+  State<_ReportLoader<T>> createState() => _ReportLoaderState<T>();
 }
 
-class _SummaryTabState extends State<_SummaryTab> {
-  InstallmentReportSummary? _summary;
+class _ReportLoaderState<T> extends State<_ReportLoader<T>> {
+  T? _data;
   String? _error;
   int _request = 0;
-
   @override
   void initState() {
     super.initState();
     _load();
-  }
-
-  @override
-  void didUpdateWidget(covariant _SummaryTab oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.currencyTypeId != widget.currencyTypeId) _load();
   }
 
   Future<void> _load() async {
     final request = ++_request;
-    setState(() {
-      _summary = null;
-      _error = null;
-    });
-    final result = await getIt<ReportsRepository>().getInstallmentSummary(
-      widget.currencyTypeId,
-    );
+    setState(() => _error = null);
+    final result = await widget.load();
     if (!mounted || request != _request) return;
     result.when(
-      success: (r) => setState(() => _summary = r),
-      failure: (f) => setState(() => _error = f.message),
+      success: (data) => setState(() => _data = data),
+      failure: (error) => setState(() => _error = error.message),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     if (_error != null) {
-      return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
-        description: _error,
-        onRetry: _load,
-      );
+      return AppErrorState(description: _error, onRetry: _load);
     }
-    final s = _summary;
-    if (s == null) return const _SummarySkeleton();
-    if (s.isEmpty) {
-      return _EmptyReport(
-        onRefresh: _load,
-        currency: widget.currencyTypeId == 2 ? 'USD' : 'UZS',
-      );
-    }
-    final currencyLabel = widget.currencyTypeId == 2 ? 'USD' : 'UZS';
-    final colors = context.colors;
+    final data = _data;
+    if (data == null) return const AppSkeletonList();
+    return widget.builder(context, data, _load);
+  }
+}
 
-    return RefreshIndicator(
-      onRefresh: _load,
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+class _ReportList extends StatelessWidget {
+  const _ReportList({required this.children, required this.onRefresh});
+  final List<Widget> children;
+  final Future<void> Function() onRefresh;
+  @override
+  Widget build(BuildContext context) => RefreshIndicator(
+    onRefresh: onRefresh,
+    child: ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+      children: children,
+    ),
+  );
+}
+
+class _SummaryCard extends StatelessWidget {
+  const _SummaryCard({required this.summary, required this.currency});
+  final InstallmentReportSummary summary;
+  final int currency;
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return AppCard(
+      hasShadow: false,
+      child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: colors.primaryContainer,
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: colors.primary.withValues(alpha: .15)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.credit_card_rounded,
-                      color: colors.primary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Qolgan to‘lovlar',
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: colors.textSecondary,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      currencyLabel,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: colors.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  MoneyFormatter.format(
-                    s.totalRemaining,
-                    currencyLabel: currencyLabel,
-                  ),
-                  textAlign: TextAlign.right,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: colors.primary,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -.5,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          AppCard(
-            hasShadow: false,
-            borderRadius: BorderRadius.circular(18),
-            child: Column(
-              children: [
-                _row(context, 'Berilgan', s.totalGiven, currencyLabel),
-                Divider(height: 24, color: colors.divider),
-                _row(
-                  context,
-                  'To‘langan',
-                  s.totalPaid,
-                  currencyLabel,
-                  color: colors.success,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: colors.error.withValues(alpha: .06),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: colors.error.withValues(alpha: .15)),
-            ),
-            child: _row(
-              context,
-              'Muddati o‘tgan',
-              s.overdueAmount,
-              currencyLabel,
-              color: colors.error,
-            ),
-          ),
-          const SizedBox(height: 20),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: _statusCount(
-                  context,
-                  'Faol',
-                  s.activeCount,
-                  colors.info,
+                child: _Metric(
+                  label: 'Faol rejalar',
+                  value: '${summary.activeCount} ta',
+                  icon: Icons.play_circle_outline_rounded,
+                  color: colors.primary,
                 ),
               ),
-              const SizedBox(width: AppSpacing.sm),
+              const SizedBox(width: 8),
               Expanded(
-                child: _statusCount(
-                  context,
-                  'Yopilgan',
-                  s.completedCount,
-                  colors.success,
+                child: _Metric(
+                  label: 'Tugallangan',
+                  value: '${summary.completedCount} ta',
+                  icon: Icons.check_circle_outline_rounded,
+                  color: colors.success,
                 ),
               ),
-              const SizedBox(width: AppSpacing.sm),
+              const SizedBox(width: 8),
               Expanded(
-                child: _statusCount(
-                  context,
-                  'Bekor',
-                  s.cancelledCount,
-                  colors.textTertiary,
+                child: _Metric(
+                  label: 'Bekor qilingan',
+                  value: '${summary.cancelledCount} ta',
+                  icon: Icons.cancel_outlined,
+                  color: colors.textTertiary,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final given = _AmountTile(
+                label: 'Berilgan',
+                amount: summary.totalGiven,
+                currency: currency,
+                color: colors.accentViolet,
+                icon: Icons.account_balance_wallet_outlined,
+              );
+              final paid = _AmountTile(
+                label: 'To‘langan',
+                amount: summary.totalPaid,
+                currency: currency,
+                color: colors.success,
+                icon: Icons.check_circle_outline_rounded,
+              );
+              if (constraints.maxWidth < 300 ||
+                  MediaQuery.textScalerOf(context).scale(14) > 19) {
+                return Column(
+                  children: [given, const SizedBox(height: 8), paid],
+                );
+              }
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: given),
+                  const SizedBox(width: 8),
+                  Expanded(child: paid),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+          _AmountTile(
+            label: 'Qolgan',
+            amount: summary.totalRemaining,
+            currency: currency,
+            color: colors.warning,
+            icon: Icons.hourglass_bottom_rounded,
+            wide: true,
+          ),
+          if (summary.overdueAmount > Decimal.zero) ...[
+            const SizedBox(height: 10),
+            _AmountTile(
+              label: 'Muddati o‘tgan',
+              amount: summary.overdueAmount,
+              currency: currency,
+              color: colors.error,
+              icon: Icons.warning_amber_rounded,
+              wide: true,
+            ),
+          ],
         ],
       ),
     );
   }
+}
 
-  Widget _statusCount(
-    BuildContext context,
-    String label,
-    int count,
-    Color color,
-  ) {
-    return AppCard(
-      hasShadow: false,
-      padding: const EdgeInsets.all(12),
-      borderRadius: BorderRadius.circular(16),
-      child: Column(
-        children: [
-          Text(
-            '$count',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(color: color),
+class _Metric extends StatelessWidget {
+  const _Metric({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.color,
+  });
+  final String label;
+  final String value;
+  final IconData icon;
+  final Color color;
+  @override
+  Widget build(BuildContext context) => Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: .07),
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: color.withValues(alpha: .15)),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: color, size: 16),
+        const SizedBox(height: 6),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
+            color: color,
           ),
-          Text(
-            label,
-            style: TextStyle(color: context.colors.textSecondary, fontSize: 12),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _row(
-    BuildContext context,
-    String label,
-    Decimal amount,
-    String currencyLabel, {
-    Color? color,
-  }) => _MoneyRow(
-    label: label,
-    amount: amount,
-    currency: currencyLabel,
-    color: color,
+        ),
+        Text(
+          label,
+          style: TextStyle(fontSize: 10, color: context.colors.textSecondary),
+        ),
+      ],
+    ),
   );
 }
 
-class _PartnersTab extends StatefulWidget {
-  const _PartnersTab({required this.currencyTypeId});
-  final int currencyTypeId;
+class _AmountTile extends StatelessWidget {
+  const _AmountTile({
+    required this.label,
+    required this.amount,
+    required this.currency,
+    required this.color,
+    required this.icon,
+    this.wide = false,
+  });
+  final String label;
+  final Decimal amount;
+  final int currency;
+  final Color color;
+  final IconData icon;
+  final bool wide;
   @override
-  State<_PartnersTab> createState() => _PartnersTabState();
+  Widget build(BuildContext context) => Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: .07),
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: color.withValues(alpha: .16)),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 17, color: color),
+            const SizedBox(width: 7),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: context.colors.textSecondary,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Text(
+          _money(amount, currency),
+          textAlign: TextAlign.right,
+          style: TextStyle(
+            fontSize: wide ? 22 : 17,
+            fontWeight: FontWeight.w800,
+            color: color,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
-class _PartnersTabState extends State<_PartnersTab> {
-  List<InstallmentPartnerRanking>? _items;
-  String? _error;
-
+class _ReportEntry extends StatelessWidget {
+  const _ReportEntry({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
   @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  @override
-  void didUpdateWidget(covariant _PartnersTab oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.currencyTypeId != widget.currencyTypeId) _load();
-  }
-
-  Future<void> _load() async {
-    setState(() {
-      _items = null;
-      _error = null;
-    });
-    final result = await getIt<ReportsRepository>().getInstallmentPartners(
-      widget.currencyTypeId,
-    );
-    if (!mounted) return;
-    result.when(
-      success: (r) => setState(() => _items = r),
-      failure: (f) => setState(() => _error = f.message),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_error != null) {
-      return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
-        description: _error,
-        onRetry: _load,
-      );
-    }
-    final items = _items;
-    if (items == null) return const AppSkeletonList();
-    if (items.isEmpty) {
-      return const AppEmptyState(
-        title: 'Ma\'lumot yo\'q',
-        icon: Icons.people_outline_rounded,
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: _load,
-      child: ListView.separated(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        itemCount: items.length,
-        separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
-        itemBuilder: (context, i) {
-          final item = items[i];
-          return AppCard(
-            hasShadow: false,
-            borderRadius: BorderRadius.circular(18),
-            padding: const EdgeInsets.all(14),
-            onTap: () =>
-                context.push(RoutePaths.reportPartnerDetail(item.partnerId)),
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 10),
+    child: AppCard(
+      hasShadow: false,
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: .1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 23),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item.partnerName,
-                  style: Theme.of(context).textTheme.titleSmall,
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-                const SizedBox(height: 6),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Qolgan',
-                        style: TextStyle(color: context.colors.textSecondary),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Flexible(
-                      child: Text(
-                        MoneyFormatter.format(
-                          item.remaining,
-                          currencyTypeId: widget.currencyTypeId,
-                        ),
-                        textAlign: TextAlign.right,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: context.colors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    height: 1.4,
+                    color: context.colors.textSecondary,
+                  ),
                 ),
               ],
             ),
-          );
-        },
+          ),
+          const SizedBox(width: 8),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: context.colors.textTertiary,
+            size: 20,
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }
 
-class _RiskyTab extends StatefulWidget {
-  const _RiskyTab({required this.currencyTypeId});
-  final int currencyTypeId;
+class _RecoveryPage extends StatelessWidget {
+  const _RecoveryPage({required this.initialCurrency});
+  final int initialCurrency;
   @override
-  State<_RiskyTab> createState() => _RiskyTabState();
-}
-
-class _RiskyTabState extends State<_RiskyTab> {
-  List<RiskyPartner>? _items;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  @override
-  void didUpdateWidget(covariant _RiskyTab oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.currencyTypeId != widget.currencyTypeId) _load();
-  }
-
-  Future<void> _load() async {
-    setState(() {
-      _items = null;
-      _error = null;
-    });
-    final result = await getIt<ReportsRepository>().getRiskyPartners(
-      widget.currencyTypeId,
-    );
-    if (!mounted) return;
-    result.when(
-      success: (r) => setState(() => _items = r),
-      failure: (f) => setState(() => _error = f.message),
-    );
-  }
-
-  AppStatusChipTone _toneFor(String level) => switch (level.toLowerCase()) {
-    'yuqori' || 'high' => AppStatusChipTone.error,
-    'o\'rta' || 'medium' => AppStatusChipTone.warning,
-    _ => AppStatusChipTone.neutral,
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    if (_error != null) {
-      return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
-        description: _error,
-        onRetry: _load,
-      );
-    }
-    final items = _items;
-    if (items == null) return const AppSkeletonList();
-    if (items.isEmpty) {
-      return const AppEmptyState(
-        title: 'Muammoli hamkorlar yo\'q',
-        icon: Icons.check_circle_outline_rounded,
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: _load,
-      child: ListView.separated(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        itemCount: items.length,
-        separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
-        itemBuilder: (context, i) {
-          final item = items[i];
-          return AppCard(
-            hasShadow: false,
-            borderRadius: BorderRadius.circular(18),
-            padding: const EdgeInsets.all(14),
-            child: Row(
+  Widget build(BuildContext context) => _CurrencyReportPage(
+    title: 'Undirish samaradorligi',
+    initialCurrency: initialCurrency,
+    builder: (currency) => _ReportLoader<RecoveryReport>(
+      key: ValueKey(currency),
+      load: () => _repository.getRecoveryReport(currency),
+      builder: (context, report, reload) => _ReportList(
+        onRefresh: reload,
+        children: [
+          AppCard(
+            child: Column(
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                SizedBox(
+                  width: 150,
+                  height: 150,
+                  child: Stack(
+                    alignment: Alignment.center,
                     children: [
-                      Text(
-                        item.partnerName,
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      Text(
-                        'O\'rtacha kechikish: ${item.averageDelayDays} kun',
-                        style: TextStyle(
-                          color: context.colors.textSecondary,
-                          fontSize: 12,
+                      SizedBox.expand(
+                        child: CircularProgressIndicator(
+                          value: (report.recoveryRate / 100)
+                              .clamp(0, 1)
+                              .toDouble(),
+                          strokeWidth: 12,
+                          color: context.colors.success,
+                          backgroundColor: context.colors.surfaceSecondary,
                         ),
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '${report.recoveryRate}%',
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          Text(
+                            'Undirilgan',
+                            style: TextStyle(
+                              color: context.colors.textSecondary,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-                AppStatusChip(
-                  label: 'Risk: ${item.riskLevel}',
-                  tone: _toneFor(item.riskLevel),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _RecoveryTab extends StatefulWidget {
-  const _RecoveryTab({required this.currencyTypeId});
-  final int currencyTypeId;
-  @override
-  State<_RecoveryTab> createState() => _RecoveryTabState();
-}
-
-class _RecoveryTabState extends State<_RecoveryTab> {
-  RecoveryReport? _report;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  @override
-  void didUpdateWidget(covariant _RecoveryTab oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.currencyTypeId != widget.currencyTypeId) _load();
-  }
-
-  Future<void> _load() async {
-    setState(() {
-      _report = null;
-      _error = null;
-    });
-    final result = await getIt<ReportsRepository>().getRecoveryReport(
-      widget.currencyTypeId,
-    );
-    if (!mounted) return;
-    result.when(
-      success: (r) => setState(() => _report = r),
-      failure: (f) => setState(() => _error = f.message),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_error != null) {
-      return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
-        description: _error,
-        onRetry: _load,
-      );
-    }
-    final r = _report;
-    if (r == null) return const AppSkeletonList();
-    final currencyLabel = widget.currencyTypeId == 2 ? 'USD' : 'UZS';
-
-    return RefreshIndicator(
-      onRefresh: _load,
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-        children: [
-          AppCard(
-            child: Column(
-              children: [
+                const SizedBox(height: 18),
                 Text(
-                  '${r.recoveryRate}%',
-                  style: Theme.of(context).textTheme.displaySmall,
+                  report.ratingLabel,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 16),
+                _MoneyRow(
+                  label: 'Berilgan',
+                  amount: report.totalGiven ?? Decimal.zero,
+                  currency: currency,
+                ),
+                _MoneyRow(
+                  label: 'Undirilgan',
+                  amount: report.recoveredAmount,
+                  currency: currency,
+                  color: context.colors.success,
+                ),
+                _MoneyRow(
+                  label: 'Qolgan',
+                  amount: report.totalRemaining ?? Decimal.zero,
+                  currency: currency,
+                ),
+                _MoneyRow(
+                  label: 'Muddati o‘tgan',
+                  amount: report.overdueAmount,
+                  currency: currency,
+                  color: context.colors.error,
                 ),
                 Text(
-                  r.ratingLabel,
-                  style: TextStyle(color: context.colors.textSecondary),
+                  'Kechikish darajasi: ${report.overdueRate}%',
+                  style: TextStyle(color: context.colors.error, fontSize: 12),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: AppSpacing.md),
-          AppCard(
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: _MoneyRow(
-                        label: 'Qaytarilgan',
-                        amount: r.recoveredAmount,
-                        currency: currencyLabel,
-                        color: context.colors.success,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: _MoneyRow(
-                        label: 'Muddati o‘tgan',
-                        amount: r.overdueAmount,
-                        currency: currencyLabel,
-                        color: context.colors.error,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+          const SizedBox(height: 20),
+          const Text(
+            'To‘lov holatlari',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
           ),
+          const SizedBox(height: 12),
+          for (final status in ['paid', 'partial', 'overdue', 'pending'])
+            _ReportEntry(
+              icon: Icons.receipt_long_outlined,
+              color: _statusColor(context, status),
+              title: _statusLabel(status),
+              subtitle: '${report.byItems[status] ?? 0} ta to‘lov',
+              onTap: () => _open(
+                context,
+                _ItemsPage(currency: currency, status: status),
+              ),
+            ),
         ],
       ),
-    );
-  }
+    ),
+  );
 }
 
-class _MonthlyTab extends StatefulWidget {
-  const _MonthlyTab({required this.currencyTypeId});
-  final int currencyTypeId;
+String _statusLabel(String status) => switch (status) {
+  'paid' => 'To‘langan',
+  'partial' => 'Qisman to‘langan',
+  'overdue' => 'Muddati o‘tgan',
+  _ => 'Kutilmoqda',
+};
+Color _statusColor(BuildContext context, String status) => switch (status) {
+  'paid' => context.colors.success,
+  'partial' => context.colors.info,
+  'overdue' => context.colors.error,
+  _ => context.colors.textTertiary,
+};
+
+class _ForecastPage extends StatefulWidget {
+  const _ForecastPage({required this.initialCurrency});
+  final int initialCurrency;
   @override
-  State<_MonthlyTab> createState() => _MonthlyTabState();
+  State<_ForecastPage> createState() => _ForecastPageState();
 }
 
-class _MonthlyTabState extends State<_MonthlyTab> {
-  List<MonthlyInstallmentStat>? _items;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  @override
-  void didUpdateWidget(covariant _MonthlyTab oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.currencyTypeId != widget.currencyTypeId) _load();
-  }
-
-  Future<void> _load() async {
-    setState(() {
-      _items = null;
-      _error = null;
-    });
-    final result = await getIt<ReportsRepository>().getMonthlyInstallments(
-      year: DateTime.now().year,
-      currencyTypeId: widget.currencyTypeId,
-    );
-    if (!mounted) return;
-    result.when(
-      success: (r) => setState(() => _items = r),
-      failure: (f) => setState(() => _error = f.message),
-    );
-  }
-
+class _ForecastPageState extends State<_ForecastPage> {
+  int _days = 30;
+  DateTimeRange? _range;
   @override
   Widget build(BuildContext context) {
-    if (_error != null) {
-      return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
-        description: _error,
-        onRetry: _load,
-      );
-    }
-    final items = _items;
-    if (items == null) return const AppSkeletonList();
-    if (items.isEmpty) {
-      return const AppEmptyState(
-        title: 'Ma\'lumot yo\'q',
-        icon: Icons.bar_chart_rounded,
-      );
-    }
-
-    final maxY = items
-        .map((e) => e.amount.toDouble())
-        .fold(0.0, (a, b) => a > b ? a : b);
-
-    return RefreshIndicator(
-      onRefresh: _load,
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+    final from = _range?.start ?? DateUtils.dateOnly(DateTime.now());
+    final to = _range?.end ?? from.add(Duration(days: _days));
+    return _CurrencyReportPage(
+      title: 'Kutilayotgan to‘lovlar',
+      initialCurrency: widget.initialCurrency,
+      builder: (currency) => Column(
         children: [
-          AppCard(
-            child: SizedBox(
-              height: 220,
-              child: BarChart(
-                BarChartData(
-                  maxY: maxY == 0 ? 1 : maxY * 1.2,
-                  barGroups: [
-                    for (var i = 0; i < items.length; i++)
-                      BarChartGroupData(
-                        x: i,
-                        barRods: [
-                          BarChartRodData(
-                            toY: items[i].amount.toDouble(),
-                            color: context.colors.primary,
-                            width: 12,
-                          ),
-                        ],
-                      ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                AppSegmentedControl<int>(
+                  value: _range == null ? _days : -1,
+                  segments: const [
+                    AppSegment(value: 30, label: '30 kun'),
+                    AppSegment(value: 60, label: '60 kun'),
+                    AppSegment(value: 90, label: '90 kun'),
                   ],
-                  titlesData: FlTitlesData(
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          final index = value.toInt();
-                          if (index < 0 || index >= items.length) {
-                            return const SizedBox.shrink();
-                          }
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Text(
-                              items[index].month,
-                              style: const TextStyle(fontSize: 10),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    leftTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                  ),
-                  gridData: const FlGridData(show: false),
-                  borderData: FlBorderData(show: false),
+                  onChanged: (days) => setState(() {
+                    _days = days;
+                    _range = null;
+                  }),
                 ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.date_range_rounded, size: 18),
+                  label: Text(
+                    '${AppDateFormatter.display(from)} – ${AppDateFormatter.display(to)}',
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  onPressed: () async {
+                    final picked = await showDateRangePicker(
+                      context: context,
+                      initialDateRange: DateTimeRange(start: from, end: to),
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime(DateTime.now().year + 10, 12, 31),
+                    );
+                    if (picked != null && mounted) {
+                      setState(() => _range = picked);
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: _ReportLoader<InstallmentForecast>(
+              key: ValueKey('$currency-$from-$to'),
+              load: () => _repository.getInstallmentForecast(
+                currencyTypeId: currency,
+                dateFrom: from,
+                dateTo: to,
+              ),
+              builder: (context, report, reload) => _ReportList(
+                onRefresh: reload,
+                children: [
+                  _AmountTile(
+                    label: 'Kutilayotgan summa',
+                    amount: report.expectedAmount,
+                    currency: currency,
+                    color: context.colors.accentViolet,
+                    icon: Icons.calendar_month_rounded,
+                    wide: true,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _Metric(
+                          label: 'To‘lovlar',
+                          value: '${report.itemsCount} ta',
+                          icon: Icons.receipt_long_outlined,
+                          color: context.colors.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _Metric(
+                          label: 'Mijozlar',
+                          value: '${report.partnersCount} ta',
+                          icon: Icons.people_outline,
+                          color: context.colors.success,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _MonthlyPage extends StatefulWidget {
+  const _MonthlyPage({required this.initialCurrency});
+  final int initialCurrency;
+  @override
+  State<_MonthlyPage> createState() => _MonthlyPageState();
+}
+
+class _MonthlyPageState extends State<_MonthlyPage> {
+  int _year = DateTime.now().year;
+  @override
+  Widget build(BuildContext context) => _CurrencyReportPage(
+    title: 'Oylik dinamika',
+    initialCurrency: widget.initialCurrency,
+    builder: (currency) => Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                tooltip: 'Oldingi yil',
+                onPressed: () => setState(() => _year--),
+                icon: const Icon(Icons.chevron_left),
+              ),
+              Text(
+                '$_year',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              IconButton(
+                tooltip: 'Keyingi yil',
+                onPressed: () => setState(() => _year++),
+                icon: const Icon(Icons.chevron_right),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: _ReportLoader<List<MonthlyInstallmentStat>>(
+            key: ValueKey('$currency-$_year'),
+            load: () => _repository.getMonthlyInstallments(
+              year: _year,
+              currencyTypeId: currency,
+            ),
+            builder: (context, items, reload) => _ReportList(
+              onRefresh: reload,
+              children: [
+                _AmountTile(
+                  label: 'Jami to‘lovlar',
+                  amount: items.fold(
+                    Decimal.zero,
+                    (sum, item) => sum + item.amount,
+                  ),
+                  currency: currency,
+                  color: context.colors.primary,
+                  icon: Icons.bar_chart_rounded,
+                  wide: true,
+                ),
+                const SizedBox(height: 16),
+                if (items.isNotEmpty)
+                  AppCard(
+                    child: SizedBox(
+                      height: 210,
+                      child: BarChart(
+                        BarChartData(
+                          barGroups: [
+                            for (var i = 0; i < items.length; i++)
+                              BarChartGroupData(
+                                x: i,
+                                barRods: [
+                                  BarChartRodData(
+                                    toY: items[i].amount.toDouble(),
+                                    color: context.colors.primary,
+                                    width: 10,
+                                  ),
+                                ],
+                              ),
+                          ],
+                          titlesData: FlTitlesData(
+                            leftTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            topTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            rightTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                reservedSize: 28,
+                                getTitlesWidget: (value, meta) {
+                                  final index = value.toInt();
+                                  if (index < 0 || index >= items.length) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 6),
+                                    child: Text(
+                                      items[index].month,
+                                      style: const TextStyle(fontSize: 9),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          gridData: const FlGridData(show: false),
+                          borderData: FlBorderData(show: false),
+                        ),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 12),
+                if (items.isEmpty)
+                  const AppEmptyState(
+                    title: 'Ma’lumot yo‘q',
+                    icon: Icons.bar_chart_rounded,
+                  ),
+                for (final item in items)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: AppCard(
+                      hasShadow: false,
+                      child: Column(
+                        children: [
+                          _MoneyRow(
+                            label: item.month,
+                            amount: item.amount,
+                            currency: currency,
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              '${item.paymentsCount} ta to‘lov',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: context.colors.textSecondary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class _RiskyPage extends StatelessWidget {
+  const _RiskyPage({required this.initialCurrency});
+  final int initialCurrency;
+  @override
+  Widget build(BuildContext context) => _CurrencyReportPage(
+    title: 'Muammoli mijozlar',
+    initialCurrency: initialCurrency,
+    builder: (currency) => _ReportLoader<List<RiskyPartner>>(
+      key: ValueKey(currency),
+      load: () => _repository.getRiskyPartners(currency),
+      builder: (context, items, reload) => _ReportList(
+        onRefresh: reload,
+        children: [
+          if (items.isEmpty)
+            const AppEmptyState(
+              title: 'Muammoli mijozlar yo‘q',
+              icon: Icons.check_circle_outline_rounded,
+            ),
+          for (final item in items)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: AppCard(
+                hasShadow: false,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item.partnerName,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          item.riskLevel == 'high'
+                              ? 'Yuqori xavf'
+                              : item.riskLevel == 'medium'
+                              ? 'O‘rta xavf'
+                              : 'Past xavf',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: item.riskLevel == 'high'
+                                ? context.colors.error
+                                : context.colors.warning,
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (item.phone.isNotEmpty)
+                      Text(
+                        item.phone,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: context.colors.textSecondary,
+                        ),
+                      ),
+                    const SizedBox(height: 12),
+                    Text(
+                      '${item.overdueItems} ta kechikkan to‘lov · O‘rtacha ${item.averageDelayDays} kun',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: context.colors.textSecondary,
+                      ),
+                    ),
+                    _MoneyRow(
+                      label: 'Muddati o‘tgan',
+                      amount: item.overdueAmount ?? Decimal.zero,
+                      currency: currency,
+                      color: context.colors.error,
+                    ),
+                    _MoneyRow(
+                      label: 'Qolgan',
+                      amount: item.totalRemaining ?? Decimal.zero,
+                      currency: currency,
+                    ),
+                    Text(
+                      'Xavf balli: ${item.riskScore}',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    ),
+  );
+}
+
+class _PartnersPage extends StatelessWidget {
+  const _PartnersPage({required this.initialCurrency});
+  final int initialCurrency;
+  @override
+  Widget build(BuildContext context) => _CurrencyReportPage(
+    title: 'Mijozlar bo‘yicha',
+    initialCurrency: initialCurrency,
+    builder: (currency) => _PagedReport<InstallmentPartnerRanking>(
+      key: ValueKey(currency),
+      load: (page) => _repository.getInstallmentPartners(currency, page: page),
+      itemBuilder: (context, item) => AppCard(
+        hasShadow: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              item.partnerName,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+            ),
+            if (item.phone.isNotEmpty)
+              Text(
+                item.phone,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: context.colors.textSecondary,
+                ),
+              ),
+            const SizedBox(height: 8),
+            Text(
+              '${item.activePlans} ta faol reja',
+              style: TextStyle(fontSize: 12, color: context.colors.primary),
+            ),
+            _MoneyRow(
+              label: 'Berilgan',
+              amount: item.totalGiven,
+              currency: currency,
+            ),
+            _MoneyRow(
+              label: 'To‘langan',
+              amount: item.totalPaid ?? Decimal.zero,
+              currency: currency,
+              color: context.colors.success,
+            ),
+            _MoneyRow(
+              label: 'Qolgan',
+              amount: item.remaining,
+              currency: currency,
+            ),
+            if (item.lastPaymentAt != null)
+              Text(
+                'Oxirgi to‘lov: ${item.lastPaymentAt}',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: context.colors.textSecondary,
+                ),
+              ),
+            if (item.totalGiven > Decimal.zero) ...[
+              const SizedBox(height: 10),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: ((item.totalPaid ?? Decimal.zero) / item.totalGiven)
+                      .toDouble()
+                      .clamp(0, 1),
+                  color: context.colors.success,
+                  backgroundColor: context.colors.surfaceSecondary,
+                  minHeight: 6,
+                ),
+              ),
+              const SizedBox(height: 6),
+            ],
+            if (item.overdue > Decimal.zero)
+              _MoneyRow(
+                label: 'Muddati o‘tgan',
+                amount: item.overdue,
+                currency: currency,
+                color: context.colors.error,
+              ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+class _ItemsPage extends StatelessWidget {
+  const _ItemsPage({required this.currency, required this.status});
+  final int currency;
+  final String status;
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: Text(_statusLabel(status))),
+    body: SafeArea(
+      child: _PagedReport<InstallmentReportItem>(
+        load: (page) => _repository.getInstallmentReportItems(
+          currencyTypeId: currency,
+          status: status,
+          page: page,
+        ),
+        itemBuilder: (context, item) => AppCard(
+          hasShadow: false,
+          onTap: item.planId <= 0
+              ? null
+              : () => context.push(RoutePaths.installmentDetail(item.planId)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                item.partnerName,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${item.number}-qism${item.dueDate == null ? '' : ' · ${AppDateFormatter.display(item.dueDate!)}'}',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: context.colors.textSecondary,
+                ),
+              ),
+              _MoneyRow(
+                label: 'Summa',
+                amount: item.amount,
+                currency: currency,
+              ),
+              _MoneyRow(
+                label: 'To‘langan',
+                amount: item.paidAmount,
+                currency: currency,
+                color: context.colors.success,
+              ),
+              _MoneyRow(
+                label: 'Qolgan',
+                amount: item.remaining,
+                currency: currency,
+              ),
+              Text(
+                item.statusLabel,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: _statusColor(context, status),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class _PagedReport<T> extends StatefulWidget {
+  const _PagedReport({
+    super.key,
+    required this.load,
+    required this.itemBuilder,
+  });
+  final Future<ApiResult<SimplePage<T>>> Function(int page) load;
+  final Widget Function(BuildContext, T) itemBuilder;
+  @override
+  State<_PagedReport<T>> createState() => _PagedReportState<T>();
+}
+
+class _PagedReportState<T> extends State<_PagedReport<T>> {
+  final List<T> _items = [];
+  int _page = 0;
+  int _request = 0;
+  bool _hasMore = true;
+  bool _loading = true;
+  String? _error;
+  @override
+  void initState() {
+    super.initState();
+    _load(reset: true);
+  }
+
+  Future<void> _load({bool reset = false}) async {
+    if (!reset && (_loading || !_hasMore)) return;
+    final request = ++_request;
+    final page = reset ? 1 : _page + 1;
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    final result = await widget.load(page);
+    if (!mounted || request != _request) return;
+    setState(() {
+      _loading = false;
+      result.when(
+        success: (data) {
+          if (reset) _items.clear();
+          _items.addAll(data.items);
+          _page = page;
+          _hasMore = data.hasNext;
+        },
+        failure: (error) => _error = error.message,
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_page == 0 && _loading) return const AppSkeletonList();
+    if (_page == 0 && _error != null) {
+      return AppErrorState(
+        description: _error,
+        onRetry: () => _load(reset: true),
+      );
+    }
+    return _ReportList(
+      onRefresh: () => _load(reset: true),
+      children: [
+        if (_items.isEmpty)
+          const AppEmptyState(
+            title: 'Ma’lumot yo‘q',
+            icon: Icons.receipt_long_outlined,
+          ),
+        for (final item in _items)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: widget.itemBuilder(context, item),
+          ),
+        if (_hasMore)
+          Center(
+            child: _loading
+                ? const CircularProgressIndicator()
+                : TextButton(
+                    onPressed: () => _load(),
+                    child: Text(
+                      _error == null ? 'Yana yuklash' : 'Qayta urinish',
+                    ),
+                  ),
+          ),
+      ],
     );
   }
 }
@@ -801,85 +1200,33 @@ class _MoneyRow extends StatelessWidget {
   });
   final String label;
   final Decimal amount;
-  final String currency;
+  final int currency;
   final Color? color;
   @override
-  Widget build(BuildContext context) => Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Expanded(
-        child: Text(
-          label,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: context.colors.textSecondary),
-        ),
-      ),
-      const SizedBox(width: 12),
-      Flexible(
-        child: Text(
-          MoneyFormatter.format(amount, currencyLabel: currency),
-          textAlign: TextAlign.right,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color: color ?? context.colors.textPrimary,
-            fontWeight: FontWeight.w700,
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 7),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
           ),
         ),
-      ),
-    ],
-  );
-}
-
-class _EmptyReport extends StatelessWidget {
-  const _EmptyReport({required this.onRefresh, required this.currency});
-  final Future<void> Function() onRefresh;
-  final String currency;
-  @override
-  Widget build(BuildContext context) => RefreshIndicator(
-    onRefresh: onRefresh,
-    child: ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(16),
-      children: [
-        const SizedBox(height: 48),
-        AppEmptyState(
-          title: 'Bo‘lib to‘lash ma’lumoti yo‘q',
-          description: '$currency uchun hali hisobot mavjud emas.',
-          icon: Icons.credit_card_outlined,
-          actionLabel: 'Yangilash',
-          onAction: onRefresh,
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            _money(amount, currency),
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: color ?? context.colors.textPrimary,
+            ),
+          ),
         ),
       ],
     ),
-  );
-}
-
-class _SummarySkeleton extends StatelessWidget {
-  const _SummarySkeleton();
-  @override
-  Widget build(BuildContext context) => ListView(
-    padding: const EdgeInsets.all(16),
-    children: [
-      AppSkeletonBox(height: 110, borderRadius: BorderRadius.circular(22)),
-      const SizedBox(height: 12),
-      AppSkeletonBox(height: 110, borderRadius: BorderRadius.circular(18)),
-      const SizedBox(height: 10),
-      AppSkeletonBox(height: 50, borderRadius: BorderRadius.circular(16)),
-      const SizedBox(height: 20),
-      Row(
-        children: [
-          for (var i = 0; i < 3; i++)
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(right: i < 2 ? 8 : 0),
-                child: AppSkeletonBox(
-                  height: 80,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-            ),
-        ],
-      ),
-    ],
   );
 }

@@ -230,7 +230,8 @@ class _OverviewCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
+        border: Border.all(color: colors.borderSubtle),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -321,6 +322,7 @@ class _OverviewTile extends StatelessWidget {
                   child: Text(
                     '$value',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: context.colors.textPrimary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

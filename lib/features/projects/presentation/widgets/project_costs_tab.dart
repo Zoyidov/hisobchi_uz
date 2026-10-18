@@ -26,14 +26,18 @@ import 'worker_selection_sheet.dart';
 
 /// Tab C: Xarajatlar (MOBILE_APP_TZ.md 10.4-C).
 class ProjectCostsTab extends StatelessWidget {
-  const ProjectCostsTab({super.key, required this.projectId});
+  const ProjectCostsTab({super.key, required this.projectId, this.costTypeId});
+  final int? costTypeId;
   final int projectId;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          ProjectCostsCubit(getIt<ProjectsRepository>(), projectId)..load(),
+      create: (_) => ProjectCostsCubit(
+        getIt<ProjectsRepository>(),
+        projectId,
+        costTypeId: costTypeId,
+      )..load(),
       child: _View(projectId: projectId),
     );
   }

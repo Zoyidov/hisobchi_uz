@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/widgets/icons/app_edit_icon.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/constants/app_permission.dart';
 import '../../../../core/widgets/navigation/permission_guard.dart';
@@ -77,7 +78,7 @@ class _Loaded extends StatelessWidget {
         title: Text(project.projectName, overflow: TextOverflow.ellipsis),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit_outlined),
+            icon: const AppEditIcon(),
             onPressed: () async {
               await Navigator.of(context).push(
                 MaterialPageRoute<void>(

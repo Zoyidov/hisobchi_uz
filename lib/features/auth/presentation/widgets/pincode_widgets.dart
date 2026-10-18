@@ -77,14 +77,17 @@ class PincodeCapsulesViewState extends State<PincodeCapsulesView>
       duration: const Duration(milliseconds: 450),
     );
 
-    _shakeAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.0, end: -12.0), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: -12.0, end: 12.0), weight: 2),
-      TweenSequenceItem(tween: Tween(begin: 12.0, end: -8.0), weight: 2),
-      TweenSequenceItem(tween: Tween(begin: -8.0, end: 8.0), weight: 2),
-      TweenSequenceItem(tween: Tween(begin: 8.0, end: -4.0), weight: 2),
-      TweenSequenceItem(tween: Tween(begin: -4.0, end: 0.0), weight: 1),
-    ]).animate(CurvedAnimation(parent: _shakeController, curve: Curves.easeInOut));
+    _shakeAnimation =
+        TweenSequence<double>([
+          TweenSequenceItem(tween: Tween(begin: 0.0, end: -12.0), weight: 1),
+          TweenSequenceItem(tween: Tween(begin: -12.0, end: 12.0), weight: 2),
+          TweenSequenceItem(tween: Tween(begin: 12.0, end: -8.0), weight: 2),
+          TweenSequenceItem(tween: Tween(begin: -8.0, end: 8.0), weight: 2),
+          TweenSequenceItem(tween: Tween(begin: 8.0, end: -4.0), weight: 2),
+          TweenSequenceItem(tween: Tween(begin: -4.0, end: 0.0), weight: 1),
+        ]).animate(
+          CurvedAnimation(parent: _shakeController, curve: Curves.easeInOut),
+        );
   }
 
   @override
@@ -128,7 +131,10 @@ class PincodeCapsulesViewState extends State<PincodeCapsulesView>
           double capsuleWidth = 66.0;
           if (availableWidth < (4 * capsuleWidth + 3 * spacing + 32)) {
             spacing = 8.0;
-            capsuleWidth = math.max(48.0, (availableWidth - 32 - 3 * spacing) / 4);
+            capsuleWidth = math.max(
+              48.0,
+              (availableWidth - 32 - 3 * spacing) / 4,
+            );
           }
           final capsuleHeight = capsuleWidth * 1.72; // Stadium ratio ~1:1.72
 
@@ -151,13 +157,14 @@ class PincodeCapsulesViewState extends State<PincodeCapsulesView>
                   height: capsuleHeight,
                   decoration: BoxDecoration(
                     color: isDark
-                        ? (isFilled ? slotColor.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.03))
-                        : (isFilled ? slotColor.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.02)),
+                        ? (isFilled
+                              ? slotColor.withValues(alpha: 0.08)
+                              : Colors.white.withValues(alpha: 0.03))
+                        : (isFilled
+                              ? slotColor.withValues(alpha: 0.06)
+                              : Colors.black.withValues(alpha: 0.02)),
                     borderRadius: BorderRadius.circular(capsuleWidth / 2),
-                    border: Border.all(
-                      color: slotColor,
-                      width: 2.5,
-                    ),
+                    border: Border.all(color: slotColor, width: 2.5),
                     boxShadow: isFilled && isDark
                         ? [
                             BoxShadow(
@@ -181,7 +188,8 @@ class PincodeCapsulesViewState extends State<PincodeCapsulesView>
                           color: isDark ? Colors.white : slotColor,
                           boxShadow: [
                             BoxShadow(
-                              color: (isDark ? Colors.white : slotColor).withValues(alpha: 0.6),
+                              color: (isDark ? Colors.white : slotColor)
+                                  .withValues(alpha: 0.6),
                               blurRadius: 8,
                               spreadRadius: 1,
                             ),
@@ -256,9 +264,7 @@ class PincodeNumericKeypad extends StatelessWidget {
                     : const SizedBox(height: 60),
               ),
               // Bottom Center: Digit 0
-              Expanded(
-                child: _buildDigitKey('0', numberColor, colors),
-              ),
+              Expanded(child: _buildDigitKey('0', numberColor, colors)),
               // Bottom Right: Backspace Key
               Expanded(
                 child: _buildActionKey(
@@ -284,14 +290,24 @@ class PincodeNumericKeypad extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(List<String> digits, Color numberColor, AppColorsExtension colors) {
+  Widget _buildRow(
+    List<String> digits,
+    Color numberColor,
+    AppColorsExtension colors,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: digits.map((d) => Expanded(child: _buildDigitKey(d, numberColor, colors))).toList(),
+      children: digits
+          .map((d) => Expanded(child: _buildDigitKey(d, numberColor, colors)))
+          .toList(),
     );
   }
 
-  Widget _buildDigitKey(String digit, Color numberColor, AppColorsExtension colors) {
+  Widget _buildDigitKey(
+    String digit,
+    Color numberColor,
+    AppColorsExtension colors,
+  ) {
     return Center(
       child: Material(
         color: Colors.transparent,
@@ -312,7 +328,7 @@ class PincodeNumericKeypad extends StatelessWidget {
             child: Text(
               digit,
               style: TextStyle(
-                fontSize: 28,
+                fontSize: 36,
                 fontWeight: FontWeight.w700,
                 color: numberColor,
                 letterSpacing: -0.5,
@@ -346,11 +362,7 @@ class PincodeNumericKeypad extends StatelessWidget {
             width: 68,
             height: 60,
             alignment: Alignment.center,
-            child: Icon(
-              icon,
-              size: iconSize,
-              color: color,
-            ),
+            child: Icon(icon, size: iconSize, color: color),
           ),
         ),
       ),
@@ -386,10 +398,14 @@ class PincodePillButton extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             decoration: BoxDecoration(
-              color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.04),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.04),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: isDark ? Colors.white.withValues(alpha: 0.16) : Colors.black.withValues(alpha: 0.1),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.16)
+                    : Colors.black.withValues(alpha: 0.1),
                 width: 1,
               ),
             ),
@@ -411,11 +427,11 @@ class PincodePillButton extends StatelessWidget {
 
 /// Full Senior-Level PIN Screen Scaffold matching the uploaded screenshot:
 /// - Atmospheric luxury gradient background
-/// - Top bar: Security check label + Exit/Logout icon
-/// - Big bold greeting: "Hi, Faruxjon!"
-/// - Subtitle: "Enter your PIN"
+/// - Security label and exit action.
+/// - Greeting uses the signed-in user name when available.
+/// - PIN entry instructions.
 /// - 4 Neon Stadium Capsules
-/// - "Forgot PIN" Frosted Pill Button
+/// - PIN recovery action.
 /// - Custom In-App Numeric Keypad
 class PincodeScreenLayout extends StatelessWidget {
   const PincodeScreenLayout({
@@ -460,182 +476,167 @@ class PincodeScreenLayout extends StatelessWidget {
     final colors = context.colors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final bgGradient = isDark
-        ? const LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF0D1424),
-              Color(0xFF090D18),
-              Color(0xFF04060B),
-            ],
-          )
-        : const LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF8FAFC),
-              Color(0xFFF1F5F9),
-              Color(0xFFE2E8F0),
-            ],
-          );
-
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF090D18) : const Color(0xFFF8FAFC),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: bgGradient,
-        ),
-        child: Stack(
-          children: [
-            // Ambient Radial Glow for luxury depth
-            Positioned(
-              top: -60,
-              left: 0,
-              right: 0,
-              height: 380,
-              child: IgnorePointer(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: RadialGradient(
-                      center: const Alignment(0, -0.2),
-                      radius: 0.85,
-                      colors: [
-                        isDark ? const Color(0xFF1E293B).withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.8),
-                        Colors.transparent,
-                      ],
-                    ),
+      backgroundColor: colors.surface,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: const Alignment(-.9, -1),
+                    radius: 1.25,
+                    colors: [
+                      Color.alphaBlend(
+                        colors.primary.withValues(alpha: isDark ? .13 : .07),
+                        colors.surface,
+                      ),
+                      colors.surface,
+                    ],
+                    stops: const [0, .85],
                   ),
                 ),
               ),
             ),
-
-            SafeArea(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Top Bar
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              topLabel,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
-                                letterSpacing: -0.2,
-                              ),
+          ),
+          SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Top Bar
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            topLabel,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: isDark
+                                  ? const Color(0xFF94A3B8)
+                                  : const Color(0xFF64748B),
+                              letterSpacing: -0.2,
                             ),
-                            if (onExit != null)
-                              IconButton(
-                                visualDensity: VisualDensity.compact,
-                                icon: Icon(
-                                  exitIcon,
-                                  color: isDark ? Colors.white : const Color(0xFF0F172A),
-                                  size: 22,
+                          ),
+                          if (onExit != null)
+                            IconButton(
+                              visualDensity: VisualDensity.compact,
+                              icon: Icon(
+                                exitIcon,
+                                color: isDark
+                                    ? Colors.white
+                                    : const Color(0xFF0F172A),
+                                size: 22,
+                              ),
+                              onPressed: () {
+                                HapticFeedback.lightImpact();
+                                onExit?.call();
+                              },
+                            )
+                          else
+                            const SizedBox(width: 48, height: 48),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Greetings & Title
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.w800,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF0F172A),
+                              letterSpacing: -0.6,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            subtitle,
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              color: isDark
+                                  ? const Color(0xFF94A3B8)
+                                  : const Color(0xFF64748B),
+                              letterSpacing: -0.4,
+                            ),
+                          ),
+                          if (errorMessage != null &&
+                              errorMessage!.isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            AnimatedOpacity(
+                              duration: const Duration(milliseconds: 250),
+                              opacity: 1.0,
+                              child: Text(
+                                errorMessage!,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: colors.error,
                                 ),
-                                onPressed: () {
-                                  HapticFeedback.lightImpact();
-                                  onExit?.call();
-                                },
-                              )
-                            else
-                              const SizedBox(width: 48, height: 48),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      // Greetings & Title
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              title,
-                              style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.w800,
-                                color: isDark ? Colors.white : const Color(0xFF0F172A),
-                                letterSpacing: -0.6,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              subtitle,
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w700,
-                                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
-                                letterSpacing: -0.4,
-                              ),
-                            ),
-                            if (errorMessage != null && errorMessage!.isNotEmpty) ...[
-                              const SizedBox(height: 8),
-                              AnimatedOpacity(
-                                duration: const Duration(milliseconds: 250),
-                                opacity: 1.0,
-                                child: Text(
-                                  errorMessage!,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    color: colors.error,
-                                  ),
-                                ),
-                              ),
-                            ],
                           ],
-                        ),
+                        ],
                       ),
+                    ),
 
-                      const Spacer(flex: 1),
+                    const Spacer(flex: 1),
 
-                      // 4 Stadium Capsules
-                      PincodeCapsulesView(
-                        key: capsulesKey,
-                        code: code,
-                        length: 4,
-                        isError: isError,
-                      ),
+                    // 4 Stadium Capsules
+                    PincodeCapsulesView(
+                      key: capsulesKey,
+                      code: code,
+                      length: 4,
+                      isError: isError,
+                    ),
 
-                      const SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
-                      // Middle Pill Button (e.g. "Forgot PIN" or "Skip")
-                      if (pillButtonLabel != null && onPillButtonTap != null)
-                        PincodePillButton(
-                          label: pillButtonLabel!,
-                          onTap: onPillButtonTap!,
-                        )
-                      else
-                        const SizedBox(height: 44),
+                    // Middle Pill Button (e.g. "Forgot PIN" or "Skip")
+                    if (pillButtonLabel != null && onPillButtonTap != null)
+                      PincodePillButton(
+                        label: pillButtonLabel!,
+                        onTap: onPillButtonTap!,
+                      )
+                    else
+                      const SizedBox(height: 44),
 
-                      const Spacer(flex: 2),
+                    const Spacer(flex: 2),
 
-                      // Custom Numeric Keypad
-                      PincodeNumericKeypad(
-                        onDigit: onDigit,
-                        onBackspace: onBackspace,
-                        onLongPressBackspace: onLongPressBackspace,
-                        onBiometrics: onBiometrics,
-                        showBiometrics: showBiometrics,
-                      ),
+                    // Custom Numeric Keypad
+                    PincodeNumericKeypad(
+                      onDigit: onDigit,
+                      onBackspace: onBackspace,
+                      onLongPressBackspace: onLongPressBackspace,
+                      onBiometrics: onBiometrics,
+                      showBiometrics: showBiometrics,
+                    ),
 
-                      const SizedBox(height: 12),
-                    ],
-                  );
-                },
-              ),
+                    const SizedBox(height: 12),
+                  ],
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -22,14 +22,27 @@ class PartnerSummaryReport {
   final int creditorsCount;
   final int debtorsCount;
 
-  factory PartnerSummaryReport.fromJson(Map<String, dynamic> json) => PartnerSummaryReport(
+  factory PartnerSummaryReport.fromJson(Map<String, dynamic> json) =>
+      PartnerSummaryReport(
         debt: parseMoney(json['debt']),
         credit: parseMoney(json['credit']),
         balance: parseMoney(json['balance']),
-        partnersCount: json['partners_count'] as int? ?? 0,
-        operationsCount: (json['operations'] as Map<String, dynamic>?)?['count'] as int? ?? 0,
-        creditorsCount: (json['xaqdorlar'] as Map<String, dynamic>?)?['count'] as int? ?? 0,
-        debtorsCount: (json['qarzdorlar'] as Map<String, dynamic>?)?['count'] as int? ?? 0,
+        partnersCount: int.tryParse('${json['partners_count']}') ?? 0,
+        operationsCount:
+            int.tryParse(
+              '${(json['operations'] as Map<String, dynamic>?)?['count']}',
+            ) ??
+            0,
+        creditorsCount:
+            int.tryParse(
+              '${(json['xaqdorlar'] as Map<String, dynamic>?)?['count']}',
+            ) ??
+            0,
+        debtorsCount:
+            int.tryParse(
+              '${(json['qarzdorlar'] as Map<String, dynamic>?)?['count']}',
+            ) ??
+            0,
       );
 
   static final empty = PartnerSummaryReport(
@@ -45,14 +58,20 @@ class PartnerSummaryReport {
 
 /// Hisobot detali — hamkor balans bilan (MOBILE_APP_TZ.md 12.1-A: detail).
 class PartnerReportDetailItem {
-  const PartnerReportDetailItem({required this.partnerId, required this.partnerName, required this.balance});
+  const PartnerReportDetailItem({
+    required this.partnerId,
+    required this.partnerName,
+    required this.balance,
+  });
   final int partnerId;
   final String partnerName;
   final Decimal balance;
 
-  factory PartnerReportDetailItem.fromJson(Map<String, dynamic> json) => PartnerReportDetailItem(
-        partnerId: json['id'] as int? ?? json['partner_id'] as int? ?? 0,
-        partnerName: json['name'] as String? ?? json['partner_name'] as String? ?? '',
+  factory PartnerReportDetailItem.fromJson(Map<String, dynamic> json) =>
+      PartnerReportDetailItem(
+        partnerId: int.tryParse('${json['partner_id'] ?? json['id']}') ?? 0,
+        partnerName:
+            json['name'] as String? ?? json['partner_name'] as String? ?? '',
         balance: parseMoney(json['balance']),
       );
 }
@@ -63,8 +82,10 @@ class PeriodSummary {
   final Decimal debt;
   final Decimal credit;
 
-  factory PeriodSummary.fromJson(Map<String, dynamic> json) =>
-      PeriodSummary(debt: parseMoney(json['debt']), credit: parseMoney(json['credit']));
+  factory PeriodSummary.fromJson(Map<String, dynamic> json) => PeriodSummary(
+    debt: parseMoney(json['debt']),
+    credit: parseMoney(json['credit']),
+  );
 
   static final zero = PeriodSummary(debt: Decimal.zero, credit: Decimal.zero);
 }
@@ -87,7 +108,8 @@ class PeriodOperation {
   final String? description;
   final String? createdAt;
 
-  factory PeriodOperation.fromJson(Map<String, dynamic> json) => PeriodOperation(
+  factory PeriodOperation.fromJson(Map<String, dynamic> json) =>
+      PeriodOperation(
         id: json['id'] as int? ?? 0,
         partnerName: json['partner_name'] as String? ?? '',
         summa: parseMoney(json['summa']),
@@ -99,15 +121,29 @@ class PeriodOperation {
 
 /// Qarz muddatlari xulosasi (MOBILE_APP_TZ.md 12.1-C).
 class WarrantyPeriodsSummary {
-  const WarrantyPeriodsSummary({required this.expired, required this.today, required this.in3Days});
+  const WarrantyPeriodsSummary({
+    required this.expired,
+    required this.today,
+    required this.in3Days,
+  });
   final int expired;
   final int today;
   final int in3Days;
 
-  factory WarrantyPeriodsSummary.fromJson(Map<String, dynamic> json) => WarrantyPeriodsSummary(
-        expired: (json['qarz_expired'] as Map<String, dynamic>?)?['count'] as int? ?? json['qarz_expired'] as int? ?? 0,
-        today: (json['qarz_today'] as Map<String, dynamic>?)?['count'] as int? ?? json['qarz_today'] as int? ?? 0,
-        in3Days: (json['qarz_3_days'] as Map<String, dynamic>?)?['count'] as int? ?? json['qarz_3_days'] as int? ?? 0,
+  factory WarrantyPeriodsSummary.fromJson(Map<String, dynamic> json) =>
+      WarrantyPeriodsSummary(
+        expired:
+            (json['qarz_expired'] as Map<String, dynamic>?)?['count'] as int? ??
+            json['qarz_expired'] as int? ??
+            0,
+        today:
+            (json['qarz_today'] as Map<String, dynamic>?)?['count'] as int? ??
+            json['qarz_today'] as int? ??
+            0,
+        in3Days:
+            (json['qarz_3_days'] as Map<String, dynamic>?)?['count'] as int? ??
+            json['qarz_3_days'] as int? ??
+            0,
       );
 
   static const zero = WarrantyPeriodsSummary(expired: 0, today: 0, in3Days: 0);
@@ -131,7 +167,8 @@ class WorkerReportItem {
   final Decimal credit;
   final int operationsCount;
 
-  factory WorkerReportItem.fromJson(Map<String, dynamic> json) => WorkerReportItem(
+  factory WorkerReportItem.fromJson(Map<String, dynamic> json) =>
+      WorkerReportItem(
         id: json['id'] as int? ?? 0,
         name: json['name'] as String? ?? '',
         role: json['role'] as String?,
@@ -143,17 +180,19 @@ class WorkerReportItem {
 
 /// Hamkor detal hisoboti — V2, UZS va USD valyutalari bilan (GET /reports/partners-v2/partner-details/$id).
 class PartnerDetailsResult {
-  const PartnerDetailsResult({
-    required this.uzs,
-    required this.usd,
-  });
+  const PartnerDetailsResult({required this.uzs, required this.usd});
 
   final PartnerDetailsCurrencyReport uzs;
   final PartnerDetailsCurrencyReport usd;
 
-  factory PartnerDetailsResult.fromJson(Map<String, dynamic> json) => PartnerDetailsResult(
-        uzs: PartnerDetailsCurrencyReport.fromJson(json['UZS'] as Map<String, dynamic>? ?? const {}),
-        usd: PartnerDetailsCurrencyReport.fromJson(json['USD'] as Map<String, dynamic>? ?? const {}),
+  factory PartnerDetailsResult.fromJson(Map<String, dynamic> json) =>
+      PartnerDetailsResult(
+        uzs: PartnerDetailsCurrencyReport.fromJson(
+          json['UZS'] as Map<String, dynamic>? ?? const {},
+        ),
+        usd: PartnerDetailsCurrencyReport.fromJson(
+          json['USD'] as Map<String, dynamic>? ?? const {},
+        ),
       );
 }
 
@@ -187,7 +226,7 @@ class PartnerDetailsCurrencyReport {
 
   factory PartnerDetailsCurrencyReport.fromJson(Map<String, dynamic> json) {
     int parseCount(dynamic v) {
-      if (v is Map) return (v['count'] as num?)?.toInt() ?? 0;
+      if (v is Map) return int.tryParse('${v['count']}') ?? 0;
       if (v is num) return v.toInt();
       if (v is String) return int.tryParse(v) ?? 0;
       return 0;
@@ -197,7 +236,7 @@ class PartnerDetailsCurrencyReport {
       balance: parseMoney(json['balance']),
       income: parseMoney(json['income']),
       expense: parseMoney(json['expense']),
-      operationsCount: (json['operations_count'] as num?)?.toInt() ?? 0,
+      operationsCount: int.tryParse('${json['operations_count']}') ?? 0,
       qarzExpired: parseCount(json['qarz_expired']),
       qarzToday: parseCount(json['qarz_today']),
       qarz3Days: parseCount(json['qarz_3_days']),
@@ -216,7 +255,11 @@ class PartnerDetailsCurrencyReport {
 typedef PartnerDetailReport = PartnerDetailsCurrencyReport;
 
 class MonthlyStat {
-  const MonthlyStat({required this.label, required this.income, required this.expense});
+  const MonthlyStat({
+    required this.label,
+    required this.income,
+    required this.expense,
+  });
   final String label;
   final Decimal income;
   final Decimal expense;
@@ -225,10 +268,10 @@ class MonthlyStat {
   double get expenseDouble => expense.toDouble();
 
   factory MonthlyStat.fromJson(Map<String, dynamic> json) => MonthlyStat(
-        label: json['month'] as String? ?? json['label'] as String? ?? '',
-        income: parseMoney(json['income'] ?? json['debt']),
-        expense: parseMoney(json['expense'] ?? json['credit']),
-      );
+    label: json['month'] as String? ?? json['label'] as String? ?? '',
+    income: parseMoney(json['income'] ?? json['debt']),
+    expense: parseMoney(json['expense'] ?? json['credit']),
+  );
 }
 
 class BalancePoint {
@@ -239,8 +282,7 @@ class BalancePoint {
   double get balanceDouble => balance.toDouble();
 
   factory BalancePoint.fromJson(Map<String, dynamic> json) => BalancePoint(
-        label: json['date'] as String? ?? json['label'] as String? ?? '',
-        balance: parseMoney(json['balance']),
-      );
+    label: json['date'] as String? ?? json['label'] as String? ?? '',
+    balance: parseMoney(json['balance']),
+  );
 }
-

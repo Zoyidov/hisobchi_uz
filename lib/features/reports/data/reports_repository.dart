@@ -16,6 +16,75 @@ class ReportsRepository {
 
   // ---------------- Partners V3 ----------------
 
+  Future<ApiResult<Map<String, PartnerSummaryReport>>>
+  getPartnersSummaryReports() => _client.get(
+    ApiEndpoints.partnersV3Summary,
+    parse: (result) {
+      final map = result as Map<String, dynamic>;
+      return {
+        for (final currency in ['UZS', 'USD'])
+          currency: PartnerSummaryReport.fromJson(
+            map[currency] as Map<String, dynamic>? ?? const {},
+          ),
+      };
+    },
+  );
+
+  Future<ApiResult<SimplePage<PartnerOperation>>> getPartnersMainOperations({
+    required int currencyTypeId,
+    int page = 1,
+  }) => _operationPage(ApiEndpoints.partnerSummarySectionOne, {
+    'type': 'oparation',
+    'currency_type_id': currencyTypeId,
+    'page': page,
+  });
+
+  Future<ApiResult<SimplePage<PartnerOperation>>>
+  getPartnersWarrantyOperations({
+    required String type,
+    required int currencyTypeId,
+    int page = 1,
+  }) => _operationPage(ApiEndpoints.partnersV3WarrantyPeriodsDetails, {
+    'type': type,
+    'currency_type_id': currencyTypeId,
+    'page': page,
+  });
+
+  Future<ApiResult<SimplePage<PartnerOperation>>> getPartnersPeriodOperations({
+    required String type,
+    required int currencyTypeId,
+    required DateTime from,
+    required DateTime to,
+    int page = 1,
+  }) => _operationPage(ApiEndpoints.partnersV3PeriodsOperations, {
+    'type': type,
+    'currency_type_id': currencyTypeId,
+    'date[]': [
+      AppDateFormatter.toApiFilterDate(from),
+      AppDateFormatter.toApiFilterDate(to),
+    ],
+    'page': page,
+  });
+
+  Future<ApiResult<SimplePage<PartnerOperation>>> _operationPage(
+    String path,
+    Map<String, dynamic> query,
+  ) => _client.get(
+    path,
+    query: query,
+    parse: (result) {
+      final map = result as Map<String, dynamic>;
+      return SimplePage(
+        items: (map['data'] as List? ?? const [])
+            .map((e) => PartnerOperation.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        hasNext:
+            map['next_page_url'] != null ||
+            (map['links'] as Map<String, dynamic>?)?['next'] != null,
+      );
+    },
+  );
+
   Future<ApiResult<PartnerSummaryReport>> getPartnersSummary(
     int currencyTypeId,
   ) {
@@ -37,10 +106,23 @@ class ReportsRepository {
     required int currencyTypeId,
     int page = 1,
   }) {
-    return _client.getSimplePage(
-      ApiEndpoints.partnersV3SummaryDetails,
+    return _client.get(
+      ApiEndpoints.partnerSummarySectionTwo,
       query: {'type': type, 'currency_type_id': currencyTypeId, 'page': page},
-      fromJson: PartnerReportDetailItem.fromJson,
+      parse: (result) {
+        final map = result as Map<String, dynamic>;
+        return SimplePage(
+          items: (map['data'] as List? ?? const [])
+              .map(
+                (e) =>
+                    PartnerReportDetailItem.fromJson(e as Map<String, dynamic>),
+              )
+              .toList(),
+          hasNext:
+              map['next_page_url'] != null ||
+              (map['links'] as Map<String, dynamic>?)?['next'] != null,
+        );
+      },
     );
   }
 
@@ -50,9 +132,11 @@ class ReportsRepository {
   }) {
     return _client.get(
       ApiEndpoints.partnersV3Periods,
-      query: {
-        'date[0]': AppDateFormatter.toApiFilterDate(from),
-        'date[1]': AppDateFormatter.toApiFilterDate(to),
+      data: {
+        'date': [
+          AppDateFormatter.toApiFilterDate(from),
+          AppDateFormatter.toApiFilterDate(to),
+        ],
       },
       parse: (r) {
         final map = r as Map<String, dynamic>;
@@ -118,15 +202,43 @@ class ReportsRepository {
     );
   }
 
+  Future<ApiResult<Map<String, PeriodSummary>>> getWorkersSummary({
+    DateTime? from,
+    DateTime? to,
+  }) => _client.get(
+    ApiEndpoints.partnersV3Workers,
+    query: {
+      if (from != null && to != null)
+        'date[]': [
+          AppDateFormatter.toApiFilterDate(from),
+          AppDateFormatter.toApiFilterDate(to),
+        ],
+    },
+    parse: (result) {
+      final map = result as Map<String, dynamic>;
+      return {
+        for (final currency in ['UZS', 'USD'])
+          currency: PeriodSummary.fromJson(
+            map[currency] as Map<String, dynamic>? ?? const {},
+          ),
+      };
+    },
+  );
+
   Future<ApiResult<List<WorkerReportItem>>> getWorkersReport({
-    required DateTime from,
-    required DateTime to,
+    required int currencyTypeId,
+    DateTime? from,
+    DateTime? to,
   }) {
     return _client.getList(
       ApiEndpoints.partnersV3WorkersLists,
       query: {
-        'date[0]': AppDateFormatter.toApiFilterDate(from),
-        'date[1]': AppDateFormatter.toApiFilterDate(to),
+        'currency_type_id': currencyTypeId,
+        if (from != null && to != null)
+          'date[]': [
+            AppDateFormatter.toApiFilterDate(from),
+            AppDateFormatter.toApiFilterDate(to),
+          ],
       },
       fromJson: WorkerReportItem.fromJson,
     );
@@ -187,19 +299,48 @@ class ReportsRepository {
     return _client.get(
       ApiEndpoints.installmentReportSummary,
       query: {'currency_type_id': currencyTypeId},
-      parse: (r) => InstallmentReportSummary.fromJson(
-        r is List && r.isEmpty ? const {} : r as Map<String, dynamic>,
-      ),
+      parse: (result) {
+        if (result is List) {
+          // The API returns one summary per currency; never mix currencies.
+          for (final entry in result) {
+            final row = entry as Map<String, dynamic>;
+            if (int.tryParse('${row['currency_type_id']}') == currencyTypeId) {
+              return InstallmentReportSummary.fromJson(row);
+            }
+          }
+          return InstallmentReportSummary.fromJson(const {});
+        }
+        return InstallmentReportSummary.fromJson(
+          result as Map<String, dynamic>,
+        );
+      },
     );
   }
 
-  Future<ApiResult<List<InstallmentPartnerRanking>>> getInstallmentPartners(
-    int currencyTypeId,
-  ) {
-    return _client.getList(
+  Future<ApiResult<SimplePage<InstallmentPartnerRanking>>>
+  getInstallmentPartners(
+    int currencyTypeId, {
+    int page = 1,
+    String sort = 'remaining',
+  }) {
+    return _client.get(
       ApiEndpoints.installmentReportPartners,
-      query: {'currency_type_id': currencyTypeId},
-      fromJson: InstallmentPartnerRanking.fromJson,
+      query: {'currency_type_id': currencyTypeId, 'page': page, 'sort': sort},
+      parse: (result) {
+        final map = result as Map<String, dynamic>;
+        return SimplePage(
+          items: (map['data'] as List)
+              .map(
+                (item) => InstallmentPartnerRanking.fromJson(
+                  item as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
+          hasNext:
+              map['next_page_url'] != null ||
+              (map['links'] as Map<String, dynamic>?)?['next'] != null,
+        );
+      },
     );
   }
 
@@ -215,7 +356,8 @@ class ReportsRepository {
     return _client.get(
       ApiEndpoints.installmentReportRecovery,
       query: {'currency_type_id': currencyTypeId},
-      parse: (r) => RecoveryReport.fromJson(r as Map<String, dynamic>),
+      parse: (r) =>
+          RecoveryReport.fromJson(_installmentCurrencyRow(r, currencyTypeId)),
     );
   }
 
@@ -223,14 +365,93 @@ class ReportsRepository {
     required int year,
     int? currencyTypeId,
   }) {
-    return _client.getList(
+    return _client.get(
       ApiEndpoints.installmentReportMonthly,
       query: {
         'year': year,
         if (currencyTypeId != null) 'currency_type_id': currencyTypeId,
       },
-      fromJson: MonthlyInstallmentStat.fromJson,
+      parse: (result) {
+        final rows = result as List;
+        if (rows.isEmpty) return <MonthlyInstallmentStat>[];
+        if ((rows.first as Map<String, dynamic>).containsKey('months')) {
+          final row = _installmentCurrencyRow(rows, currencyTypeId ?? 1);
+          return (row['months'] as List? ?? const [])
+              .map(
+                (e) =>
+                    MonthlyInstallmentStat.fromJson(e as Map<String, dynamic>),
+              )
+              .toList();
+        }
+        return rows
+            .map(
+              (e) => MonthlyInstallmentStat.fromJson(e as Map<String, dynamic>),
+            )
+            .toList();
+      },
     );
+  }
+
+  Future<ApiResult<InstallmentForecast>> getInstallmentForecast({
+    required int currencyTypeId,
+    required DateTime dateFrom,
+    required DateTime dateTo,
+  }) {
+    return _client.get(
+      ApiEndpoints.installmentReportForecast,
+      query: {
+        'currency_type_id': currencyTypeId,
+        'date_from': AppDateFormatter.display(dateFrom),
+        'date_to': AppDateFormatter.display(dateTo),
+      },
+      parse: (result) => InstallmentForecast.fromJson(
+        _installmentCurrencyRow(result, currencyTypeId),
+      ),
+    );
+  }
+
+  Future<ApiResult<SimplePage<InstallmentReportItem>>>
+  getInstallmentReportItems({
+    required int currencyTypeId,
+    required String status,
+    int page = 1,
+  }) {
+    return _client.get(
+      ApiEndpoints.installmentReportItems,
+      query: {
+        'currency_type_id': currencyTypeId,
+        'status': status,
+        'page': page,
+      },
+      parse: (result) {
+        final map = result as Map<String, dynamic>;
+        return SimplePage(
+          items: (map['data'] as List? ?? const [])
+              .map(
+                (e) =>
+                    InstallmentReportItem.fromJson(e as Map<String, dynamic>),
+              )
+              .toList(),
+          hasNext:
+              map['next_page_url'] != null ||
+              (map['links'] as Map<String, dynamic>?)?['next'] != null,
+        );
+      },
+    );
+  }
+
+  static Map<String, dynamic> _installmentCurrencyRow(
+    dynamic result,
+    int currencyTypeId,
+  ) {
+    if (result is Map<String, dynamic>) return result;
+    for (final entry in result as List) {
+      final row = entry as Map<String, dynamic>;
+      if (int.tryParse('${row['currency_type_id']}') == currencyTypeId) {
+        return row;
+      }
+    }
+    return const {};
   }
 
   // ---------------- Projects ----------------

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/widgets/icons/app_edit_icon.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/sheets/app_bottom_sheet.dart';
@@ -26,19 +27,26 @@ Future<TransactionAction?> showTransactionActionSheet(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          MoneyText(wallet.summa, currencyTypeId: wallet.currencyTypeId, size: MoneySize.card),
+          MoneyText(
+            wallet.summa,
+            currencyTypeId: wallet.currencyTypeId,
+            size: MoneySize.card,
+          ),
           const SizedBox(height: AppSpacing.md),
           if (wallet.type == 'credit' && !wallet.isCancelled)
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.edit_outlined),
+              leading: const AppEditIcon(),
               title: const Text('Tahrirlash'),
               onTap: () => Navigator.of(context).pop(TransactionAction.edit),
             ),
           if (canCancel && !wallet.isCancelled)
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.cancel_outlined, color: context.colors.warning),
+              leading: Icon(
+                Icons.cancel_outlined,
+                color: context.colors.warning,
+              ),
               title: const Text('Bekor qilish'),
               onTap: () => Navigator.of(context).pop(TransactionAction.cancel),
             ),
@@ -46,7 +54,10 @@ Future<TransactionAction?> showTransactionActionSheet(
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: Icon(Icons.delete_outline, color: context.colors.error),
-              title: Text('O\'chirish', style: TextStyle(color: context.colors.error)),
+              title: Text(
+                'O\'chirish',
+                style: TextStyle(color: context.colors.error),
+              ),
               onTap: () => Navigator.of(context).pop(TransactionAction.delete),
             ),
         ],
@@ -56,7 +67,10 @@ Future<TransactionAction?> showTransactionActionSheet(
 }
 
 /// Bekor qilish sababi — UI da majburiy, kamida 3 belgi (MOBILE_APP_TZ.md 8.8, 28-bo'lim).
-Future<String?> showCancelTransactionSheet(BuildContext context, {Wallet? wallet}) {
+Future<String?> showCancelTransactionSheet(
+  BuildContext context, {
+  Wallet? wallet,
+}) {
   return showModalBottomSheet<String>(
     context: context,
     isScrollControlled: true,
@@ -70,10 +84,12 @@ class _CancelTransactionSheetContent extends StatefulWidget {
   final Wallet? wallet;
 
   @override
-  State<_CancelTransactionSheetContent> createState() => _CancelTransactionSheetContentState();
+  State<_CancelTransactionSheetContent> createState() =>
+      _CancelTransactionSheetContentState();
 }
 
-class _CancelTransactionSheetContentState extends State<_CancelTransactionSheetContent> {
+class _CancelTransactionSheetContentState
+    extends State<_CancelTransactionSheetContent> {
   late final TextEditingController _controller;
   String? _selectedPreset;
 
@@ -101,7 +117,9 @@ class _CancelTransactionSheetContentState extends State<_CancelTransactionSheetC
     setState(() {
       _selectedPreset = text;
       _controller.text = text;
-      _controller.selection = TextSelection.fromPosition(TextPosition(offset: text.length));
+      _controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: text.length),
+      );
     });
   }
 
@@ -166,7 +184,8 @@ class _CancelTransactionSheetContentState extends State<_CancelTransactionSheetC
                       children: [
                         Text(
                           'Tranzaksiyani bekor qilish',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 17,
                               ),
@@ -191,7 +210,11 @@ class _CancelTransactionSheetContentState extends State<_CancelTransactionSheetC
                         color: colors.surfaceSecondary,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(Icons.close_rounded, size: 16, color: colors.textSecondary),
+                      child: Icon(
+                        Icons.close_rounded,
+                        size: 16,
+                        color: colors.textSecondary,
+                      ),
                     ),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
@@ -202,11 +225,16 @@ class _CancelTransactionSheetContentState extends State<_CancelTransactionSheetC
               if (wallet != null) ...[
                 const SizedBox(height: AppSpacing.sm),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: colors.surfaceSecondary.withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: colors.border.withValues(alpha: 0.5)),
+                    border: Border.all(
+                      color: colors.border.withValues(alpha: 0.5),
+                    ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -214,15 +242,24 @@ class _CancelTransactionSheetContentState extends State<_CancelTransactionSheetC
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
                             decoration: BoxDecoration(
-                              color: (wallet.isExpense ? colors.error : colors.success).withValues(alpha: 0.12),
+                              color:
+                                  (wallet.isExpense
+                                          ? colors.error
+                                          : colors.success)
+                                      .withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               wallet.isExpense ? 'Chiqim' : 'Kirim',
                               style: TextStyle(
-                                color: wallet.isExpense ? colors.error : colors.success,
+                                color: wallet.isExpense
+                                    ? colors.error
+                                    : colors.success,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -231,7 +268,11 @@ class _CancelTransactionSheetContentState extends State<_CancelTransactionSheetC
                           const SizedBox(width: 8),
                           Text(
                             '#${wallet.id}',
-                            style: TextStyle(fontSize: 12, color: colors.textTertiary, fontWeight: FontWeight.w600),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colors.textTertiary,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),
@@ -240,7 +281,9 @@ class _CancelTransactionSheetContentState extends State<_CancelTransactionSheetC
                         currencyTypeId: wallet.currencyTypeId,
                         signed: true,
                         size: MoneySize.list,
-                        colorOverride: wallet.isExpense ? colors.error : colors.success,
+                        colorOverride: wallet.isExpense
+                            ? colors.error
+                            : colors.success,
                       ),
                     ],
                   ),
@@ -263,27 +306,37 @@ class _CancelTransactionSheetContentState extends State<_CancelTransactionSheetC
                 spacing: 6,
                 runSpacing: 6,
                 children: _presets.map((preset) {
-                  final isSelected = _selectedPreset == preset && _controller.text == preset;
+                  final isSelected =
+                      _selectedPreset == preset && _controller.text == preset;
                   return InkWell(
                     borderRadius: BorderRadius.circular(10),
                     onTap: () => _applyPreset(preset),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? colors.primary.withValues(alpha: 0.15)
                             : colors.surfaceSecondary.withValues(alpha: 0.7),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: isSelected ? colors.primary : colors.border.withValues(alpha: 0.6),
+                          color: isSelected
+                              ? colors.primary
+                              : colors.border.withValues(alpha: 0.6),
                         ),
                       ),
                       child: Text(
                         preset,
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                          color: isSelected ? colors.primary : colors.textPrimary,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                          color: isSelected
+                              ? colors.primary
+                              : colors.textPrimary,
                         ),
                       ),
                     ),
@@ -305,10 +358,15 @@ class _CancelTransactionSheetContentState extends State<_CancelTransactionSheetC
               const SizedBox(height: 6),
               Container(
                 decoration: BoxDecoration(
-                  color: isDark ? colors.surfaceSecondary : const Color(0xFFF1F5F9),
+                  color: isDark
+                      ? colors.surfaceSecondary
+                      : const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
                 child: TextField(
                   controller: _controller,
                   maxLines: 3,
@@ -319,8 +377,12 @@ class _CancelTransactionSheetContentState extends State<_CancelTransactionSheetC
                     border: InputBorder.none,
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
-                    hintText: 'Bekor qilish sababini yozing (kamida 3 belgi)...',
-                    hintStyle: TextStyle(fontSize: 13, color: colors.textTertiary),
+                    hintText:
+                        'Bekor qilish sababini yozing (kamida 3 belgi)...',
+                    hintStyle: TextStyle(
+                      fontSize: 13,
+                      color: colors.textTertiary,
+                    ),
                   ),
                 ),
               ),
@@ -332,8 +394,8 @@ class _CancelTransactionSheetContentState extends State<_CancelTransactionSheetC
                   _controller.text.trim().isEmpty
                       ? 'Kamida 3 ta belgi talab qilinadi'
                       : (_controller.text.trim().length < 3
-                          ? 'Yana ${3 - _controller.text.trim().length} ta belgi kiriting'
-                          : '✓ Sabab yetarli'),
+                            ? 'Yana ${3 - _controller.text.trim().length} ta belgi kiriting'
+                            : '✓ Sabab yetarli'),
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
@@ -351,7 +413,9 @@ class _CancelTransactionSheetContentState extends State<_CancelTransactionSheetC
                     flex: 1,
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         side: BorderSide(color: colors.border),
                       ),
@@ -372,19 +436,28 @@ class _CancelTransactionSheetContentState extends State<_CancelTransactionSheetC
                     child: FilledButton.icon(
                       style: FilledButton.styleFrom(
                         backgroundColor: colors.error,
-                        disabledBackgroundColor: colors.error.withValues(alpha: 0.35),
+                        disabledBackgroundColor: colors.error.withValues(
+                          alpha: 0.35,
+                        ),
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         elevation: 0,
                       ),
                       onPressed: isValid
-                          ? () => Navigator.of(context).pop(_controller.text.trim())
+                          ? () => Navigator.of(
+                              context,
+                            ).pop(_controller.text.trim())
                           : null,
                       icon: const Icon(Icons.cancel_outlined, size: 18),
                       label: const Text(
                         'Bekor qilish',
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                   ),
@@ -446,10 +519,10 @@ Future<bool?> showDeleteTransactionDialog(
                 'Tranzaksiyani o\'chirish',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 19,
-                      letterSpacing: -0.3,
-                    ),
+                  fontWeight: FontWeight.w800,
+                  fontSize: 19,
+                  letterSpacing: -0.3,
+                ),
               ),
               const SizedBox(height: 6),
 
@@ -470,9 +543,13 @@ Future<bool?> showDeleteTransactionDialog(
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: isDark ? colors.surfaceSecondary : const Color(0xFFF8FAFC),
+                  color: isDark
+                      ? colors.surfaceSecondary
+                      : const Color(0xFFF8FAFC),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: colors.border.withValues(alpha: 0.6)),
+                  border: Border.all(
+                    color: colors.border.withValues(alpha: 0.6),
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -480,9 +557,13 @@ Future<bool?> showDeleteTransactionDialog(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
-                            color: (isExpense ? colors.error : colors.success).withValues(alpha: 0.12),
+                            color: (isExpense ? colors.error : colors.success)
+                                .withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -532,15 +613,24 @@ Future<bool?> showDeleteTransactionDialog(
 
               // Warning Pill
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: colors.warning.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: colors.warning.withValues(alpha: 0.25)),
+                  border: Border.all(
+                    color: colors.warning.withValues(alpha: 0.25),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline_rounded, size: 16, color: colors.warning),
+                    Icon(
+                      Icons.info_outline_rounded,
+                      size: 16,
+                      color: colors.warning,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -567,7 +657,9 @@ Future<bool?> showDeleteTransactionDialog(
                     backgroundColor: colors.error,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 13),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                     elevation: 0,
                   ),
                   onPressed: () => Navigator.of(context).pop(true),
@@ -584,7 +676,9 @@ Future<bool?> showDeleteTransactionDialog(
                 child: TextButton(
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   onPressed: () => Navigator.of(context).pop(false),
                   child: Text(

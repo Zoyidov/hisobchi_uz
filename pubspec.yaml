@@ -1,7 +1,7 @@
 name: hisobchi_uz
 description: "E-Nazorat — kichik va o'rta biznes uchun moliyaviy hisobdorlik platformasi"
 publish_to: 'none'
-version: 1.0.0+3
+version: 1.0.2+2
 
 environment:
   sdk: ^3.12.2
@@ -65,6 +65,7 @@ dependencies:
   device_info_plus: ^11.2.0
   package_info_plus: ^8.1.2
   uuid: ^4.5.1
+  flutter_svg: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -84,5 +85,7 @@ flutter_launcher_icons:
   adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
 
 flutter:
+  assets:
+    - assets/icon/edit.svg
   uses-material-design: true
   generate: true

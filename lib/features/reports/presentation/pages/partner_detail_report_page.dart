@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 
 import '../../../../core/di/injector.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/states/app_error_state.dart';
 import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../../partners/data/partner_models.dart';
@@ -41,7 +40,8 @@ class PartnerDetailReportPage extends StatefulWidget {
   });
 
   @override
-  State<PartnerDetailReportPage> createState() => _PartnerDetailReportPageState();
+  State<PartnerDetailReportPage> createState() =>
+      _PartnerDetailReportPageState();
 }
 
 class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
@@ -52,6 +52,7 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
   PartnerDetailsResult? _report;
   bool _isLoading = true;
   String? _error;
+  int _request = 0;
 
   @override
   void initState() {
@@ -89,15 +90,17 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
   }
 
   Future<void> _load() async {
+    final request = ++_request;
     setState(() {
       _isLoading = true;
       _error = null;
     });
 
-    final result =
-        await getIt<ReportsRepository>().getPartnerDetailReport(widget.partnerId);
+    final result = await getIt<ReportsRepository>().getPartnerDetailReport(
+      widget.partnerId,
+    );
 
-    if (!mounted) return;
+    if (!mounted || request != _request) return;
 
     result.when(
       success: (r) => setState(() {
@@ -114,8 +117,9 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
   void _exportExcel() {
     downloadAndShareExcel(
       context,
-      download: () =>
-          getIt<PartnersRepository>().exportPartnerWalletsExcel(widget.partnerId),
+      download: () => getIt<PartnersRepository>().exportPartnerWalletsExcel(
+        widget.partnerId,
+      ),
       fileName: '${widget.partnerName}_hisobot.xlsx',
     );
   }
@@ -141,8 +145,11 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
     );
   }
 
-  void _navigateToHistory({required String type, required String currency}) {
-    Navigator.push(
+  Future<void> _navigateToHistory({
+    required String type,
+    required String currency,
+  }) async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PartnerHistoryWalletsPage(
@@ -154,6 +161,7 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
         ),
       ),
     );
+    if (mounted) await _load();
   }
 
   @override
@@ -164,19 +172,26 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
       backgroundColor: colors.background,
       appBar: AppBar(
         title: Text(
-          widget.partnerName,
+          widget.partnerName.trim().isEmpty
+              ? 'Hamkor hisoboti'
+              : widget.partnerName,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.3,
-              ),
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.3,
+          ),
         ),
         actions: [
           if (_mainTabController.index == 0)
             PopupMenuButton<int>(
               offset: const Offset(0, 48),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               color: colors.surface,
-              icon: Icon(CupertinoIcons.ellipsis_vertical, color: colors.textPrimary),
+              icon: Icon(
+                CupertinoIcons.ellipsis_vertical,
+                color: colors.textPrimary,
+              ),
               onSelected: (val) {
                 if (val == 1) _exportExcel();
               },
@@ -188,7 +203,11 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.file_download_outlined, color: colors.primary, size: 20),
+                      Icon(
+                        Icons.file_download_outlined,
+                        color: colors.primary,
+                        size: 20,
+                      ),
                       const SizedBox(width: 10),
                       Text(
                         'Excel hisobot',
@@ -255,8 +274,14 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
           ),
           labelColor: Colors.white,
           unselectedLabelColor: colors.textSecondary,
-          labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-          unselectedLabelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+          labelStyle: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
           dividerColor: Colors.transparent,
           indicatorSize: TabBarIndicatorSize.tab,
           tabs: const [
@@ -394,7 +419,7 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
                 _buildAnimatedItem(
                   index: 0,
                   child: BalanceCard(
-                    balance: report.balanceAmount,
+                    balance: report.balance,
                     currency: currency,
                     operationsCount: report.operationsCount,
                   ),
@@ -402,8 +427,8 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
                 _buildAnimatedItem(
                   index: 1,
                   child: SummaryGrid(
-                    totalIncome: report.incomeAmount,
-                    totalExpense: report.expenseAmount,
+                    totalIncome: report.income,
+                    totalExpense: report.expense,
                     operationsCount: report.operationsCount,
                     currency: currency,
                     onIncomeTap: () =>
@@ -425,23 +450,21 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
                         _handleDebtAgingTap("Yaqinlashmoqda", currency),
                   ),
                 ),
-                if (report.monthlyStatistics.isNotEmpty)
-                  _buildAnimatedItem(
-                    index: 3,
-                    child: MonthlyBarChart(
-                      stats: report.monthlyStatistics,
-                      currency: currency,
-                    ),
+                _buildAnimatedItem(
+                  index: 3,
+                  child: MonthlyBarChart(
+                    stats: report.monthlyStatistics,
+                    currency: currency,
                   ),
-                if (spots.isNotEmpty)
-                  _buildAnimatedItem(
-                    index: 4,
-                    child: BalanceLineChart(
-                      spots: spots,
-                      labels: labels,
-                      currency: currency,
-                    ),
+                ),
+                _buildAnimatedItem(
+                  index: 4,
+                  child: BalanceLineChart(
+                    spots: spots,
+                    labels: labels,
+                    currency: currency,
                   ),
+                ),
                 const SizedBox(height: 50),
               ],
             ),
@@ -473,7 +496,7 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
   final double height;
 
   _SliverTabBarDelegate({required this.child, required double height})
-      : height = height.roundToDouble();
+    : height = height.roundToDouble();
 
   @override
   double get minExtent => height;
@@ -486,8 +509,7 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
     BuildContext context,
     double shrinkOffset,
     bool overlapsContent,
-  ) =>
-      SizedBox.expand(child: child);
+  ) => SizedBox.expand(child: child);
 
   @override
   bool shouldRebuild(_SliverTabBarDelegate oldDelegate) =>
