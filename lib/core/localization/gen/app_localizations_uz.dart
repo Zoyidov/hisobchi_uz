@@ -9,7 +9,7 @@ class AppLocalizationsUz extends AppLocalizations {
   AppLocalizationsUz([String locale = 'uz']) : super(locale);
 
   @override
-  String get appName => 'PNazorat';
+  String get appName => 'Hisup';
 
   @override
   String get commonSave => 'Saqlash';

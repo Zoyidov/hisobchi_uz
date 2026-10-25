@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In uz, this message translates to:
-  /// **'PNazorat'**
+  /// **'Hisup'**
   String get appName;
 
   /// No description provided for @commonSave.

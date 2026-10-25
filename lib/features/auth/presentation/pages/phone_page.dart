@@ -1,3 +1,4 @@
+import '../../../../core/widgets/branding/hisup_logo.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -37,7 +38,8 @@ class _PhoneView extends StatefulWidget {
   State<_PhoneView> createState() => _PhoneViewState();
 }
 
-class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMixin {
+class _PhoneViewState extends State<_PhoneView>
+    with SingleTickerProviderStateMixin {
   final _phoneController = TextEditingController();
   final _displayController = TextEditingController();
   final _focusNode = FocusNode();
@@ -67,13 +69,10 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
       curve: Curves.easeOutCubic,
     );
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.04),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animController,
-      curve: Curves.easeOutCubic,
-    ));
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.04), end: Offset.zero).animate(
+          CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+        );
 
     _focusNode.addListener(() {
       setState(() {
@@ -93,7 +92,8 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
     super.dispose();
   }
 
-  bool get _canContinue => PhoneFormatter.isValid(_phoneController.text) && _agreed;
+  bool get _canContinue =>
+      PhoneFormatter.isValid(_phoneController.text) && _agreed;
 
   void _onInputChanged(String _) {
     final unmasked = _maskFormatter.getUnmaskedText();
@@ -117,7 +117,10 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
       body: BlocConsumer<PhoneCubit, PhoneState>(
         listener: (context, state) {
           if (state is PhoneNeedsOtp) {
-            context.push(RoutePaths.otp, extra: {'phone': state.phone, 'mode': 'register'});
+            context.push(
+              RoutePaths.otp,
+              extra: {'phone': state.phone, 'mode': 'register'},
+            );
           } else if (state is PhoneNeedsLogin) {
             context.push(RoutePaths.login, extra: {'phone': state.phone});
           } else if (state is PhoneError) {
@@ -145,7 +148,9 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          colors.primary.withValues(alpha: isDark ? 0.22 : 0.14),
+                          colors.primary.withValues(
+                            alpha: isDark ? 0.22 : 0.14,
+                          ),
                           colors.primary.withValues(alpha: 0.0),
                         ],
                       ),
@@ -164,7 +169,9 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          colors.accentViolet.withValues(alpha: isDark ? 0.15 : 0.08),
+                          colors.accentViolet.withValues(
+                            alpha: isDark ? 0.15 : 0.08,
+                          ),
                           colors.accentViolet.withValues(alpha: 0.0),
                         ],
                       ),
@@ -178,11 +185,16 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     return SingleChildScrollView(
-                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
                       physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.xl,
+                      ),
                       child: ConstrainedBox(
-                        constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                        ),
                         child: IntrinsicHeight(
                           child: FadeTransition(
                             opacity: _fadeAnimation,
@@ -193,55 +205,12 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
                                 children: [
                                   const SizedBox(height: AppSpacing.lg),
 
-                                  // Top Brand Pill Badge
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 6,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: colors.primaryContainer.withValues(
-                                            alpha: isDark ? 0.4 : 0.8,
-                                          ),
-                                          borderRadius: AppRadius.pillRadius,
-                                          border: Border.all(
-                                            color: colors.primary.withValues(alpha: 0.2),
-                                            width: 1,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Container(
-                                              width: 7,
-                                              height: 7,
-                                              decoration: BoxDecoration(
-                                                color: colors.primary,
-                                                shape: BoxShape.circle,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: colors.primary.withValues(alpha: 0.6),
-                                                    blurRadius: 6,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              'HISOBCHI.UZ • BIZNES TIZIMI',
-                                              style: TextStyle(
-                                                color: colors.primary,
-                                                fontSize: 10.5,
-                                                fontWeight: FontWeight.w800,
-                                                letterSpacing: 0.8,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
+                                  const Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: HisupLogo(
+                                      markSize: 68,
+                                      fontSize: 28,
+                                    ),
                                   ),
 
                                   const Spacer(flex: 2),
@@ -256,8 +225,12 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
                                           width: 76,
                                           height: 76,
                                           decoration: BoxDecoration(
-                                            color: colors.primary.withValues(alpha: 0.18),
-                                            borderRadius: BorderRadius.circular(26),
+                                            color: colors.primary.withValues(
+                                              alpha: 0.18,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              26,
+                                            ),
                                           ),
                                         ),
                                         Container(
@@ -269,22 +242,30 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
                                               end: Alignment.bottomRight,
                                               colors: [
                                                 colors.primary,
-                                                colors.primary.withValues(alpha: 0.85),
+                                                colors.primary.withValues(
+                                                  alpha: 0.85,
+                                                ),
                                               ],
                                             ),
-                                            borderRadius: BorderRadius.circular(22),
+                                            borderRadius: BorderRadius.circular(
+                                              22,
+                                            ),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: colors.primary.withValues(
-                                                  alpha: isDark ? 0.5 : 0.32,
-                                                ),
+                                                color: colors.primary
+                                                    .withValues(
+                                                      alpha: isDark
+                                                          ? 0.5
+                                                          : 0.32,
+                                                    ),
                                                 blurRadius: 18,
                                                 offset: const Offset(0, 8),
                                               ),
                                             ],
                                           ),
                                           child: const Icon(
-                                            Icons.account_balance_wallet_rounded,
+                                            Icons
+                                                .account_balance_wallet_rounded,
                                             size: 34,
                                             color: Colors.white,
                                           ),
@@ -298,7 +279,10 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
                                   // Headline & Subtitle
                                   Text(
                                     'Keling, boshlaymiz! 👋',
-                                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineLarge
+                                        ?.copyWith(
                                           fontSize: 28,
                                           fontWeight: FontWeight.w800,
                                           letterSpacing: -0.6,
@@ -379,7 +363,11 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
               if (hasValidPhone)
                 Row(
                   children: [
-                    Icon(Icons.check_circle_rounded, size: 14, color: colors.success),
+                    Icon(
+                      Icons.check_circle_rounded,
+                      size: 14,
+                      color: colors.success,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       'To\'g\'ri format',
@@ -407,14 +395,16 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
               color: _isFocused
                   ? colors.primary
                   : hasValidPhone
-                      ? colors.success.withValues(alpha: 0.6)
-                      : colors.border.withValues(alpha: 0.95),
+                  ? colors.success.withValues(alpha: 0.6)
+                  : colors.border.withValues(alpha: 0.95),
               width: _isFocused ? 1.8 : 1.2,
             ),
             boxShadow: _isFocused
                 ? [
                     BoxShadow(
-                      color: colors.primary.withValues(alpha: isDark ? 0.3 : 0.14),
+                      color: colors.primary.withValues(
+                        alpha: isDark ? 0.3 : 0.14,
+                      ),
                       blurRadius: 14,
                       offset: const Offset(0, 4),
                     ),
@@ -425,14 +415,16 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
             children: [
               // Country Code & Flag Pill
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
-                  color: colors.surfaceSecondary.withValues(alpha: isDark ? 0.7 : 0.9),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: colors.borderSubtle,
-                    width: 1,
+                  color: colors.surfaceSecondary.withValues(
+                    alpha: isDark ? 0.7 : 0.9,
                   ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: colors.borderSubtle, width: 1),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -494,7 +486,8 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
               // Action / Status Icon
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 200),
-                transitionBuilder: (child, anim) => ScaleTransition(scale: anim, child: child),
+                transitionBuilder: (child, anim) =>
+                    ScaleTransition(scale: anim, child: child),
                 child: hasValidPhone
                     ? Container(
                         key: const ValueKey('valid_badge'),
@@ -511,20 +504,20 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
                         ),
                       )
                     : _displayController.text.isNotEmpty
-                        ? InkWell(
-                            key: const ValueKey('clear_btn'),
-                            onTap: _clearInput,
-                            borderRadius: BorderRadius.circular(14),
-                            child: Padding(
-                              padding: const EdgeInsets.all(4),
-                              child: Icon(
-                                Icons.cancel_rounded,
-                                size: 20,
-                                color: colors.textTertiary,
-                              ),
-                            ),
-                          )
-                        : const SizedBox.shrink(key: ValueKey('empty_space')),
+                    ? InkWell(
+                        key: const ValueKey('clear_btn'),
+                        onTap: _clearInput,
+                        borderRadius: BorderRadius.circular(14),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: Icon(
+                            Icons.cancel_rounded,
+                            size: 20,
+                            color: colors.textTertiary,
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(key: ValueKey('empty_space')),
               ),
             ],
           ),
@@ -557,7 +550,9 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
                 color: _agreed ? colors.primary : Colors.transparent,
                 borderRadius: BorderRadius.circular(7),
                 border: Border.all(
-                  color: _agreed ? colors.primary : colors.textTertiary.withValues(alpha: 0.6),
+                  color: _agreed
+                      ? colors.primary
+                      : colors.textTertiary.withValues(alpha: 0.6),
                   width: 1.8,
                 ),
                 boxShadow: _agreed
@@ -596,7 +591,7 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
                         onTap: () => _showTermsModal(
                           context,
                           'Foydalanish shartlari',
-                          'Hisobchi.uz platformasidan foydalanish orqali siz barcha moliyaviy amaliyotlar shaffofligi, xavfsizlik talablari hamda xizmat ko\'rsatish qoidalariga rozilik bildirasiz.',
+                          'Hisup platformasidan foydalanish orqali siz barcha moliyaviy amaliyotlar shaffofligi, xavfsizlik talablari hamda xizmat ko\'rsatish qoidalariga rozilik bildirasiz.',
                         ),
                         child: Text(
                           'Foydalanish shartlari',
@@ -605,7 +600,9 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
                             fontWeight: FontWeight.w600,
                             color: colors.primary,
                             decoration: TextDecoration.underline,
-                            decorationColor: colors.primary.withValues(alpha: 0.4),
+                            decorationColor: colors.primary.withValues(
+                              alpha: 0.4,
+                            ),
                           ),
                         ),
                       ),
@@ -627,7 +624,9 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
                             fontWeight: FontWeight.w600,
                             color: colors.primary,
                             decoration: TextDecoration.underline,
-                            decorationColor: colors.primary.withValues(alpha: 0.4),
+                            decorationColor: colors.primary.withValues(
+                              alpha: 0.4,
+                            ),
                           ),
                         ),
                       ),
@@ -740,19 +739,12 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
         decoration: BoxDecoration(
           color: colors.surfaceSecondary.withValues(alpha: 0.5),
           borderRadius: AppRadius.pillRadius,
-          border: Border.all(
-            color: colors.borderSubtle,
-            width: 1,
-          ),
+          border: Border.all(color: colors.borderSubtle, width: 1),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.shield_outlined,
-              size: 15,
-              color: colors.textTertiary,
-            ),
+            Icon(Icons.shield_outlined, size: 15, color: colors.textTertiary),
             const SizedBox(width: 6),
             Text(
               '256-bit shifrlangan • Ma\'lumotlar to\'liq xavfsiz',
@@ -805,15 +797,19 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
                         color: colors.primaryContainer,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Icon(Icons.description_outlined, color: colors.primary, size: 22),
+                      child: Icon(
+                        Icons.description_outlined,
+                        color: colors.primary,
+                        size: 22,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         title,
                         style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ],
@@ -870,9 +866,9 @@ class _PhoneViewState extends State<_PhoneView> with SingleTickerProviderStateMi
               const SizedBox(height: 16),
               Text(
                 'Kirish cheklangan',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),

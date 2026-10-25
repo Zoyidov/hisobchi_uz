@@ -53,7 +53,7 @@ class _BankReceiptSheet extends StatelessWidget {
   String _buildShareText() {
     final isExpense = wallet.isExpense;
     final buffer = StringBuffer();
-    buffer.writeln('🧾 ELEKTRON TO\'LOV KVITANSIYASI — HISOBCHI.UZ');
+    buffer.writeln('🧾 ELEKTRON TO\'LOV KVITANSIYASI — Hisup');
     buffer.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     buffer.writeln('Chek raqami: № ${wallet.id.toString().padLeft(8, '0')}');
     buffer.writeln(
@@ -65,7 +65,9 @@ class _BankReceiptSheet extends StatelessWidget {
     buffer.writeln(
       'Summa: ${isExpense ? "-" : "+"}${MoneyFormatter.format(wallet.summa, currencyTypeId: wallet.currencyTypeId)}',
     );
-    buffer.writeln('Komissiya: 0 UZS (0%)');
+    buffer.writeln(
+      'Komissiya: 0 ${MoneyFormatter.currencyCode(wallet.currencyTypeId)} (0%)',
+    );
     buffer.writeln('Hamkor: ${partner.name}');
     if (partner.phone.isNotEmpty) {
       buffer.writeln('Telefon: ${PhoneFormatter.toDisplay(partner.phone)}');
@@ -90,7 +92,7 @@ class _BankReceiptSheet extends StatelessWidget {
       buffer.writeln('Bekor qilish sababi: ${wallet.cancelReason}');
     }
     buffer.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    buffer.writeln('E-Nazorat rasmiy bank standarti to\'lov hujjati');
+    buffer.writeln('Hisup rasmiy bank standarti to\'lov hujjati');
     return buffer.toString();
   }
 
@@ -272,7 +274,7 @@ class _BankReceiptSheet extends StatelessWidget {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'HISOBCHI.UZ',
+                                            'Hisup',
                                             style: TextStyle(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w900,
@@ -398,7 +400,7 @@ class _BankReceiptSheet extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    MoneyFormatter.format(wallet.summa),
+                                    MoneyFormatter.groupDigits(wallet.summa),
                                     style: TextStyle(
                                       fontSize: 34,
                                       fontWeight: FontWeight.w900,
@@ -429,7 +431,7 @@ class _BankReceiptSheet extends StatelessWidget {
 
                               // COMMISSION ROW
                               Text(
-                                'Komissiya: 0 UZS (0%)',
+                                'Komissiya: 0 ${MoneyFormatter.currencyCode(wallet.currencyTypeId)} (0%)',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: colors.textTertiary,
@@ -606,7 +608,7 @@ class _BankReceiptSheet extends StatelessWidget {
                                             ),
                                           ),
                                           Text(
-                                            'Hisobchi.uz moliyaviy hisobot tizimida qayd etilgan',
+                                            'Hisup moliyaviy hisobot tizimida qayd etilgan',
                                             style: TextStyle(
                                               fontSize: 11,
                                               color: colors.textTertiary,

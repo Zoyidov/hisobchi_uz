@@ -13,6 +13,7 @@ import '../../../../core/router/route_paths.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters/phone_formatter.dart';
 import '../../../../core/widgets/cards/app_card.dart';
+import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../../../core/widgets/inputs/app_search_field.dart';
 import '../../../../core/widgets/lists/app_paged_list_view.dart';
 import '../../../../core/widgets/media/app_avatar.dart';
@@ -259,6 +260,7 @@ class _PartnersListView extends StatelessWidget {
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 840),
                   child: AppPagedListView<Partner>(
+                    loadingMore: const _PartnerPaginationSkeleton(),
                     state: state,
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 110),
                     onLoadMore: cubit.loadMore,
@@ -629,5 +631,76 @@ class _Amount extends StatelessWidget {
                       ? amountColor(context, amount.toDouble())
                       : context.colors.textPrimary),
             ),
+  );
+}
+
+class _PartnerPaginationSkeleton extends StatelessWidget {
+  const _PartnerPaginationSkeleton();
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: 'Mijozlar yuklanmoqda',
+    child: Column(
+      children: [
+        for (var i = 0; i < 2; i++)
+          Padding(
+            padding: EdgeInsets.only(bottom: i == 0 ? 8 : 0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+              decoration: BoxDecoration(
+                color: Color.alphaBlend(
+                  context.colors.surfaceSecondary.withValues(alpha: .55),
+                  context.colors.surface,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: context.colors.borderSubtle),
+              ),
+              child: const Row(
+                children: [
+                  AppSkeletonBox(
+                    width: 36,
+                    height: 36,
+                    borderRadius: BorderRadius.all(Radius.circular(18)),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    flex: 6,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        FractionallySizedBox(
+                          widthFactor: .75,
+                          child: AppSkeletonBox(height: 14),
+                        ),
+                        SizedBox(height: 7),
+                        FractionallySizedBox(
+                          widthFactor: .95,
+                          child: AppSkeletonBox(height: 10),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 20),
+                  Expanded(
+                    flex: 5,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        AppSkeletonBox(height: 14),
+                        SizedBox(height: 7),
+                        FractionallySizedBox(
+                          widthFactor: .45,
+                          child: AppSkeletonBox(height: 10),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 22),
+                ],
+              ),
+            ),
+          ),
+      ],
+    ),
   );
 }

@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters/phone_formatter.dart';
 import '../../../../core/widgets/lists/app_paged_list_view.dart';
 import '../../../../core/widgets/media/app_avatar.dart';
+import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../../../core/widgets/sheets/app_bottom_sheet.dart';
 import '../../data/partner_models.dart';
 import '../../data/partners_repository.dart';
@@ -62,6 +63,7 @@ class _PartnerSearchList extends StatelessWidget {
                       return false;
                     },
                     child: AppPagedListView<Partner>(
+                      loadingMore: const _PartnerSearchLoading(),
                       state: state,
                       onLoadMore: cubit.loadMore,
                       onRefresh: cubit.loadFirst,
@@ -101,4 +103,57 @@ class _PartnerSearchList extends StatelessWidget {
       ),
     );
   }
+}
+
+class _PartnerSearchLoading extends StatelessWidget {
+  const _PartnerSearchLoading();
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: 'Hamkorlar yuklanmoqda',
+    child: const Column(
+      children: [
+        _PartnerSearchSkeletonRow(),
+        SizedBox(height: 8),
+        _PartnerSearchSkeletonRow(),
+      ],
+    ),
+  );
+}
+
+class _PartnerSearchSkeletonRow extends StatelessWidget {
+  const _PartnerSearchSkeletonRow();
+
+  @override
+  Widget build(BuildContext context) => const Padding(
+    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 14),
+    child: Row(
+      children: [
+        AppSkeletonBox(
+          width: 40,
+          height: 40,
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+        ),
+        SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FractionallySizedBox(
+                widthFactor: .6,
+                child: AppSkeletonBox(height: 15),
+              ),
+              SizedBox(height: 8),
+              FractionallySizedBox(
+                widthFactor: .8,
+                child: AppSkeletonBox(height: 12),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(width: 20),
+        AppSkeletonBox(width: 14, height: 18),
+      ],
+    ),
+  );
 }

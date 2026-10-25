@@ -12,7 +12,7 @@ import '../../../core/router/route_paths.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/cards/app_card.dart';
 import '../../../core/widgets/feedback/subscription_banner.dart';
-import '../../../core/widgets/media/app_avatar.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/widgets/states/app_error_state.dart';
 import '../../../core/widgets/states/app_skeleton.dart';
 import '../../notifications/presentation/cubit/notification_badge_cubit.dart';
@@ -137,7 +137,20 @@ class _DashboardHeader extends StatelessWidget {
             child: InkWell(
               borderRadius: BorderRadius.circular(24),
               onTap: () => context.go(RoutePaths.profile),
-              child: AppAvatar(name: user.name, size: 48),
+              child: Container(
+                width: 48,
+                height: 48,
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: colors.borderSubtle),
+                ),
+                child: SvgPicture.asset(
+                  'assets/icon/hisup_mark.svg',
+                  semanticsLabel: 'Hisup logosi',
+                ),
+              ),
             ),
           ),
           const SizedBox(width: 12),

@@ -156,7 +156,7 @@ class ForceUpdatePage extends StatelessWidget {
 
                     // Subtitle
                     Text(
-                      'Hisobchi.uz yangi moliyaviy imkoniyatlar, takomillashtirilgan xavfsizlik va yuqori tezlikka ega bo\'ldi. Davom ettirish uchun ilovani yangilang.',
+                      'Hisup yangi moliyaviy imkoniyatlar, takomillashtirilgan xavfsizlik va yuqori tezlikka ega bo\'ldi. Davom ettirish uchun ilovani yangilang.',
                       style: TextStyle(
                         color: colors.textSecondary,
                         fontSize: 14.5,

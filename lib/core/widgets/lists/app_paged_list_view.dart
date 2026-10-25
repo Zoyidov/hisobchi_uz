@@ -25,6 +25,7 @@ class AppPagedListView<T> extends StatelessWidget {
     this.onEmptyAction,
     this.padding = const EdgeInsets.all(AppSpacing.md),
     this.header,
+    this.loadingMore,
     this.controller,
     this.primary,
     this.physics,
@@ -42,6 +43,7 @@ class AppPagedListView<T> extends StatelessWidget {
   final VoidCallback? onEmptyAction;
   final EdgeInsetsGeometry padding;
   final Widget? header;
+  final Widget? loadingMore;
   final ScrollController? controller;
   final bool? primary;
   final ScrollPhysics? physics;
@@ -85,8 +87,11 @@ class AppPagedListView<T> extends StatelessWidget {
         if (notification.metrics.axis == Axis.vertical) {
           final metrics = notification.metrics;
           final threshold =
-              metrics.maxScrollExtent - (88 * AppPageSize.infiniteScrollThreshold);
-          if (metrics.pixels >= threshold && !state.isLoadingMore && state.hasNext) {
+              metrics.maxScrollExtent -
+              (88 * AppPageSize.infiniteScrollThreshold);
+          if (metrics.pixels >= threshold &&
+              !state.isLoadingMore &&
+              state.hasNext) {
             onLoadMore();
           }
         }
@@ -99,7 +104,8 @@ class AppPagedListView<T> extends StatelessWidget {
           primary: primary,
           physics: physics ?? const AlwaysScrollableScrollPhysics(),
           padding: padding,
-          itemCount: (header != null ? 1 : 0) +
+          itemCount:
+              (header != null ? 1 : 0) +
               state.items.length +
               (state.hasNext || state.isLoadingMore ? 1 : 0),
           separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
@@ -122,10 +128,11 @@ class AppPagedListView<T> extends StatelessWidget {
                   ),
                 );
               }
-              return const Padding(
-                padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
-                child: Center(child: CircularProgressIndicator()),
-              );
+              return loadingMore ??
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
             }
             return itemBuilder(context, state.items[i], i);
           },

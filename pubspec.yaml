@@ -1,7 +1,7 @@
 name: hisobchi_uz
-description: "E-Nazorat — kichik va o'rta biznes uchun moliyaviy hisobdorlik platformasi"
+description: "Hisup — kichik va o'rta biznes uchun moliyaviy hisobdorlik platformasi"
 publish_to: 'none'
-version: 1.0.2+2
+version: 1.0.3+3
 
 environment:
   sdk: ^3.12.2
@@ -81,11 +81,25 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/icon/app_icon.png"
-  adaptive_icon_background: "#1A73E8"
+  adaptive_icon_background: "#FFFFFF"
+  remove_alpha_ios: true
+  web:
+    generate: true
+    image_path: "assets/icon/app_icon.png"
+    background_color: "#FFFFFF"
+    theme_color: "#0751CC"
+  windows:
+    generate: true
+    image_path: "assets/icon/app_icon.png"
+    icon_size: 256
+  macos:
+    generate: true
+    image_path: "assets/icon/app_icon.png"
   adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
 
 flutter:
   assets:
     - assets/icon/edit.svg
+    - assets/icon/hisup_mark.svg
   uses-material-design: true
   generate: true

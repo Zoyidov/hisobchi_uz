@@ -323,7 +323,7 @@ class _RegisterViewState extends State<_RegisterView> with SingleTickerProviderS
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Hisobchi.uz biznes tizimida shaxsiy profilingizni shakllantiring.',
+                            'Hisup biznes tizimida shaxsiy profilingizni shakllantiring.',
                             style: TextStyle(
                               color: colors.textSecondary,
                               fontSize: 14.5,

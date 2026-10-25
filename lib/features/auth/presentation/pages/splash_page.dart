@@ -1,3 +1,4 @@
+import '../../../../core/widgets/branding/hisup_logo.dart';
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
@@ -24,7 +25,8 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
+class _SplashPageState extends State<SplashPage>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _scaleAnim;
   late final Animation<double> _fadeAnim;
@@ -37,12 +39,16 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
       duration: const Duration(milliseconds: 900),
     );
 
-    _scaleAnim = Tween<double>(begin: 0.82, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-    );
+    _scaleAnim = Tween<double>(
+      begin: 0.82,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
     _fadeAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.7, curve: Curves.easeOut)),
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.7, curve: Curves.easeOut),
+      ),
     );
 
     _controller.forward();
@@ -63,7 +69,9 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     final userCubit = context.read<UserCubit>();
 
     // Kamida 1.2 soniya silliq splash animatsiyasi ko'rinishi uchun
-    final minSplashWait = Future<void>.delayed(const Duration(milliseconds: 1200));
+    final minSplashWait = Future<void>.delayed(
+      const Duration(milliseconds: 1200),
+    );
 
     // TODO: Versiya tekshiruvini qayta yoqish kerak (app store ga chiqarilganda)
     // try {
@@ -123,8 +131,11 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     } else {
       if (user.isStaff && user.worksFor.isNotEmpty) {
         await context.read<OwnerContextCubit>().switchTo(
-              OwnerContext(ownerId: user.worksFor.first.ownerId, ownerName: user.worksFor.first.ownerName),
-            );
+          OwnerContext(
+            ownerId: user.worksFor.first.ownerId,
+            ownerName: user.worksFor.first.ownerName,
+          ),
+        );
       }
       if (!mounted) return;
       context.go(RoutePaths.dashboard);
@@ -164,11 +175,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
         children: [
           // 1. Theme-Adaptive Gradient Background
           Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: bgGradient,
-              ),
-            ),
+            child: Container(decoration: BoxDecoration(gradient: bgGradient)),
           ),
 
           // 2. Ambient Glow Mesh Spheres
@@ -215,118 +222,14 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
               builder: (context, child) {
                 return Opacity(
                   opacity: _fadeAnim.value,
-                  child: Transform.scale(
-                    scale: _scaleAnim.value,
-                    child: child,
-                  ),
+                  child: Transform.scale(scale: _scaleAnim.value, child: child),
                 );
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Glassmorphic Glowing Logo Card
-                  Container(
-                    width: 92,
-                    height: 92,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          colors.primary,
-                          colors.onPrimaryContainer,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(26),
-                      boxShadow: [
-                        BoxShadow(
-                          color: colors.primary.withValues(alpha: isDark ? 0.45 : 0.28),
-                          blurRadius: 32,
-                          spreadRadius: 2,
-                          offset: const Offset(0, 10),
-                        ),
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.35),
-                        width: 1.2,
-                      ),
-                    ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Positioned(
-                          top: 14,
-                          left: 14,
-                          child: Container(
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white.withValues(alpha: 0.15),
-                            ),
-                          ),
-                        ),
-                        const Icon(
-                          CupertinoIcons.chart_pie_fill,
-                          size: 46,
-                          color: Colors.white,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Brand Name
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Hisobchi',
-                        style: TextStyle(
-                          color: isDark ? Colors.white : colors.textPrimary,
-                          fontSize: 30,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.6,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              colors.primary,
-                              colors.onPrimaryContainer,
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.3)
-                                : colors.primary.withValues(alpha: 0.2),
-                          ),
-                        ),
-                        child: const Text(
-                          '.uz',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.2,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 8),
+                  const HisupLogo(markSize: 132, fontSize: 46),
+                  const SizedBox(height: 14),
 
                   // Subtitle
                   Text(
