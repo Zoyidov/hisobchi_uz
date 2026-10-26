@@ -26,10 +26,8 @@ class OwnerContextCubit extends Cubit<OwnerContext> {
 
   Future<void> restore() async {
     final saved = await _secureStorage.readOwnerContext();
-    if (saved != null) {
-      final id = int.tryParse(saved);
-      if (id != null) emit(OwnerContext(ownerId: id));
-    }
+    final id = saved == null ? null : int.tryParse(saved);
+    emit(id == null ? OwnerContext.own : OwnerContext(ownerId: id));
   }
 
   Future<void> switchTo(OwnerContext context) async {

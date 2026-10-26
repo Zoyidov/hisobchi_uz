@@ -3,13 +3,16 @@ import '../../../core/domain/entities/auth_results.dart';
 import '../../../core/domain/entities/user_entity.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_result.dart';
+import '../../../core/storage/secure_storage_service.dart';
 
 /// Xom API chaqiruvlari — model/parse mantiqi shu yerda, biznes qoidalar
 /// repository qatlamida (MOBILE_APP_TZ.md bo'lim 5).
 class AuthRemoteDataSource {
-  AuthRemoteDataSource(this._client);
+  AuthRemoteDataSource(this._client, {SecureStorageService? secureStorage})
+    : _secureStorage = secureStorage ?? SecureStorageService();
 
   final ApiClient _client;
+  final SecureStorageService _secureStorage;
 
   Future<ApiResult<VersionCheckResult>> checkVersion({
     required String appVersion,
@@ -31,10 +34,17 @@ class AuthRemoteDataSource {
   }
 
   Future<ApiResult<void>> sendOtp(String phone) {
-    return _client.post(ApiEndpoints.otp, data: {'phone': phone}, parse: (_) {});
+    return _client.post(
+      ApiEndpoints.otp,
+      data: {'phone': phone},
+      parse: (_) {},
+    );
   }
 
-  Future<ApiResult<OtpVerifyResult>> verifyOtp({required String phone, required String otpCode}) {
+  Future<ApiResult<OtpVerifyResult>> verifyOtp({
+    required String phone,
+    required String otpCode,
+  }) {
     return _client.post(
       ApiEndpoints.otpVerify,
       data: {'phone': phone, 'otp_code': otpCode},
@@ -78,19 +88,32 @@ class AuthRemoteDataSource {
   }
 
   Future<ApiResult<void>> deleteAccount() async {
-    final deleteResult = await _client.delete(ApiEndpoints.deleteAccount, parse: (_) {});
+    final deleteResult = await _client.delete(
+      ApiEndpoints.deleteAccount,
+      parse: (_) {},
+    );
     if (deleteResult.isSuccess) {
       return deleteResult;
     }
-    final postResult = await _client.post(ApiEndpoints.deleteAccount, parse: (_) {});
+    final postResult = await _client.post(
+      ApiEndpoints.deleteAccount,
+      parse: (_) {},
+    );
     if (postResult.isSuccess) {
       return postResult;
     }
     return deleteResult;
   }
 
-  Future<ApiResult<void>> updateAppSettings(int userId, Map<String, dynamic> body) {
-    return _client.post(ApiEndpoints.appSettings(userId), data: body, parse: (_) {});
+  Future<ApiResult<void>> updateAppSettings(
+    int userId,
+    Map<String, dynamic> body,
+  ) {
+    return _client.post(
+      ApiEndpoints.appSettings(userId),
+      data: body,
+      parse: (_) {},
+    );
   }
 
   Future<ApiResult<bool>> verifyPincode(int userId, String pincode) {
@@ -102,10 +125,17 @@ class AuthRemoteDataSource {
   }
 
   Future<ApiResult<void>> updateProfileInfo(String name) {
-    return _client.put(ApiEndpoints.updateProfileInfo, data: {'name': name}, parse: (_) {});
+    return _client.put(
+      ApiEndpoints.updateProfileInfo,
+      data: {'name': name},
+      parse: (_) {},
+    );
   }
 
-  Future<ApiResult<void>> updatePassword(String oldPassword, String newPassword) {
+  Future<ApiResult<void>> updatePassword(
+    String oldPassword,
+    String newPassword,
+  ) {
     return _client.post(
       ApiEndpoints.updatePassword,
       data: {'old_password': oldPassword, 'new_password': newPassword},
@@ -121,7 +151,10 @@ class AuthRemoteDataSource {
     );
   }
 
-  Future<ApiResult<void>> updateProfilePhoneCheckOtp(String phone, String otpCode) {
+  Future<ApiResult<void>> updateProfilePhoneCheckOtp(
+    String phone,
+    String otpCode,
+  ) {
     return _client.post(
       ApiEndpoints.updateProfilePhoneCheckOtp,
       data: {'phone': phone, 'otp_code': otpCode},
@@ -129,5 +162,12 @@ class AuthRemoteDataSource {
     );
   }
 
-  Future<ApiResult<void>> activateOwnAccount() => _client.post(ApiEndpoints.activateOwnAccount, parse: (_) {});
+  Future<ApiResult<void>> activateOwnAccount() async {
+    final token = await _secureStorage.readToken();
+    return _client.post(
+      ApiEndpoints.activateOwnAccount,
+      data: {'token': token},
+      parse: (_) {},
+    );
+  }
 }

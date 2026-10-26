@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +11,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/formatters/phone_formatter.dart';
+import '../../../../core/widgets/branding/hisup_logo.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/feedback/app_snackbar.dart';
 import '../auth_navigation.dart';
@@ -226,54 +226,14 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
 
                                   const Spacer(flex: 2),
 
-                                  // Hero Visual Icon with Multi-layer Glow
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        Container(
-                                          width: 76,
-                                          height: 76,
-                                          decoration: BoxDecoration(
-                                            color: colors.primary.withValues(alpha: 0.18),
-                                            borderRadius: BorderRadius.circular(26),
-                                          ),
-                                        ),
-                                        Container(
-                                          width: 68,
-                                          height: 68,
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                              colors: [
-                                                colors.primary,
-                                                colors.primary.withValues(alpha: 0.85),
-                                              ],
-                                            ),
-                                            borderRadius: BorderRadius.circular(22),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: colors.primary.withValues(
-                                                  alpha: isDark ? 0.5 : 0.32,
-                                                ),
-                                                blurRadius: 18,
-                                                offset: const Offset(0, 8),
-                                              ),
-                                            ],
-                                          ),
-                                          child: const Icon(
-                                            Icons.lock_rounded,
-                                            size: 32,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
+                                  const Center(
+                                    child: HisupLogo(
+                                      markSize: 104,
+                                      fontSize: 36,
                                     ),
                                   ),
 
-                                  const SizedBox(height: AppSpacing.xl),
+                                  const SizedBox(height: AppSpacing.xxl),
 
                                   // Headings
                                   Text(
@@ -431,6 +391,7 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                                               child: TextField(
                                                 controller: _passwordController,
                                                 focusNode: _focusNode,
+                                                onTapOutside: (_) => _focusNode.unfocus(),
                                                 autofocus: true,
                                                 obscureText: _obscure,
                                                 onChanged: (_) => setState(() {}),

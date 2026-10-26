@@ -1,7 +1,7 @@
 name: hisobchi_uz
 description: "Hisup — kichik va o'rta biznes uchun moliyaviy hisobdorlik platformasi"
 publish_to: 'none'
-version: 1.0.3+3
+version: 1.0.4+4
 
 environment:
   sdk: ^3.12.2
@@ -83,6 +83,7 @@ flutter_launcher_icons:
   image_path: "assets/icon/app_icon.png"
   adaptive_icon_background: "#FFFFFF"
   remove_alpha_ios: true
+  image_path_ios_dark_transparent: "assets/icon/app_icon_dark_transparent.png"
   web:
     generate: true
     image_path: "assets/icon/app_icon.png"
@@ -101,5 +102,6 @@ flutter:
   assets:
     - assets/icon/edit.svg
     - assets/icon/hisup_mark.svg
+    - assets/icon/hisup_mark_dark.svg
   uses-material-design: true
   generate: true

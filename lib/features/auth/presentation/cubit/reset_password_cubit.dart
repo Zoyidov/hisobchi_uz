@@ -35,7 +35,8 @@ class ResetPasswordFailed extends ResetPasswordState {
 /// Parolni tiklash — javobda token keladi, qayta login talab qilinmaydi
 /// (MOBILE_APP_TZ.md 5.7).
 class ResetPasswordCubit extends Cubit<ResetPasswordState> {
-  ResetPasswordCubit(this._authRepository) : super(const ResetPasswordInitial());
+  ResetPasswordCubit(this._authRepository)
+    : super(const ResetPasswordInitial());
 
   final AuthRepository _authRepository;
 
@@ -44,6 +45,7 @@ class ResetPasswordCubit extends Cubit<ResetPasswordState> {
     required String otpCode,
     required String password,
   }) async {
+    if (state is ResetPasswordSubmitting) return;
     emit(const ResetPasswordSubmitting());
     final result = await _authRepository.resetPassword(
       phone: phone,

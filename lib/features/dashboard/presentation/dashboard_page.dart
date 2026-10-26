@@ -128,6 +128,7 @@ class _DashboardHeader extends StatelessWidget {
     final user = context.watch<UserCubit>().currentUserOrNull;
     final owner = context.watch<OwnerContextCubit>().state;
     final colors = context.colors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       children: [
         if (user != null) ...[
@@ -142,12 +143,14 @@ class _DashboardHeader extends StatelessWidget {
                 height: 48,
                 padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? colors.surface : Colors.white,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: colors.borderSubtle),
                 ),
                 child: SvgPicture.asset(
-                  'assets/icon/hisup_mark.svg',
+                  isDark
+                      ? 'assets/icon/hisup_mark_dark.svg'
+                      : 'assets/icon/hisup_mark.svg',
                   semanticsLabel: 'Hisup logosi',
                 ),
               ),

@@ -1,5 +1,4 @@
 import '../../../../core/widgets/branding/hisup_logo.dart';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -205,76 +204,16 @@ class _PhoneViewState extends State<_PhoneView>
                                 children: [
                                   const SizedBox(height: AppSpacing.lg),
 
-                                  const Align(
-                                    alignment: Alignment.centerLeft,
+                                  const Spacer(),
+
+                                  const Center(
                                     child: HisupLogo(
-                                      markSize: 68,
-                                      fontSize: 28,
+                                      markSize: 104,
+                                      fontSize: 36,
                                     ),
                                   ),
 
-                                  const Spacer(flex: 2),
-
-                                  // Hero Visual Icon with Multi-layer Glow
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        Container(
-                                          width: 76,
-                                          height: 76,
-                                          decoration: BoxDecoration(
-                                            color: colors.primary.withValues(
-                                              alpha: 0.18,
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              26,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          width: 68,
-                                          height: 68,
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                              colors: [
-                                                colors.primary,
-                                                colors.primary.withValues(
-                                                  alpha: 0.85,
-                                                ),
-                                              ],
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              22,
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: colors.primary
-                                                    .withValues(
-                                                      alpha: isDark
-                                                          ? 0.5
-                                                          : 0.32,
-                                                    ),
-                                                blurRadius: 18,
-                                                offset: const Offset(0, 8),
-                                              ),
-                                            ],
-                                          ),
-                                          child: const Icon(
-                                            Icons
-                                                .account_balance_wallet_rounded,
-                                            size: 34,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: AppSpacing.xl),
+                                  const SizedBox(height: AppSpacing.xxl),
 
                                   // Headline & Subtitle
                                   Text(
@@ -455,6 +394,7 @@ class _PhoneViewState extends State<_PhoneView>
                   keyboardType: TextInputType.phone,
                   inputFormatters: [_maskFormatter],
                   onChanged: _onInputChanged,
+                  onTapOutside: (_) => _focusNode.unfocus(),
                   style: TextStyle(
                     fontSize: 17.5,
                     fontWeight: FontWeight.w700,

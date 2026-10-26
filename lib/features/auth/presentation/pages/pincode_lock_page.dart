@@ -7,6 +7,7 @@ import '../../../../core/cubits/user_cubit.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/router/route_paths.dart';
 import '../../../../core/storage/secure_storage_service.dart';
+import '../../../../core/widgets/states/app_error_state.dart';
 import '../auth_navigation.dart';
 import '../cubit/pincode_lock_cubit.dart';
 import '../widgets/pincode_widgets.dart';
@@ -34,6 +35,7 @@ class _PincodeLockView extends StatefulWidget {
 
 class _PincodeLockViewState extends State<_PincodeLockView> {
   String _code = '';
+  bool _loadFailed = false;
   final _capsulesKey = GlobalKey<PincodeCapsulesViewState>();
 
   @override
@@ -45,9 +47,14 @@ class _PincodeLockViewState extends State<_PincodeLockView> {
   }
 
   Future<void> _onUnlocked() async {
+    if (_loadFailed) setState(() => _loadFailed = false);
     await context.read<UserCubit>().loadMe();
     if (!mounted) return;
-    AuthNavigation.goToNextAfterPincode(context);
+    if (context.read<UserCubit>().currentUserOrNull == null) {
+      setState(() => _loadFailed = true);
+      return;
+    }
+    await AuthNavigation.resumeSession(context);
   }
 
   void _onDigit(String digit) {
@@ -97,6 +104,9 @@ class _PincodeLockViewState extends State<_PincodeLockView> {
         }
       },
       builder: (context, state) {
+        if (_loadFailed) {
+          return Scaffold(body: AppErrorState(onRetry: _onUnlocked));
+        }
         final user = context.watch<UserCubit>().currentUserOrNull;
         final firstName = user?.name.trim().split(RegExp(r'\s+')).firstOrNull;
         final title = (firstName != null && firstName.isNotEmpty)

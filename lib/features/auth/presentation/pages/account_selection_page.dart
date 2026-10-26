@@ -1,10 +1,12 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/cubits/auth_cubit.dart';
+import '../../../../core/di/injector.dart';
+import '../../../../core/domain/repositories/auth_repository.dart';
+import '../../../../core/widgets/feedback/app_snackbar.dart';
 import '../../../../core/cubits/owner_context_cubit.dart';
 import '../../../../core/cubits/user_cubit.dart';
 import '../../../../core/router/route_paths.dart';
@@ -15,12 +17,59 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/media/app_avatar.dart';
 
 /// Hisob tanlash — Senior Level FinTech Multi-Tenant Account Switcher ekrani.
-class AccountSelectionPage extends StatelessWidget {
+class AccountSelectionPage extends StatefulWidget {
   const AccountSelectionPage({super.key});
 
   @override
+  State<AccountSelectionPage> createState() => _AccountSelectionPageState();
+}
+
+class _AccountSelectionPageState extends State<AccountSelectionPage> {
+  bool _activating = false;
+  bool _ownerActivated = false;
+  String? _activationError;
+
+  Future<void> _activateOwner() async {
+    if (_activating) return;
+    setState(() {
+      _activating = true;
+      _activationError = null;
+    });
+    if (!_ownerActivated) {
+      final result = await getIt<AuthRepository>().activateOwnAccount();
+      if (!mounted) return;
+      if (!result.isSuccess) {
+        result.when(
+          success: (_) {},
+          failure: (f) {
+            AppSnackbar.error(context, f.message);
+            setState(() => _activationError = f.message);
+          },
+        );
+        setState(() => _activating = false);
+        return;
+      }
+      _ownerActivated = true;
+    }
+    await context.read<UserCubit>().loadMe();
+    if (!mounted) return;
+    final user = context.read<UserCubit>().currentUserOrNull;
+    if (user == null || !user.isOwner) {
+      setState(() {
+        _activating = false;
+        _activationError =
+            "Hisob ma'lumotlarini yuklab bo'lmadi. Qayta urinib ko'ring.";
+      });
+      return;
+    }
+    await context.read<OwnerContextCubit>().switchTo(OwnerContext.own);
+    if (mounted) context.go(RoutePaths.dashboard);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final user = context.watch<UserCubit>().currentUserOrNull;
+    final userState = context.watch<UserCubit>().state;
+    final user = context.read<UserCubit>().currentUserOrNull;
     final colors = context.colors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -59,7 +108,9 @@ class AccountSelectionPage extends StatelessWidget {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      colors.accentViolet.withValues(alpha: isDark ? 0.15 : 0.08),
+                      colors.accentViolet.withValues(
+                        alpha: isDark ? 0.15 : 0.08,
+                      ),
                       colors.accentViolet.withValues(alpha: 0.0),
                     ],
                   ),
@@ -82,11 +133,18 @@ class AccountSelectionPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
-                          color: colors.primaryContainer.withValues(alpha: isDark ? 0.4 : 0.8),
+                          color: colors.primaryContainer.withValues(
+                            alpha: isDark ? 0.4 : 0.8,
+                          ),
                           borderRadius: AppRadius.pillRadius,
-                          border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
+                          border: Border.all(
+                            color: colors.primary.withValues(alpha: 0.2),
+                          ),
                         ),
                         child: Text(
                           'HISOBNI TANLASH 🏢',
@@ -100,7 +158,11 @@ class AccountSelectionPage extends StatelessWidget {
                       ),
                       IconButton(
                         tooltip: 'Chiqish',
-                        icon: Icon(Icons.logout_rounded, color: colors.textTertiary, size: 20),
+                        icon: Icon(
+                          Icons.logout_rounded,
+                          color: colors.textTertiary,
+                          size: 20,
+                        ),
                         onPressed: () async {
                           HapticFeedback.mediumImpact();
                           await context.read<AuthCubit>().logout();
@@ -116,14 +178,14 @@ class AccountSelectionPage extends StatelessWidget {
                   Text(
                     'Qaysi hisobda ishlaysiz? 👋',
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                          fontSize: 27,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.5,
-                        ),
+                      fontSize: 27,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Sizga bir nechta biznes va korxona profillari biriktirilgan. Davom etish uchun keraklisini tanlang:',
+                    "Xodim sifatida ish joyingizni tanlang yoki o‘zingizning biznes hisobingizga kiring.",
                     style: TextStyle(
                       color: colors.textSecondary,
                       fontSize: 14.5,
@@ -138,30 +200,79 @@ class AccountSelectionPage extends StatelessWidget {
                     child: ListView(
                       physics: const BouncingScrollPhysics(),
                       children: [
+                        if (user == null && !_activating) ...[
+                          Text(
+                            userState is UserError
+                                ? userState.failure.message
+                                : "Hisob ma'lumotlari yuklanmoqda...",
+                          ),
+                          TextButton(
+                            onPressed: userState is UserLoading
+                                ? null
+                                : () async {
+                                    await context.read<UserCubit>().loadMe();
+                                  },
+                            child: const Text('Qayta yuklash'),
+                          ),
+                        ],
+                        if ((user != null && !user.isOwner) ||
+                            _activationError != null) ...[
+                          if (_activationError != null)
+                            Text(
+                              _activationError!,
+                              style: TextStyle(color: colors.error),
+                            ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.lg,
+                            ),
+                            child: FilledButton.icon(
+                              onPressed: _activating ? null : _activateOwner,
+                              icon: const Icon(Icons.add_business_rounded),
+                              label: Text(
+                                _activating
+                                    ? 'Hisob ochilmoqda...'
+                                    : "O'z biznes hisobimni ochish",
+                              ),
+                            ),
+                          ),
+                        ],
                         // 1. Owner's Own Account Card
                         if (user != null && user.isOwner) ...[
                           Padding(
-                            padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.lg,
+                            ),
                             child: AppButtonPressable(
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(22),
                                 onTap: () async {
                                   HapticFeedback.mediumImpact();
-                                  await context.read<OwnerContextCubit>().switchTo(OwnerContext.own);
-                                  if (context.mounted) context.go(RoutePaths.dashboard);
+                                  await context
+                                      .read<OwnerContextCubit>()
+                                      .switchTo(OwnerContext.own);
+                                  if (context.mounted) {
+                                    context.go(RoutePaths.dashboard);
+                                  }
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(18),
                                   decoration: BoxDecoration(
-                                    color: isDark ? colors.surfaceSecondary : colors.surface,
+                                    color: isDark
+                                        ? colors.surfaceSecondary
+                                        : colors.surface,
                                     borderRadius: BorderRadius.circular(22),
                                     border: Border.all(
-                                      color: colors.primary.withValues(alpha: 0.5),
+                                      color: colors.primary.withValues(
+                                        alpha: 0.5,
+                                      ),
                                       width: 1.6,
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: colors.primary.withValues(alpha: isDark ? 0.25 : 0.1),
+                                        color: colors.primary.withValues(
+                                          alpha: isDark ? 0.25 : 0.1,
+                                        ),
                                         blurRadius: 18,
                                         offset: const Offset(0, 4),
                                       ),
@@ -182,7 +293,10 @@ class AccountSelectionPage extends StatelessWidget {
                                             decoration: BoxDecoration(
                                               color: colors.primary,
                                               shape: BoxShape.circle,
-                                              border: Border.all(color: colors.surface, width: 2),
+                                              border: Border.all(
+                                                color: colors.surface,
+                                                width: 2,
+                                              ),
                                             ),
                                             child: const Icon(
                                               Icons.star_rounded,
@@ -195,7 +309,8 @@ class AccountSelectionPage extends StatelessWidget {
                                       const SizedBox(width: 14),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Row(
                                               children: [
@@ -204,25 +319,32 @@ class AccountSelectionPage extends StatelessWidget {
                                                     user.name,
                                                     style: TextStyle(
                                                       fontSize: 16.5,
-                                                      fontWeight: FontWeight.w700,
+                                                      fontWeight:
+                                                          FontWeight.w700,
                                                       color: colors.textPrimary,
                                                     ),
                                                   ),
                                                 ),
                                                 Container(
-                                                  padding: const EdgeInsets.symmetric(
-                                                    horizontal: 8,
-                                                    vertical: 3,
-                                                  ),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 3,
+                                                      ),
                                                   decoration: BoxDecoration(
-                                                    color: colors.primaryContainer,
-                                                    borderRadius: BorderRadius.circular(6),
+                                                    color:
+                                                        colors.primaryContainer,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          6,
+                                                        ),
                                                   ),
                                                   child: Text(
                                                     'ASOSIY • EGASI',
                                                     style: TextStyle(
                                                       fontSize: 10,
-                                                      fontWeight: FontWeight.w800,
+                                                      fontWeight:
+                                                          FontWeight.w800,
                                                       color: colors.primary,
                                                       letterSpacing: 0.4,
                                                     ),
@@ -271,21 +393,32 @@ class AccountSelectionPage extends StatelessWidget {
                           ),
                           ...user.worksFor.map((w) {
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                              padding: const EdgeInsets.only(
+                                bottom: AppSpacing.md,
+                              ),
                               child: AppButtonPressable(
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(20),
                                   onTap: () async {
                                     HapticFeedback.mediumImpact();
-                                    await context.read<OwnerContextCubit>().switchTo(
-                                          OwnerContext(ownerId: w.ownerId, ownerName: w.ownerName),
+                                    await context
+                                        .read<OwnerContextCubit>()
+                                        .switchTo(
+                                          OwnerContext(
+                                            ownerId: w.ownerId,
+                                            ownerName: w.ownerName,
+                                          ),
                                         );
-                                    if (context.mounted) context.go(RoutePaths.dashboard);
+                                    if (context.mounted) {
+                                      context.go(RoutePaths.dashboard);
+                                    }
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
-                                      color: isDark ? colors.surfaceSecondary : colors.surface,
+                                      color: isDark
+                                          ? colors.surfaceSecondary
+                                          : colors.surface,
                                       borderRadius: BorderRadius.circular(20),
                                       border: Border.all(color: colors.border),
                                       boxShadow: colors.cardShadow,
@@ -296,7 +429,8 @@ class AccountSelectionPage extends StatelessWidget {
                                         const SizedBox(width: 14),
                                         Expanded(
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Row(
                                                 children: [
@@ -305,26 +439,35 @@ class AccountSelectionPage extends StatelessWidget {
                                                       w.ownerName,
                                                       style: TextStyle(
                                                         fontSize: 15.5,
-                                                        fontWeight: FontWeight.w700,
-                                                        color: colors.textPrimary,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color:
+                                                            colors.textPrimary,
                                                       ),
                                                     ),
                                                   ),
                                                   Container(
-                                                    padding: const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 3,
-                                                    ),
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 3,
+                                                        ),
                                                     decoration: BoxDecoration(
-                                                      color: colors.surfaceSecondary,
-                                                      borderRadius: BorderRadius.circular(6),
+                                                      color: colors
+                                                          .surfaceSecondary,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            6,
+                                                          ),
                                                     ),
                                                     child: Text(
                                                       'XODIM',
                                                       style: TextStyle(
                                                         fontSize: 10,
-                                                        fontWeight: FontWeight.w700,
-                                                        color: colors.textSecondary,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color: colors
+                                                            .textSecondary,
                                                         letterSpacing: 0.3,
                                                       ),
                                                     ),
@@ -363,7 +506,10 @@ class AccountSelectionPage extends StatelessWidget {
                   // Trust Footer
                   Center(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: colors.surfaceSecondary.withValues(alpha: 0.5),
                         borderRadius: AppRadius.pillRadius,
@@ -372,7 +518,11 @@ class AccountSelectionPage extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.shield_outlined, size: 15, color: colors.textTertiary),
+                          Icon(
+                            Icons.shield_outlined,
+                            size: 15,
+                            color: colors.textTertiary,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             'Har bir hisob xavfsiz ajratilgan holda yuritiladi',

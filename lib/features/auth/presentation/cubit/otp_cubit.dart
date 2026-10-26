@@ -44,7 +44,7 @@ class OtpInvalid extends OtpState {
 /// tekshirish (MOBILE_APP_TZ.md 5.4).
 class OtpCubit extends Cubit<OtpState> {
   OtpCubit(this._authRepository, {required this.phone, required this.mode})
-      : super(const OtpCountingDown(AppDurations.otpCountdownSec)) {
+    : super(const OtpCountingDown(AppDurations.otpCountdownSec)) {
     _startTimer();
   }
 
@@ -52,47 +52,65 @@ class OtpCubit extends Cubit<OtpState> {
   final String phone;
   final OtpMode mode;
   Timer? _timer;
+  bool _resending = false;
+  int _secondsRemaining = AppDurations.otpCountdownSec;
 
   void _startTimer() {
     _timer?.cancel();
-    var seconds = AppDurations.otpCountdownSec;
-    emit(OtpCountingDown(seconds));
+    _secondsRemaining = AppDurations.otpCountdownSec;
+    emit(OtpCountingDown(_secondsRemaining));
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (isClosed) {
         timer.cancel();
         return;
       }
-      seconds--;
-      if (seconds <= 0) {
+      _secondsRemaining--;
+      if (_secondsRemaining <= 0) {
         timer.cancel();
-        emit(const OtpCountingDown(0));
+        if (state is! OtpVerifying) {
+          emit(const OtpCountingDown(0));
+        }
       } else {
-        emit(OtpCountingDown(seconds));
+        if (state is! OtpVerifying) {
+          emit(OtpCountingDown(_secondsRemaining));
+        }
       }
     });
   }
 
   Future<void> resend() async {
+    if (_resending || _secondsRemaining > 0 || state is OtpVerifying) {
+      return;
+    }
+    _resending = true;
     final result = await _authRepository.sendOtp(phone);
+    _resending = false;
     if (isClosed) return;
     result.when(
       success: (_) => _startTimer(),
-      failure: (f) => emit(OtpInvalid(f, state.secondsRemaining)),
+      failure: (f) => emit(OtpInvalid(f, _secondsRemaining)),
     );
   }
 
   Future<void> submit(String code) async {
-    if (mode == OtpMode.resetPassword) {
-      if (isClosed) return;
-      emit(OtpVerified(code, state.secondsRemaining));
+    if (isClosed ||
+        state is OtpVerifying ||
+        !RegExp(r'^\d{4}$').hasMatch(code)) {
       return;
     }
-    emit(OtpVerifying(state.secondsRemaining));
+    if (mode == OtpMode.resetPassword) {
+      if (isClosed) return;
+      emit(OtpVerified(code, _secondsRemaining));
+      return;
+    }
+    emit(OtpVerifying(_secondsRemaining));
     final result = await _authRepository.verifyOtp(phone: phone, otpCode: code);
     if (isClosed) return;
     result.when(
-      success: (data) => emit(OtpVerified(data.verifyToken, state.secondsRemaining)),
-      failure: (f) => emit(OtpInvalid(f, state.secondsRemaining)),
+      success: (data) {
+        emit(OtpVerified(data.verifyToken, _secondsRemaining));
+      },
+      failure: (f) => emit(OtpInvalid(f, _secondsRemaining)),
     );
   }
 

@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/cubits/auth_cubit.dart';
-import '../../../../core/cubits/owner_context_cubit.dart';
+import '../auth_navigation.dart';
 import '../../../../core/cubits/user_cubit.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/domain/repositories/auth_repository.dart';
@@ -15,6 +15,7 @@ import '../../../../core/router/route_paths.dart';
 import '../../../../core/services/device_info_service.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/states/app_error_state.dart';
 
 /// Premium iOS uslubidagi zamonaviy Splash Screen.
 /// Versiya tekshiruvi, token holati, xavfsiz bootstrap jarayoni.
@@ -30,6 +31,7 @@ class _SplashPageState extends State<SplashPage>
   late final AnimationController _controller;
   late final Animation<double> _scaleAnim;
   late final Animation<double> _fadeAnim;
+  bool _loadFailed = false;
 
   @override
   void initState() {
@@ -62,6 +64,7 @@ class _SplashPageState extends State<SplashPage>
   }
 
   Future<void> _bootstrap() async {
+    if (_loadFailed) setState(() => _loadFailed = false);
     final authRepository = getIt<AuthRepository>();
     final deviceInfo = getIt<DeviceInfoService>();
     final secureStorage = getIt<SecureStorageService>();
@@ -119,31 +122,21 @@ class _SplashPageState extends State<SplashPage>
     if (user == null) {
       await minSplashWait;
       if (!mounted) return;
-      context.go(RoutePaths.phone);
+      setState(() => _loadFailed = true);
       return;
     }
 
     await minSplashWait;
     if (!mounted) return;
 
-    if (user.hasMultipleContexts) {
-      context.go(RoutePaths.accountSelection);
-    } else {
-      if (user.isStaff && user.worksFor.isNotEmpty) {
-        await context.read<OwnerContextCubit>().switchTo(
-          OwnerContext(
-            ownerId: user.worksFor.first.ownerId,
-            ownerName: user.worksFor.first.ownerName,
-          ),
-        );
-      }
-      if (!mounted) return;
-      context.go(RoutePaths.dashboard);
-    }
+    await AuthNavigation.resumeSession(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_loadFailed) {
+      return Scaffold(body: AppErrorState(onRetry: _bootstrap));
+    }
     final colors = context.colors;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 

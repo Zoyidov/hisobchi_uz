@@ -28,24 +28,30 @@ class UserEntity {
 
   bool get isOwner => role.contains('user');
   bool get isStaff => role.contains('staff');
-  bool get hasMultipleContexts => isOwner && isStaff;
+
+  /// Xodim ish joyini tanlaydi yoki o‘z biznes hisobini ochadi.
+  /// Faqat shaxsiy owner hisobi mavjud bo‘lsa, tanlash talab qilinmaydi.
+  bool get requiresAccountSelection =>
+      !(role.length == 1 && isOwner && worksFor.isEmpty);
 
   factory UserEntity.fromJson(Map<String, dynamic> json) => UserEntity(
-        userId: json['user_id'] as int,
-        name: json['name'] as String? ?? '',
-        phone: json['phone'] as String? ?? '',
-        image: json['image'] as String?,
-        role: (json['role'] as List? ?? const []).cast<String>(),
-        permissions: (json['permissions'] as List? ?? const []).cast<String>(),
-        worksFor: (json['works_for'] as List? ?? const [])
-            .cast<Map<String, dynamic>>()
-            .map(WorksForEntry.fromJson)
-            .toList(),
-        appSettings: json['app_settings'] != null
-            ? AppSettingsEntity.fromJson(json['app_settings'] as Map<String, dynamic>)
-            : AppSettingsEntity.empty,
-        xZiffler: json['x_ziffler'] as bool? ?? true,
-      );
+    userId: json['user_id'] as int,
+    name: json['name'] as String? ?? '',
+    phone: json['phone'] as String? ?? '',
+    image: json['image'] as String?,
+    role: (json['role'] as List? ?? const []).cast<String>(),
+    permissions: (json['permissions'] as List? ?? const []).cast<String>(),
+    worksFor: (json['works_for'] as List? ?? const [])
+        .cast<Map<String, dynamic>>()
+        .map(WorksForEntry.fromJson)
+        .toList(),
+    appSettings: json['app_settings'] != null
+        ? AppSettingsEntity.fromJson(
+            json['app_settings'] as Map<String, dynamic>,
+          )
+        : AppSettingsEntity.empty,
+    xZiffler: json['x_ziffler'] as bool? ?? true,
+  );
 
   /// Owner kontekstiga qarab amal qiluvchi ruxsatlar ro'yxati
   /// (MOBILE_APP_TZ.md 6.5.4).

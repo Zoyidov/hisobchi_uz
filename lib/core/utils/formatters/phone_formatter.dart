@@ -5,7 +5,10 @@ abstract final class PhoneFormatter {
 
   /// Backendga yuboriladigan xom 9 raqam.
   static String toApi(String display) {
-    return display.replaceAll(RegExp(r'[^0-9]'), '').replaceFirst(RegExp(r'^998'), '');
+    final digits = display.replaceAll(RegExp(r'[^0-9]'), '');
+    return digits.length == 12 && digits.startsWith('998')
+        ? digits.substring(3)
+        : digits;
   }
 
   /// `901234567` → `+998 (90) 123-45-67`.

@@ -19,7 +19,9 @@ class HisupLogo extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             SvgPicture.asset(
-              'assets/icon/hisup_mark.svg',
+              isDark
+                  ? 'assets/icon/hisup_mark_dark.svg'
+                  : 'assets/icon/hisup_mark.svg',
               width: markSize,
               height: markSize,
             ),
