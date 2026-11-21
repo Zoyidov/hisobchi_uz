@@ -1,4 +1,26 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Release buildda INTERNET avtomatik qo'shilmaydi — usiz ilova API'ga ulanmaydi -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- connectivity_plus -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!-- local_auth (barmoq izi / Face ID bilan kirish) -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
+
+    <!-- Rasm/fayl tanlash tizim pickerlari orqali (image_picker, file_picker) —
+         galereyaga to'liq kirish kerak emas. Biror paket bu ruxsatlarni qo'shsa
+         ham olib tashlanadi, aks holda Play "Photo and video permissions"
+         deklaratsiyasini talab qiladi. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:node="remove"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" tools:node="remove"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" tools:node="remove"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:node="remove"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove"/>
+
+    <!-- screenOrientation="portrait" bu xususiyatni avtomatik "majburiy" qiladi —
+         planshet/Chromebook/XR qurilmalarda o'rnatish bloklanmasligi uchun ixtiyoriy. -->
+    <uses-feature android:name="android.hardware.screen.portrait" android:required="false"/>
+
     <application
         android:label="Hisup"
         android:name="${applicationName}"
@@ -38,6 +60,19 @@
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
     <queries>
+        <!-- url_launcher: qo'ng'iroq, SMS va to'lov havolalari (Android 11+) -->
+        <intent>
+            <action android:name="android.intent.action.DIAL"/>
+            <data android:scheme="tel"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SENDTO"/>
+            <data android:scheme="sms"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>

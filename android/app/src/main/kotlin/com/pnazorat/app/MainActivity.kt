@@ -1,5 +1,6 @@
 package com.pnazorat.app
 
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 
-class MainActivity : FlutterActivity()
+// local_auth (biometrik kirish) FragmentActivity talab qiladi.
+class MainActivity : FlutterFragmentActivity()
