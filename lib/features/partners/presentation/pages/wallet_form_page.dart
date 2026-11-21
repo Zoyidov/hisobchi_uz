@@ -21,6 +21,7 @@ import '../../data/partners_repository.dart';
 import '../../data/wallet_repository.dart';
 import '../cubit/wallet_form_cubit.dart';
 import '../widgets/partner_search_sheet.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Dashboard/hamkor kartochkasidan chaqiriladigan kirish nuqtasi — agar
 /// `partner` berilmagan bo'lsa, avval qidiruvli tanlov sheeti ochiladi
@@ -273,8 +274,8 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                           ),
                                           child: Icon(
                                             _isExpense
-                                                ? Icons.north_east_rounded
-                                                : Icons.south_west_rounded,
+                                                ? AppIcons.expense
+                                                : AppIcons.income,
                                             color: accent,
                                             size: 18,
                                           ),
@@ -375,7 +376,7 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                         labelText: 'Izoh',
                                         hintText: 'To‘lov haqida qisqacha',
                                         prefixIcon: const Icon(
-                                          Icons.notes_rounded,
+                                          AppIcons.notes,
                                           size: 20,
                                         ),
                                         filled: true,
@@ -388,7 +389,7 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                       Row(
                                         children: [
                                           Icon(
-                                            Icons.event_outlined,
+                                            AppIcons.calendar,
                                             size: 17,
                                             color: colors.info,
                                           ),
@@ -407,7 +408,7 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                               visualDensity:
                                                   VisualDensity.compact,
                                               icon: const Icon(
-                                                Icons.close_rounded,
+                                                AppIcons.close,
                                                 size: 18,
                                               ),
                                               onPressed: () => setState(
@@ -469,7 +470,7 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                 Row(
                                   children: [
                                     Icon(
-                                      Icons.sms_outlined,
+                                      AppIcons.message,
                                       size: 16,
                                       color: colors.info,
                                     ),
@@ -521,7 +522,7 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Icon(Icons.check_rounded, size: 20),
+                              : const Icon(AppIcons.check, size: 20),
                           label: Text(
                             isLoading
                                 ? 'Saqlanmoqda…'

@@ -9,6 +9,7 @@ import '../../../../core/widgets/chips/app_status_chip.dart';
 import '../../../../core/widgets/media/app_avatar.dart';
 import '../../../../core/widgets/typography/money_text.dart';
 import '../../data/partner_models.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// `PartnerCard` — business component (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 24,
 /// MOBILE_APP_TZ.md 8.2). 0 bo'lgan valyuta ko'rsatilmaydi.
@@ -32,8 +33,16 @@ class PartnerCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(partner.name, style: Theme.of(context).textTheme.titleSmall?.copyWith(color: colors.textTertiary)),
-                  const AppStatusChip(label: 'O\'chirilgan', tone: AppStatusChipTone.neutral),
+                  Text(
+                    partner.name,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: colors.textTertiary,
+                    ),
+                  ),
+                  const AppStatusChip(
+                    label: 'O\'chirilgan',
+                    tone: AppStatusChipTone.neutral,
+                  ),
                 ],
               ),
             ),
@@ -73,8 +82,8 @@ class PartnerCard extends StatelessWidget {
                       child: Text(
                         partner.name,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
+                          fontWeight: FontWeight.w700,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -87,9 +96,9 @@ class PartnerCard extends StatelessWidget {
                 Text(
                   PhoneFormatter.toDisplay(partner.phone),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colors.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    color: colors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Wrap(
@@ -97,15 +106,29 @@ class PartnerCard extends StatelessWidget {
                   runSpacing: 4,
                   children: [
                     if (partner.balanceUzs != Decimal.zero)
-                      MoneyText(partner.balanceUzs, currencyTypeId: 1, signed: true, size: MoneySize.list),
+                      MoneyText(
+                        partner.balanceUzs,
+                        currencyTypeId: 1,
+                        signed: true,
+                        size: MoneySize.list,
+                      ),
                     if (partner.balanceUsd != Decimal.zero)
-                      MoneyText(partner.balanceUsd, currencyTypeId: 2, signed: true, size: MoneySize.list),
+                      MoneyText(
+                        partner.balanceUsd,
+                        currencyTypeId: 2,
+                        signed: true,
+                        size: MoneySize.list,
+                      ),
                   ],
                 ),
-                if (partner.installmentRemainingUzs > Decimal.zero || partner.installmentRemainingUsd > Decimal.zero) ...[
+                if (partner.installmentRemainingUzs > Decimal.zero ||
+                    partner.installmentRemainingUsd > Decimal.zero) ...[
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: colors.info.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(8),
@@ -113,11 +136,23 @@ class PartnerCard extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.calendar_today_rounded, size: 12, color: colors.info),
+                        Icon(AppIcons.calendar, size: 12, color: colors.info),
                         const SizedBox(width: 5),
-                        Text('Bo\'lib to\'lash: ', style: TextStyle(color: colors.info, fontSize: 11, fontWeight: FontWeight.w600)),
+                        Text(
+                          'Bo\'lib to\'lash: ',
+                          style: TextStyle(
+                            color: colors.info,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         if (partner.installmentRemainingUzs > Decimal.zero)
-                          MoneyText(partner.installmentRemainingUzs, currencyTypeId: 1, colorOverride: colors.info, size: MoneySize.list),
+                          MoneyText(
+                            partner.installmentRemainingUzs,
+                            currencyTypeId: 1,
+                            colorOverride: colors.info,
+                            size: MoneySize.list,
+                          ),
                       ],
                     ),
                   ),
@@ -126,7 +161,7 @@ class PartnerCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 4),
-          Icon(Icons.chevron_right_rounded, color: colors.textTertiary, size: 20),
+          Icon(AppIcons.chevronRight, color: colors.textTertiary, size: 20),
         ],
       ),
     );

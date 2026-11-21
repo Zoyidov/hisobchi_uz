@@ -13,6 +13,7 @@ import '../../../partners/data/partner_models.dart';
 import '../../data/installments_repository.dart';
 import '../cubit/partner_installments_cubit.dart';
 import 'installment_card.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Hamkor kartochkasidagi "Bo'lib to'lash" tabi (MOBILE_APP_TZ.md 8.5, 9.9).
 class PartnerInstallmentsTab extends StatelessWidget {
@@ -23,7 +24,9 @@ class PartnerInstallmentsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => PartnerInstallmentsCubit(getIt<InstallmentsRepository>(), partner.id)..load(),
+      create: (_) =>
+          PartnerInstallmentsCubit(getIt<InstallmentsRepository>(), partner.id)
+            ..load(),
       child: _View(partner: partner),
     );
   }
@@ -39,48 +42,64 @@ class _View extends StatelessWidget {
       builder: (context, state) {
         return switch (state) {
           PartnerInstallmentsLoading() => const AppSkeletonList(),
-          PartnerInstallmentsError(:final failure) =>
-            AppErrorState(failure: failure, onRetry: () => context.read<PartnerInstallmentsCubit>().load()),
-          PartnerInstallmentsLoaded(:final plans) => plans.isEmpty
-              ? AppEmptyState(
-                  title: 'Bo\'lib to\'lash rejasi yo\'q',
-                  description: 'Katta summani qismlarga bo\'lib to\'lash uchun reja yarating.',
-                  icon: Icons.calendar_view_month_rounded,
-                  actionLabel: 'Reja yaratish',
-                  onAction: () => _create(context),
-                )
-              : RefreshIndicator(
-                  onRefresh: () => context.read<PartnerInstallmentsCubit>().refresh(),
-                  child: ListView(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    children: [
-                      AppButton.secondary(
-                        label: '+ Reja yaratish',
-                        expand: true,
-                        onPressed: () => _create(context),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      for (final plan in plans)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                          child: InstallmentCard(
-                            plan: plan,
-                            onTap: () async {
-                              await context.push(RoutePaths.installmentDetail(plan.id));
-                              if (context.mounted) context.read<PartnerInstallmentsCubit>().refresh();
-                            },
-                          ),
+          PartnerInstallmentsError(:final failure) => AppErrorState(
+            failure: failure,
+            onRetry: () => context.read<PartnerInstallmentsCubit>().load(),
+          ),
+          PartnerInstallmentsLoaded(:final plans) =>
+            plans.isEmpty
+                ? AppEmptyState(
+                    title: 'Bo\'lib to\'lash rejasi yo\'q',
+                    description:
+                        'Katta summani qismlarga bo\'lib to\'lash uchun reja yarating.',
+                    icon: AppIcons.schedule,
+                    actionLabel: 'Reja yaratish',
+                    onAction: () => _create(context),
+                  )
+                : RefreshIndicator(
+                    onRefresh: () =>
+                        context.read<PartnerInstallmentsCubit>().refresh(),
+                    child: ListView(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      children: [
+                        AppButton.secondary(
+                          label: '+ Reja yaratish',
+                          expand: true,
+                          onPressed: () => _create(context),
                         ),
-                    ],
+                        const SizedBox(height: AppSpacing.md),
+                        for (final plan in plans)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.sm,
+                            ),
+                            child: InstallmentCard(
+                              plan: plan,
+                              onTap: () async {
+                                await context.push(
+                                  RoutePaths.installmentDetail(plan.id),
+                                );
+                                if (context.mounted) {
+                                  context
+                                      .read<PartnerInstallmentsCubit>()
+                                      .refresh();
+                                }
+                              },
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
-                ),
         };
       },
     );
   }
 
   Future<void> _create(BuildContext context) async {
-    await context.push(RoutePaths.installmentCreate(partner.id), extra: partner);
+    await context.push(
+      RoutePaths.installmentCreate(partner.id),
+      extra: partner,
+    );
     if (context.mounted) context.read<PartnerInstallmentsCubit>().refresh();
   }
 }

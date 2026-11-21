@@ -8,6 +8,7 @@ import '../../../../core/widgets/sheets/app_bottom_sheet.dart';
 import '../../../../core/widgets/states/app_error_state.dart';
 import '../../../documents/data/document_models.dart';
 import '../../../documents/data/documents_repository.dart';
+import '../../../../core/icons/app_icons.dart';
 
 Future<SimpleDocument?> showWorkTypeSelectionSheet(
   BuildContext context, {
@@ -90,7 +91,7 @@ class _WorkTypeSelectionState extends State<_WorkTypeSelection> {
                   onChanged: (value) => setState(() => _query = value.trim()),
                   decoration: const InputDecoration(
                     hintText: 'Ish turini qidirish',
-                    prefixIcon: Icon(Icons.search_rounded),
+                    prefixIcon: Icon(AppIcons.search),
                   ),
                 ),
               ),
@@ -104,7 +105,7 @@ class _WorkTypeSelectionState extends State<_WorkTypeSelection> {
                   ),
                 ),
                 onPressed: _creating ? null : _create,
-                icon: const Icon(Icons.add_rounded),
+                icon: const Icon(AppIcons.add),
               ),
             ],
           ),
@@ -122,7 +123,7 @@ class _WorkTypeSelectionState extends State<_WorkTypeSelection> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          Icons.work_outline_rounded,
+                          AppIcons.project,
                           size: 36,
                           color: context.colors.textTertiary,
                         ),
@@ -137,7 +138,7 @@ class _WorkTypeSelectionState extends State<_WorkTypeSelection> {
                         const SizedBox(height: 12),
                         TextButton.icon(
                           onPressed: _creating ? null : _create,
-                          icon: const Icon(Icons.add_rounded),
+                          icon: const Icon(AppIcons.add),
                           label: const Text('Yangi ish turi yaratish'),
                         ),
                       ],
@@ -162,7 +163,7 @@ class _WorkTypeSelectionState extends State<_WorkTypeSelection> {
                           : null,
                       trailing: item.id == widget.selectedId
                           ? Icon(
-                              Icons.check_circle_rounded,
+                              AppIcons.success,
                               color: context.colors.primary,
                             )
                           : null,
@@ -255,7 +256,7 @@ class _WorkTypeFormState extends State<_WorkTypeForm> {
                 IconButton(
                   tooltip: 'Yopish',
                   onPressed: _saving ? null : () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close_rounded),
+                  icon: const Icon(AppIcons.close),
                 ),
               ],
             ),
@@ -296,7 +297,7 @@ class _WorkTypeFormState extends State<_WorkTypeForm> {
                       height: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Icon(Icons.check_rounded, size: 20),
+                  : const Icon(AppIcons.check, size: 20),
               label: Text(_saving ? 'Saqlanmoqda…' : 'Yaratish va tanlash'),
             ),
           ],

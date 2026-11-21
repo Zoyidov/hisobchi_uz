@@ -14,6 +14,7 @@ import '../../data/project_models.dart';
 import '../../data/projects_repository.dart';
 import '../cubit/project_subtabs_cubit.dart';
 import 'project_worker_assignment_sheet.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Tab D: Ishchilar (MOBILE_APP_TZ.md 10.4-D).
 class ProjectWorkersTab extends StatelessWidget {
@@ -46,7 +47,7 @@ class _View extends StatelessWidget {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: () => _assignWorkers(context, projectId),
-                  icon: const Icon(Icons.person_add_alt_rounded),
+                  icon: const Icon(AppIcons.partnerAdd),
                   label: const Text('Ishchi biriktirish'),
                 ),
               ),
@@ -62,7 +63,7 @@ class _View extends StatelessWidget {
                   items.isEmpty
                       ? const AppEmptyState(
                           title: 'Ishchilar biriktirilmagan',
-                          icon: Icons.engineering_outlined,
+                          icon: AppIcons.worker,
                         )
                       : RefreshIndicator(
                           onRefresh: () =>
@@ -110,7 +111,7 @@ class _View extends StatelessWidget {
                                     ),
                                     IconButton(
                                       icon: Icon(
-                                        Icons.remove_circle_outline,
+                                        AppIcons.removeCircle,
                                         color: context.colors.error,
                                       ),
                                       onPressed: () async {

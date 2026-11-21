@@ -6,6 +6,7 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../../utils/formatters/money_formatter.dart';
 import 'app_card.dart';
+import '../../icons/app_icons.dart';
 
 /// UZS/USD balans kartasi — kirim/chiqim/balans (MOBILE_APP_TZ.md 8.5,
 /// E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 23, 158).
@@ -61,26 +62,31 @@ class AppBalanceCard extends StatelessWidget {
                   Text(
                     'Sof balans',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: colors.textSecondary,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      color: colors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: colors.primaryContainer,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
+                  border: Border.all(
+                    color: colors.primary.withValues(alpha: 0.2),
+                  ),
                 ),
                 child: Text(
                   currencyLabel,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: colors.onPrimaryContainer,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.5,
-                      ),
+                    color: colors.onPrimaryContainer,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
             ],
@@ -110,7 +116,7 @@ class AppBalanceCard extends StatelessWidget {
                     context,
                     label: 'Kirim',
                     amount: income,
-                    icon: Icons.arrow_downward_rounded,
+                    icon: AppIcons.arrowDown,
                     color: colors.success,
                   ),
                 ),
@@ -125,14 +131,15 @@ class AppBalanceCard extends StatelessWidget {
                     context,
                     label: 'Chiqim',
                     amount: expense,
-                    icon: Icons.arrow_upward_rounded,
+                    icon: AppIcons.arrowUp,
                     color: colors.error,
                   ),
                 ),
               ],
             ),
           ),
-          if (installmentRemaining != null && installmentRemaining! > Decimal.zero) ...[
+          if (installmentRemaining != null &&
+              installmentRemaining! > Decimal.zero) ...[
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -153,25 +160,32 @@ class AppBalanceCard extends StatelessWidget {
                           color: colors.info.withValues(alpha: 0.15),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(Icons.calendar_today_rounded, size: 12, color: colors.info),
+                        child: Icon(
+                          AppIcons.calendar,
+                          size: 12,
+                          color: colors.info,
+                        ),
                       ),
                       const SizedBox(width: 8),
                       Text(
                         "Bo'lib to'lash qoldig'i",
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: colors.info,
-                              fontWeight: FontWeight.w600,
-                            ),
+                          color: colors.info,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ),
                   Text(
-                    MoneyFormatter.format(installmentRemaining!, currencyLabel: currencyLabel),
+                    MoneyFormatter.format(
+                      installmentRemaining!,
+                      currencyLabel: currencyLabel,
+                    ),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: colors.info,
-                          fontWeight: FontWeight.w800,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
+                      color: colors.info,
+                      fontWeight: FontWeight.w800,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
                   ),
                 ],
               ),
@@ -208,18 +222,18 @@ class AppBalanceCard extends StatelessWidget {
               Text(
                 label,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: context.colors.textTertiary,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  color: context.colors.textTertiary,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               const SizedBox(height: 2),
               Text(
                 MoneyFormatter.format(amount, currencyLabel: currencyLabel),
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: color,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  color: color,
+                  fontWeight: FontWeight.w700,
+                ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),

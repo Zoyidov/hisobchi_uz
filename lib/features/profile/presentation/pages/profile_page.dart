@@ -23,6 +23,7 @@ import '../../../../core/widgets/sheets/app_confirmation_sheet.dart';
 import '../../../../core/constants/app_permission.dart';
 import 'settings_page.dart';
 import '../widgets/profile_subscription_card.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Profil bosh sahifasi — guruhlangan menyu bo'limlari
 /// (MOBILE_APP_TZ.md 17-bo'lim, E_HISOB_FLUTTER_UI_UX_TZ.md 61,
@@ -89,7 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 margin: EdgeInsets.zero,
                 children: [
                   AppGroupedTile(
-                    icon: Icons.storefront_outlined,
+                    icon: AppIcons.shop,
                     label: 'O\'z hisobimni ochish',
                     iconColor: colors.primary,
                     onTap: () => _activateOwnAccount(context),
@@ -101,13 +102,13 @@ class _ProfilePageState extends State<ProfilePage> {
             AppGroupedSection(
               children: [
                 AppGroupedTile(
-                  icon: Icons.person_outline_rounded,
+                  icon: AppIcons.user,
                   label: 'Shaxsiy ma\'lumotlar',
                   iconColor: colors.primary,
                   onTap: () => context.push(RoutePaths.profileEdit),
                 ),
                 AppGroupedTile(
-                  icon: Icons.lock_outline_rounded,
+                  icon: AppIcons.lock,
                   label: 'Xavfsizlik va PIN-kod',
                   subtitle: 'PIN-kodni yoqish yoki o\'chirish',
                   iconColor: colors.accentViolet,
@@ -118,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 AppGroupedTile(
-                  icon: Icons.settings_outlined,
+                  icon: AppIcons.settings,
                   label: 'Sozlamalar',
                   iconColor: const Color(0xFF64748B),
                   onTap: () => Navigator.of(context).push(
@@ -133,13 +134,13 @@ class _ProfilePageState extends State<ProfilePage> {
               AppGroupedSection(
                 children: [
                   AppGroupedTile(
-                    icon: Icons.workspace_premium_rounded,
+                    icon: AppIcons.premium,
                     label: 'Obuna va tariflar',
                     iconColor: colors.warning,
                     onTap: () => context.push(RoutePaths.profileSubscription),
                   ),
                   AppGroupedTile(
-                    icon: Icons.sms_outlined,
+                    icon: AppIcons.message,
                     label: 'SMS paketlari',
                     iconColor: const Color(0xFF06B6D4),
                     onTap: () => context.push(RoutePaths.profileSms),
@@ -152,32 +153,32 @@ class _ProfilePageState extends State<ProfilePage> {
                   PermissionGuard(
                     permission: AppPermission.partnersView,
                     child: AppGroupedTile(
-                      icon: Icons.groups_rounded,
+                      icon: AppIcons.partners,
                       label: 'Xodimlar',
                       iconColor: colors.success,
                       onTap: () => context.push(RoutePaths.profileStaff),
                     ),
                   ),
                 AppGroupedTile(
-                  icon: Icons.folder_copy_outlined,
+                  icon: AppIcons.folder,
                   label: 'Ma\'lumotnomalar',
                   iconColor: const Color(0xFFF97316),
                   onTap: () => context.push(RoutePaths.profileDocuments),
                 ),
                 AppGroupedTile(
-                  icon: Icons.history_rounded,
+                  icon: AppIcons.history,
                   label: 'Faollik jurnali',
                   iconColor: const Color(0xFF8B5CF6),
                   onTap: () => context.push(RoutePaths.profileActivity),
                 ),
                 AppGroupedTile(
-                  icon: Icons.notifications_none_rounded,
+                  icon: AppIcons.notification,
                   label: 'Bildirishnomalar',
                   iconColor: const Color(0xFFE11D48),
                   onTap: () => context.push(RoutePaths.profileNotifications),
                 ),
                 AppGroupedTile(
-                  icon: Icons.currency_exchange_rounded,
+                  icon: AppIcons.exchange,
                   label: 'Valyuta kurslari',
                   iconColor: const Color(0xFF0284C7),
                   onTap: () => context.push(RoutePaths.profileCurrency),
@@ -188,7 +189,7 @@ class _ProfilePageState extends State<ProfilePage> {
               margin: EdgeInsets.zero,
               children: [
                 AppGroupedTile(
-                  icon: Icons.logout_rounded,
+                  icon: AppIcons.logout,
                   label: 'Chiqish',
                   destructive: true,
                   showChevron: false,

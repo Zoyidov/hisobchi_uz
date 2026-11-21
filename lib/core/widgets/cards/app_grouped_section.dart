@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
+import '../../icons/app_icons.dart';
 
 /// Bir-biriga bog'liq qatorlarni (Profil/Sozlamalar menyusi kabi) yagona
 /// yumaloq burchakli guruhga jamlaydi — bo'sh, tekis `ListView` o'rniga
@@ -79,7 +80,8 @@ class AppGroupedTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final effectiveIconColor = iconColor ?? (destructive ? colors.error : colors.primary);
+    final effectiveIconColor =
+        iconColor ?? (destructive ? colors.error : colors.primary);
     final fg = destructive ? colors.error : colors.textPrimary;
 
     return InkWell(
@@ -87,7 +89,10 @@ class AppGroupedTile extends StatelessWidget {
       splashColor: effectiveIconColor.withValues(alpha: 0.08),
       highlightColor: effectiveIconColor.withValues(alpha: 0.04),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 14),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: 14,
+        ),
         child: Row(
           children: [
             Container(
@@ -109,9 +114,9 @@ class AppGroupedTile extends StatelessWidget {
                   Text(
                     label,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: fg,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      color: fg,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 2),
@@ -134,14 +139,18 @@ class AppGroupedTile extends StatelessWidget {
                 Text(
                   value!,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: colors.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    color: colors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const SizedBox(width: 4),
               ],
               if (showChevron && onTap != null)
-                Icon(Icons.chevron_right_rounded, size: 20, color: colors.textTertiary),
+                Icon(
+                  AppIcons.chevronRight,
+                  size: 20,
+                  color: colors.textTertiary,
+                ),
             ],
           ],
         ),

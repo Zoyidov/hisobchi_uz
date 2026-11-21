@@ -19,6 +19,7 @@ import '../../../partners/data/partners_repository.dart';
 import '../../../partners/presentation/widgets/export_excel_helper.dart';
 import '../../../../core/constants/app_permission.dart';
 import '../../../../core/widgets/navigation/permission_guard.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Global partner dashboard, matching ReportClientMainPage.
 class PartnerReportsPage extends StatefulWidget {
@@ -54,7 +55,7 @@ class _PartnerReportsPageState extends State<PartnerReportsPage> {
               value: 'excel',
               child: Row(
                 children: [
-                  Icon(Icons.file_download_outlined, size: 20),
+                  Icon(AppIcons.download, size: 20),
                   SizedBox(width: 8),
                   Text('Excel hisobot'),
                 ],
@@ -259,7 +260,7 @@ class _SummaryTabState extends State<_SummaryTab> {
                     child: _ReportMetric(
                       label: 'Operatsiyalar',
                       count: report.operationsCount,
-                      icon: Icons.swap_horiz_rounded,
+                      icon: AppIcons.exchange,
                       color: context.colors.warning,
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(
@@ -281,7 +282,7 @@ class _SummaryTabState extends State<_SummaryTab> {
                     child: _ReportMetric(
                       label: 'Qarzdorlar',
                       count: report.debtorsCount,
-                      icon: Icons.arrow_upward_rounded,
+                      icon: AppIcons.arrowUp,
                       color: context.colors.error,
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(
@@ -304,7 +305,7 @@ class _SummaryTabState extends State<_SummaryTab> {
                     child: _ReportMetric(
                       label: 'Haqdorlar',
                       count: report.creditorsCount,
-                      icon: Icons.arrow_downward_rounded,
+                      icon: AppIcons.arrowDown,
                       color: context.colors.success,
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(
@@ -335,7 +336,7 @@ class _SummaryTabState extends State<_SummaryTab> {
           _MainReportEntry(
             title: 'Qarz muddatlari hisoboti',
             subtitle: 'Muddati o‘tgan, bugun va kelgusi qarzlar',
-            icon: Icons.access_time_rounded,
+            icon: AppIcons.clock,
             color: context.colors.warning,
             onTap: () => _openSection(
               'Qarz muddatlari hisoboti',
@@ -345,7 +346,7 @@ class _SummaryTabState extends State<_SummaryTab> {
           _MainReportEntry(
             title: 'Xodimlar hisoboti',
             subtitle: 'Xodimlar bo‘yicha barcha hisobotlar',
-            icon: Icons.people_alt_outlined,
+            icon: AppIcons.partners,
             color: context.colors.primary,
             onTap: () => _openSection(
               'Xodimlar hisoboti',
@@ -355,7 +356,7 @@ class _SummaryTabState extends State<_SummaryTab> {
           _MainReportEntry(
             title: 'Muddat hisoboti',
             subtitle: 'Davr bo‘yicha kirim va chiqim',
-            icon: Icons.date_range_rounded,
+            icon: AppIcons.calendarRange,
             color: context.colors.info,
             onTap: () => _openSection(
               'Muddat hisoboti',
@@ -368,7 +369,7 @@ class _SummaryTabState extends State<_SummaryTab> {
               title: 'Muddatli to‘lov hisoboti',
               subtitle:
                   'Rejalar, undirish, oylik dinamika va muammoli mijozlar',
-              icon: Icons.receipt_long_rounded,
+              icon: AppIcons.receipt,
               color: context.colors.accentViolet,
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
@@ -481,7 +482,7 @@ class _PeriodTabState extends State<_PeriodTab> {
         children: [
           OutlinedButton.icon(
             onPressed: _pickRange,
-            icon: const Icon(Icons.date_range_rounded),
+            icon: const Icon(AppIcons.calendarRange),
             label: Text(
               '${AppDateFormatter.display(_from)} — ${AppDateFormatter.display(_to)}',
             ),
@@ -493,7 +494,7 @@ class _PeriodTabState extends State<_PeriodTab> {
             label: 'Kirim',
             currency: currencyKey,
             color: context.colors.success,
-            icon: Icons.south_west_rounded,
+            icon: AppIcons.income,
           ),
           const SizedBox(height: 10),
           _ReportFlow(
@@ -502,7 +503,7 @@ class _PeriodTabState extends State<_PeriodTab> {
             label: 'Chiqim',
             currency: currencyKey,
             color: context.colors.error,
-            icon: Icons.north_east_rounded,
+            icon: AppIcons.expense,
           ),
         ],
       ),
@@ -601,7 +602,7 @@ class _WarrantyTabState extends State<_WarrantyTab> {
       count: count,
       color: color,
       compactRow: true,
-      icon: Icons.event_outlined,
+      icon: AppIcons.calendar,
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute<void>(
           builder: (_) => PartnerReportOperationsPage(
@@ -743,7 +744,7 @@ class _WorkersTabState extends State<_WorkersTab> {
                   label: 'Jami kirim',
                   currency: currency,
                   color: context.colors.success,
-                  icon: Icons.south_west_rounded,
+                  icon: AppIcons.income,
                 ),
                 const SizedBox(height: 8),
                 _ReportFlow(
@@ -751,7 +752,7 @@ class _WorkersTabState extends State<_WorkersTab> {
                   label: 'Jami chiqim',
                   currency: currency,
                   color: context.colors.error,
-                  icon: Icons.north_east_rounded,
+                  icon: AppIcons.expense,
                 ),
               ],
             ),
@@ -782,7 +783,7 @@ class _WorkersTabState extends State<_WorkersTab> {
                       if (items.isEmpty)
                         const AppEmptyState(
                           title: "Bu davrda operatsiyalar yo‘q",
-                          icon: Icons.groups_outlined,
+                          icon: AppIcons.partners,
                         )
                       else ...[
                         Text(
@@ -806,7 +807,7 @@ class _WorkersTabState extends State<_WorkersTab> {
                                         backgroundColor:
                                             context.colors.primaryContainer,
                                         child: Icon(
-                                          Icons.person_outline_rounded,
+                                          AppIcons.user,
                                           color: context.colors.primary,
                                         ),
                                       ),
@@ -934,14 +935,14 @@ class _ReportBalance extends StatelessWidget {
               label: 'Kirim',
               currency: currency,
               color: context.colors.success,
-              icon: Icons.south_west_rounded,
+              icon: AppIcons.income,
             );
             final expense = _ReportFlow(
               amount: report.credit,
               label: 'Chiqim',
               currency: currency,
               color: context.colors.error,
-              icon: Icons.north_east_rounded,
+              icon: AppIcons.expense,
             );
             if (constraints.maxWidth < 300 ||
                 MediaQuery.textScalerOf(context).scale(14) > 19) {
@@ -971,11 +972,7 @@ class _ReportBalance extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(
-                    Icons.account_balance_wallet_outlined,
-                    size: 22,
-                    color: Colors.white,
-                  ),
+                  const Icon(AppIcons.wallet, size: 22, color: Colors.white),
                   const SizedBox(width: 10),
                   const Expanded(
                     child: Text(
@@ -987,11 +984,7 @@ class _ReportBalance extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const Icon(
-                    Icons.people_alt_outlined,
-                    size: 16,
-                    color: Colors.white,
-                  ),
+                  const Icon(AppIcons.partners, size: 16, color: Colors.white),
                   const SizedBox(width: 5),
                   Text(
                     '${report.partnersCount} ta',
@@ -1155,7 +1148,7 @@ class _MainReportEntry extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Icon(
-            Icons.chevron_right_rounded,
+            AppIcons.chevronRight,
             color: context.colors.textTertiary,
             size: 20,
           ),
@@ -1221,7 +1214,7 @@ class _ReportMetric extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Icon(
-                  Icons.chevron_right_rounded,
+                  AppIcons.chevronRight,
                   color: context.colors.textTertiary,
                   size: 18,
                 ),

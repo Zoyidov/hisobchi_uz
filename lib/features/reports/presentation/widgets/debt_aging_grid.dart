@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/icons/app_icons.dart';
 
 class DebtAgingGrid extends StatelessWidget {
   final int overdueCount;
@@ -28,7 +29,9 @@ class DebtAgingGrid extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16).copyWith(top: 4, bottom: 8),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+          ).copyWith(top: 4, bottom: 8),
           child: Row(
             children: [
               Container(
@@ -38,7 +41,7 @@ class DebtAgingGrid extends StatelessWidget {
                   borderRadius: BorderRadius.circular(9),
                 ),
                 child: Icon(
-                  Icons.access_time_rounded,
+                  AppIcons.clock,
                   color: colors.textSecondary,
                   size: 16,
                 ),
@@ -65,7 +68,7 @@ class DebtAgingGrid extends StatelessWidget {
                   context: context,
                   title: 'Muddati o\'tgan',
                   count: overdueCount,
-                  icon: Icons.error_outline_rounded,
+                  icon: AppIcons.error,
                   color: const Color(0xFFEF4444),
                   onTap: onOverdueTap,
                 ),
@@ -76,7 +79,7 @@ class DebtAgingGrid extends StatelessWidget {
                   context: context,
                   title: 'Bugun',
                   count: todayCount,
-                  icon: Icons.warning_amber_rounded,
+                  icon: AppIcons.warning,
                   color: const Color(0xFFF59E0B),
                   onTap: onTodayTap,
                 ),
@@ -88,7 +91,7 @@ class DebtAgingGrid extends StatelessWidget {
                   title: 'Yaqinlashmoqda',
                   subtitle: '(3 kun)',
                   count: upcomingCount,
-                  icon: Icons.schedule_rounded,
+                  icon: AppIcons.clock,
                   color: const Color(0xFF3B82F6),
                   onTap: onUpcomingTap,
                 ),
@@ -122,9 +125,7 @@ class DebtAgingGrid extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: colors.border.withValues(alpha: 0.6),
-            ),
+            border: Border.all(color: colors.border.withValues(alpha: 0.6)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.02),

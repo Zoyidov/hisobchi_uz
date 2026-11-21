@@ -5,6 +5,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/cards/app_card.dart';
 import '../../../../core/widgets/chips/app_status_chip.dart';
 import '../../data/project_models.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// `ProjectCard` — business component (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 27,
 /// MOBILE_APP_TZ.md 10.2).
@@ -54,14 +55,14 @@ class ProjectCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
             ),
             child: image == null
-                ? Icon(Icons.work_rounded, color: statusColor, size: 22)
+                ? Icon(AppIcons.project, color: statusColor, size: 22)
                 : Image.network(
                     image.url,
                     width: 44,
                     height: 44,
                     fit: BoxFit.cover,
                     errorBuilder: (_, _, _) =>
-                        Icon(Icons.work_rounded, color: statusColor, size: 22),
+                        Icon(AppIcons.project, color: statusColor, size: 22),
                   ),
           ),
           const SizedBox(width: AppSpacing.md),
@@ -89,11 +90,7 @@ class ProjectCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(
-                      Icons.person_outline_rounded,
-                      size: 14,
-                      color: colors.textSecondary,
-                    ),
+                    Icon(AppIcons.user, size: 14, color: colors.textSecondary),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
@@ -111,11 +108,7 @@ class ProjectCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    Icon(
-                      Icons.phone_outlined,
-                      size: 13,
-                      color: colors.textTertiary,
-                    ),
+                    Icon(AppIcons.call, size: 13, color: colors.textTertiary),
                     const SizedBox(width: 4),
                     Text(
                       project.phone,
@@ -131,7 +124,7 @@ class ProjectCard extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        Icons.location_on_outlined,
+                        AppIcons.location,
                         size: 13,
                         color: colors.textTertiary,
                       ),
@@ -154,11 +147,7 @@ class ProjectCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 4),
-          Icon(
-            Icons.chevron_right_rounded,
-            color: colors.textTertiary,
-            size: 20,
-          ),
+          Icon(AppIcons.chevronRight, color: colors.textTertiary, size: 20),
         ],
       ),
     );

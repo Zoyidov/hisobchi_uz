@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../states/app_empty_state.dart';
+import '../../icons/app_icons.dart';
 
 /// Keyingi bosqichda to'liq amalga oshiriladigan bo'limlar uchun vaqtinchalik
 /// ekran — navigatsiya to'liq ishlaydi, faqat ekran mazmuni keyinroq to'ldiriladi.
@@ -14,7 +15,7 @@ class ComingSoonPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: const AppEmptyState(
-        icon: Icons.hourglass_top_rounded,
+        icon: AppIcons.hourglass,
         title: 'Tez orada',
         description: 'Bu bo\'lim ustida hozir ishlanmoqda.',
       ),

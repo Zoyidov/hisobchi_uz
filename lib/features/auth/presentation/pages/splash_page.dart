@@ -16,6 +16,7 @@ import '../../../../core/services/device_info_service.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/states/app_error_state.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Premium iOS uslubidagi zamonaviy Splash Screen.
 /// Versiya tekshiruvi, token holati, xavfsiz bootstrap jarayoni.
@@ -260,7 +261,7 @@ class _SplashPageState extends State<SplashPage>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        CupertinoIcons.checkmark_shield_fill,
+                        AppIcons.shield,
                         size: 14,
                         color: isDark
                             ? Colors.white.withValues(alpha: 0.4)

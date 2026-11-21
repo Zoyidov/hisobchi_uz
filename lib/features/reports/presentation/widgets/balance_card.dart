@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters/money_formatter.dart';
+import '../../../../core/icons/app_icons.dart';
 
 class BalanceCard extends StatelessWidget {
   const BalanceCard({
@@ -56,9 +57,7 @@ class BalanceCard extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  balance < Decimal.zero
-                      ? Icons.south_west_rounded
-                      : Icons.north_east_rounded,
+                  balance < Decimal.zero ? AppIcons.income : AppIcons.expense,
                   size: 22,
                   color: Colors.white,
                 ),
@@ -108,7 +107,7 @@ class BalanceCard extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              const Icon(Icons.sync_alt_rounded, size: 16, color: Colors.white),
+              const Icon(AppIcons.exchange, size: 16, color: Colors.white),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(

@@ -10,6 +10,7 @@ import '../cubit/simple_document_cubit.dart';
 import 'cost_types_page.dart';
 import 'simple_document_list_page.dart';
 import 'workers_page.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Profil → Ma'lumotnomalar (MOBILE_APP_TZ.md 11-bo'lim).
 class DocumentsHomePage extends StatelessWidget {
@@ -22,57 +23,86 @@ class DocumentsHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Ma\'lumotnomalar')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.xxl),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.sm,
+          AppSpacing.md,
+          AppSpacing.xxl,
+        ),
         children: [
           AppGroupedSection(
             margin: EdgeInsets.zero,
             children: [
               AppGroupedTile(
-                icon: Icons.build_outlined,
+                icon: AppIcons.tools,
                 label: 'Ish turlari',
-                onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
-                  builder: (_) => SimpleDocumentListPage(
-                    title: 'Ish turlari',
-                    entityLabel: 'Ish turi',
-                    cubit: SimpleDocumentCubit(
-                      fetchAll: repository.getWorkTypes,
-                      create: (name, desc) => repository.createWorkType(name: name, description: desc),
-                      update: (id, name, desc) => repository.updateWorkType(id, name: name, description: desc),
-                      delete: repository.deleteWorkType,
-                      restore: repository.restoreWorkType,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => SimpleDocumentListPage(
+                      title: 'Ish turlari',
+                      entityLabel: 'Ish turi',
+                      cubit: SimpleDocumentCubit(
+                        fetchAll: repository.getWorkTypes,
+                        create: (name, desc) => repository.createWorkType(
+                          name: name,
+                          description: desc,
+                        ),
+                        update: (id, name, desc) => repository.updateWorkType(
+                          id,
+                          name: name,
+                          description: desc,
+                        ),
+                        delete: repository.deleteWorkType,
+                        restore: repository.restoreWorkType,
+                      ),
                     ),
                   ),
-                )),
+                ),
               ),
               AppGroupedTile(
-                icon: Icons.payments_outlined,
+                icon: AppIcons.payments,
                 label: 'Xarajat turlari',
-                onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const CostTypesPage())),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const CostTypesPage(),
+                  ),
+                ),
               ),
               AppGroupedTile(
-                icon: Icons.badge_outlined,
+                icon: AppIcons.worker,
                 label: 'Lavozimlar',
-                onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
-                  builder: (_) => SimpleDocumentListPage(
-                    title: 'Lavozimlar',
-                    entityLabel: 'Lavozim',
-                    cubit: SimpleDocumentCubit(
-                      fetchAll: repository.getPositions,
-                      create: (name, desc) => repository.createPosition(name: name, description: desc),
-                      update: (id, name, desc) => repository.updatePosition(id, name: name, description: desc),
-                      delete: repository.deletePosition,
-                      restore: repository.restorePosition,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => SimpleDocumentListPage(
+                      title: 'Lavozimlar',
+                      entityLabel: 'Lavozim',
+                      cubit: SimpleDocumentCubit(
+                        fetchAll: repository.getPositions,
+                        create: (name, desc) => repository.createPosition(
+                          name: name,
+                          description: desc,
+                        ),
+                        update: (id, name, desc) => repository.updatePosition(
+                          id,
+                          name: name,
+                          description: desc,
+                        ),
+                        delete: repository.deletePosition,
+                        restore: repository.restorePosition,
+                      ),
                     ),
                   ),
-                )),
+                ),
               ),
               AppGroupedTile(
-                icon: Icons.engineering_outlined,
+                icon: AppIcons.worker,
                 label: 'Ishchilar',
-                onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const WorkersPage())),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const WorkersPage()),
+                ),
               ),
               AppGroupedTile(
-                icon: Icons.currency_exchange_rounded,
+                icon: AppIcons.exchange,
                 label: 'Valyuta kurslari',
                 onTap: () => context.push(RoutePaths.profileCurrency),
               ),

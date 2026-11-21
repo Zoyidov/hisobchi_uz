@@ -17,6 +17,7 @@ import '../../../partners/data/wallet_repository.dart';
 import '../../../partners/presentation/widgets/transaction_action_sheets.dart';
 import '../../../partners/presentation/widgets/transaction_receipt_sheet.dart';
 import '../../../partners/presentation/widgets/transaction_tile.dart';
+import '../../../../core/icons/app_icons.dart';
 
 class PartnerHistoryWalletsPage extends StatefulWidget {
   final int partnerId;
@@ -93,7 +94,8 @@ class _PartnerHistoryWalletsPageState extends State<PartnerHistoryWalletsPage> {
             AppPermission.walletsDebtCancel,
           );
 
-    final dummyPartner = widget.partner ??
+    final dummyPartner =
+        widget.partner ??
         Partner.placeholder(
           id: widget.partnerId,
           name: widget.partnerName,
@@ -160,9 +162,9 @@ class _PartnerHistoryWalletsPageState extends State<PartnerHistoryWalletsPage> {
           children: [
             Text(
               title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
             ),
             Text(
               '${widget.partnerName} • $_currencyLabel',
@@ -199,7 +201,7 @@ class _PartnerHistoryWalletsPageState extends State<PartnerHistoryWalletsPage> {
     if (wallets.isEmpty) {
       return const AppEmptyState(
         title: 'Hozircha tranzaksiya yo\'q',
-        icon: Icons.receipt_long_outlined,
+        icon: AppIcons.receipt,
       );
     }
 

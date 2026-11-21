@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hisobchi_uz/core/icons/app_icons.dart';
 import 'package:hisobchi_uz/core/widgets/icons/app_edit_icon.dart';
 
 void main() {
-  testWidgets('edit SVG loads and inherits icon size and color', (
-    tester,
-  ) async {
+  testWidgets('Solar edit icon inherits icon size and color', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
         home: Scaffold(
@@ -18,13 +16,10 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    final svg = tester.widget<SvgPicture>(find.byType(SvgPicture));
-    expect(svg.width, 20);
-    expect(svg.height, 20);
-    expect(
-      svg.colorFilter,
-      ColorFilter.mode(Colors.red.withValues(alpha: 1), BlendMode.srcIn),
-    );
+    final icon = tester.widget<Icon>(find.byType(Icon));
+    expect(icon.icon, AppIcons.edit);
+    expect(icon.size, 20);
+    expect(icon.color, Colors.red);
     expect(tester.takeException(), isNull);
   });
 }

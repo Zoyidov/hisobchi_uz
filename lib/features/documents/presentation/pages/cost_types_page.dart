@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,6 +18,7 @@ import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/document_models.dart';
 import '../../data/documents_repository.dart';
 import '../cubit/cost_type_cubit.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Xarajat turlari (MOBILE_APP_TZ.md 11-bo'lim).
 class CostTypesPage extends StatelessWidget {
@@ -46,13 +46,21 @@ class _View extends StatelessWidget {
             padding: const EdgeInsets.only(right: AppSpacing.sm),
             child: FilledButton.tonalIcon(
               style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 minimumSize: const Size(0, 36),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               onPressed: () => _openForm(context),
-              icon: const Icon(CupertinoIcons.plus, size: 15),
-              label: const Text('Qo\'shish', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+              icon: const Icon(AppIcons.add, size: 15),
+              label: const Text(
+                'Qo\'shish',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+              ),
             ),
           ),
         ],
@@ -61,30 +69,39 @@ class _View extends StatelessWidget {
         builder: (context, state) {
           return switch (state) {
             CostTypeLoading() => const AppSkeletonList(),
-            CostTypeError(:final failure) =>
-              AppErrorState(failure: failure, onRetry: () => context.read<CostTypeCubit>().load()),
-            CostTypeLoaded(:final items) => items.isEmpty
-                ? AppEmptyState(
-                    title: 'Xarajat turi topilmadi',
-                    actionLabel: 'Xarajat turi qo\'shish',
-                    onAction: () => _openForm(context),
-                  )
-                : RefreshIndicator(
-                    onRefresh: () => context.read<CostTypeCubit>().load(),
-                    child: ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 110),
-                      itemCount: items.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
-                      itemBuilder: (context, i) => _Tile(item: items[i]),
+            CostTypeError(:final failure) => AppErrorState(
+              failure: failure,
+              onRetry: () => context.read<CostTypeCubit>().load(),
+            ),
+            CostTypeLoaded(:final items) =>
+              items.isEmpty
+                  ? AppEmptyState(
+                      title: 'Xarajat turi topilmadi',
+                      actionLabel: 'Xarajat turi qo\'shish',
+                      onAction: () => _openForm(context),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: () => context.read<CostTypeCubit>().load(),
+                      child: ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.md,
+                          AppSpacing.md,
+                          AppSpacing.md,
+                          110,
+                        ),
+                        itemCount: items.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: AppSpacing.sm),
+                        itemBuilder: (context, i) => _Tile(item: items[i]),
+                      ),
                     ),
-                  ),
           };
         },
       ),
       floatingActionButton: AppFloatingAction(
         heroTag: 'cost_types_create_fab',
         onPressed: () => _openForm(context),
-        icon: CupertinoIcons.plus,
+        icon: AppIcons.add,
         label: 'Xarajat turi qo\'shish',
       ),
     );
@@ -101,7 +118,9 @@ class _Tile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     return AppCard(
-      onTap: item.isDeleted || item.isSystem ? null : () => _showCostTypeForm(context, editing: item),
+      onTap: item.isDeleted || item.isSystem
+          ? null
+          : () => _showCostTypeForm(context, editing: item),
       child: Row(
         children: [
           Expanded(
@@ -112,7 +131,13 @@ class _Tile extends StatelessWidget {
                 if (item.description != null && item.description!.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
-                    child: Text(item.description!, style: TextStyle(color: colors.textSecondary, fontSize: 13)),
+                    child: Text(
+                      item.description!,
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 13,
+                      ),
+                    ),
                   ),
                 Padding(
                   padding: const EdgeInsets.only(top: 6),
@@ -120,11 +145,20 @@ class _Tile extends StatelessWidget {
                     spacing: 6,
                     children: [
                       if (item.isWorkerJoin)
-                        const AppStatusChip(label: 'Ishchi biriktiriladi', tone: AppStatusChipTone.info),
+                        const AppStatusChip(
+                          label: 'Ishchi biriktiriladi',
+                          tone: AppStatusChipTone.info,
+                        ),
                       if (item.isSystem)
-                        const AppStatusChip(label: 'Tizim', tone: AppStatusChipTone.neutral),
+                        const AppStatusChip(
+                          label: 'Tizim',
+                          tone: AppStatusChipTone.neutral,
+                        ),
                       if (item.isDeleted)
-                        const AppStatusChip(label: 'O\'chirilgan', tone: AppStatusChipTone.neutral),
+                        const AppStatusChip(
+                          label: 'O\'chirilgan',
+                          tone: AppStatusChipTone.neutral,
+                        ),
                     ],
                   ),
                 ),
@@ -132,10 +166,14 @@ class _Tile extends StatelessWidget {
             ),
           ),
           if (item.isDeleted)
-            AppButton.text(label: 'Tiklash', onPressed: () => context.read<CostTypeCubit>().submitRestore(item.id))
+            AppButton.text(
+              label: 'Tiklash',
+              onPressed: () =>
+                  context.read<CostTypeCubit>().submitRestore(item.id),
+            )
           else if (!item.isSystem)
             IconButton(
-              icon: Icon(Icons.delete_outline_rounded, color: colors.error),
+              icon: Icon(AppIcons.delete, color: colors.error),
               onPressed: () async {
                 final confirmed = await showAppConfirmationSheet(
                   context,
@@ -143,8 +181,12 @@ class _Tile extends StatelessWidget {
                   description: 'Bu amalni keyin qaytarib bo\'lmaydi.',
                 );
                 if (confirmed && context.mounted) {
-                  final error = await context.read<CostTypeCubit>().submitDelete(item.id);
-                  if (error != null && context.mounted) AppSnackbar.error(context, error.message);
+                  final error = await context
+                      .read<CostTypeCubit>()
+                      .submitDelete(item.id);
+                  if (error != null && context.mounted) {
+                    AppSnackbar.error(context, error.message);
+                  }
                 }
               },
             ),
@@ -157,12 +199,16 @@ class _Tile extends StatelessWidget {
 void _showCostTypeForm(BuildContext context, {CostType? editing}) {
   final cubit = context.read<CostTypeCubit>();
   final nameController = TextEditingController(text: editing?.name);
-  final descriptionController = TextEditingController(text: editing?.description);
+  final descriptionController = TextEditingController(
+    text: editing?.description,
+  );
   var isWorkerJoin = editing?.isWorkerJoin ?? false;
 
   showAppBottomSheet<void>(
     context,
-    title: editing == null ? 'Xarajat turi qo\'shish' : 'Xarajat turini tahrirlash',
+    title: editing == null
+        ? 'Xarajat turi qo\'shish'
+        : 'Xarajat turini tahrirlash',
     child: StatefulBuilder(
       builder: (context, setState) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -171,7 +217,12 @@ void _showCostTypeForm(BuildContext context, {CostType? editing}) {
           children: [
             AppTextField(controller: nameController, label: 'Nomi'),
             const SizedBox(height: AppSpacing.md),
-            AppTextField(controller: descriptionController, label: 'Tavsif (ixtiyoriy)', maxLines: 2, minLines: 1),
+            AppTextField(
+              controller: descriptionController,
+              label: 'Tavsif (ixtiyoriy)',
+              maxLines: 2,
+              minLines: 1,
+            ),
             const SizedBox(height: AppSpacing.md),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
@@ -190,10 +241,21 @@ void _showCostTypeForm(BuildContext context, {CostType? editing}) {
           final name = nameController.text.trim();
           if (name.isEmpty) return;
           final failure = editing == null
-              ? await cubit.submitCreate(name, descriptionController.text.trim(), isWorkerJoin)
-              : await cubit.submitUpdate(editing.id, name, descriptionController.text.trim(), isWorkerJoin);
+              ? await cubit.submitCreate(
+                  name,
+                  descriptionController.text.trim(),
+                  isWorkerJoin,
+                )
+              : await cubit.submitUpdate(
+                  editing.id,
+                  name,
+                  descriptionController.text.trim(),
+                  isWorkerJoin,
+                );
           if (failure != null) {
-            if (sheetContext.mounted) AppSnackbar.error(sheetContext, failure.message);
+            if (sheetContext.mounted) {
+              AppSnackbar.error(sheetContext, failure.message);
+            }
             return;
           }
           if (sheetContext.mounted) Navigator.of(sheetContext).pop();

@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
 import 'app_bottom_sheet.dart';
+import '../../icons/app_icons.dart';
 
 class AppSelectionItem<T> {
-  const AppSelectionItem({required this.value, required this.label, this.subtitle});
+  const AppSelectionItem({
+    required this.value,
+    required this.label,
+    this.subtitle,
+  });
   final T value;
   final String label;
   final String? subtitle;
@@ -23,12 +28,20 @@ Future<T?> showAppSelectionSheet<T>(
     context,
     title: title,
     heightFactor: 0.7,
-    child: _SelectionList<T>(items: items, selectedValue: selectedValue, searchable: searchable),
+    child: _SelectionList<T>(
+      items: items,
+      selectedValue: selectedValue,
+      searchable: searchable,
+    ),
   );
 }
 
 class _SelectionList<T> extends StatefulWidget {
-  const _SelectionList({required this.items, this.selectedValue, required this.searchable});
+  const _SelectionList({
+    required this.items,
+    this.selectedValue,
+    required this.searchable,
+  });
   final List<AppSelectionItem<T>> items;
   final T? selectedValue;
   final bool searchable;
@@ -46,8 +59,10 @@ class _SelectionListState<T> extends State<_SelectionList<T>> {
     final filtered = _query.isEmpty
         ? widget.items
         : widget.items
-            .where((i) => i.label.toLowerCase().contains(_query.toLowerCase()))
-            .toList();
+              .where(
+                (i) => i.label.toLowerCase().contains(_query.toLowerCase()),
+              )
+              .toList();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -57,7 +72,10 @@ class _SelectionListState<T> extends State<_SelectionList<T>> {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             child: TextField(
               onChanged: (v) => setState(() => _query = v),
-              decoration: const InputDecoration(hintText: 'Qidirish...', prefixIcon: Icon(Icons.search)),
+              decoration: const InputDecoration(
+                hintText: 'Qidirish...',
+                prefixIcon: Icon(AppIcons.search),
+              ),
             ),
           ),
         Flexible(
@@ -71,7 +89,9 @@ class _SelectionListState<T> extends State<_SelectionList<T>> {
               return ListTile(
                 title: Text(item.label),
                 subtitle: item.subtitle != null ? Text(item.subtitle!) : null,
-                trailing: selected ? Icon(Icons.check_circle, color: colors.primary) : null,
+                trailing: selected
+                    ? Icon(AppIcons.success, color: colors.primary)
+                    : null,
                 onTap: () => Navigator.of(context).pop(item.value),
               );
             },

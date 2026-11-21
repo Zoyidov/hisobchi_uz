@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
+import '../../icons/app_icons.dart';
 
 /// Barcha bottom sheetlarning umumiy anatomiyasi: drag handle, title, content,
 /// sticky action (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 51-52). Dropdown o'rniga
@@ -38,7 +39,12 @@ Future<T?> showAppBottomSheet<T>(
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.xs),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.xs,
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -49,17 +55,16 @@ Future<T?> showAppBottomSheet<T>(
                       Text(
                         title,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: -0.2,
-                            ),
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.2,
+                        ),
                       ),
                       if (subtitle != null) ...[
                         const SizedBox(height: 4),
                         Text(
                           subtitle,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: colors.textSecondary,
-                              ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: colors.textSecondary),
                         ),
                       ],
                     ],
@@ -74,7 +79,11 @@ Future<T?> showAppBottomSheet<T>(
                       color: colors.surfaceSecondary,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.close_rounded, size: 16, color: colors.textSecondary),
+                    child: Icon(
+                      AppIcons.close,
+                      size: 16,
+                      color: colors.textSecondary,
+                    ),
                   ),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
@@ -92,12 +101,16 @@ Future<T?> showAppBottomSheet<T>(
               ),
               decoration: BoxDecoration(
                 color: colors.surface,
-                border: Border(top: BorderSide(color: colors.border.withValues(alpha: 0.5))),
+                border: Border(
+                  top: BorderSide(color: colors.border.withValues(alpha: 0.5)),
+                ),
               ),
               child: stickyAction,
             )
           else
-            SizedBox(height: MediaQuery.of(context).padding.bottom + AppSpacing.md),
+            SizedBox(
+              height: MediaQuery.of(context).padding.bottom + AppSpacing.md,
+            ),
         ],
       );
 
@@ -110,7 +123,9 @@ Future<T?> showAppBottomSheet<T>(
         clipBehavior: Clip.antiAlias,
         child: heightFactor != null
             ? ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * heightFactor),
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * heightFactor,
+                ),
                 child: sheetBody,
               )
             : sheetBody,

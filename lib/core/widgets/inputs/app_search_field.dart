@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants/app_durations.dart';
 import '../../theme/app_colors.dart';
+import '../../icons/app_icons.dart';
 
 /// Debounce bilan qidiruv maydoni (MOBILE_APP_TZ.md 8.2,
 /// E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 39).
@@ -43,9 +43,12 @@ class _AppSearchFieldState extends State<AppSearchField> {
 
   void _onChanged(String value) {
     _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: AppDurations.searchDebounceMs), () {
-      widget.onChanged(value.trim());
-    });
+    _debounce = Timer(
+      const Duration(milliseconds: AppDurations.searchDebounceMs),
+      () {
+        widget.onChanged(value.trim());
+      },
+    );
     setState(() {});
   }
 
@@ -55,21 +58,24 @@ class _AppSearchFieldState extends State<AppSearchField> {
     return TextField(
       controller: _controller,
       onChanged: _onChanged,
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
+      style: Theme.of(
+        context,
+      ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
       decoration: InputDecoration(
         hintText: widget.hint,
-        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: colors.textTertiary,
-            ),
+        hintStyle: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(color: colors.textTertiary),
         filled: true,
         fillColor: colors.surfaceSecondary.withValues(alpha: 0.8),
         prefixIcon: Padding(
           padding: const EdgeInsets.only(left: 14, right: 10),
-          child: Icon(CupertinoIcons.search, color: colors.textTertiary, size: 20),
+          child: Icon(AppIcons.search, color: colors.textTertiary, size: 20),
         ),
-        prefixIconConstraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+        prefixIconConstraints: const BoxConstraints(
+          minWidth: 44,
+          minHeight: 44,
+        ),
         suffixIcon: AnimatedSwitcher(
           duration: const Duration(milliseconds: 150),
           child: _controller.text.isNotEmpty
@@ -84,7 +90,11 @@ class _AppSearchFieldState extends State<AppSearchField> {
                         color: colors.textTertiary.withValues(alpha: 0.25),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(CupertinoIcons.xmark, color: colors.textSecondary, size: 12),
+                      child: Icon(
+                        AppIcons.close,
+                        color: colors.textSecondary,
+                        size: 12,
+                      ),
                     ),
                     onPressed: () {
                       _controller.clear();
@@ -95,7 +105,10 @@ class _AppSearchFieldState extends State<AppSearchField> {
                 )
               : const SizedBox.shrink(key: ValueKey('empty')),
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 12,
+          horizontal: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: colors.border.withValues(alpha: 0.7)),

@@ -9,6 +9,7 @@ import '../../../../core/widgets/cards/app_card.dart';
 import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../../subscription/data/subscription_models.dart';
 import '../../../subscription/data/subscription_repository.dart';
+import '../../../../core/icons/app_icons.dart';
 
 class ProfileSubscriptionCard extends StatefulWidget {
   const ProfileSubscriptionCard({
@@ -83,7 +84,7 @@ class ProfileSubscriptionCardState extends State<ProfileSubscriptionCard> {
             IconButton(
               tooltip: 'Qayta urinish',
               onPressed: _load,
-              icon: const Icon(Icons.refresh_rounded),
+              icon: const Icon(AppIcons.refresh),
             ),
           ],
         ),
@@ -178,7 +179,7 @@ class ProfileSubscriptionCardState extends State<ProfileSubscriptionCard> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: const Icon(
-                      Icons.workspace_premium_rounded,
+                      AppIcons.premium,
                       color: Colors.white,
                       size: 24,
                     ),
@@ -213,11 +214,7 @@ class ProfileSubscriptionCardState extends State<ProfileSubscriptionCard> {
                       ],
                     ),
                   ),
-                  const Icon(
-                    Icons.arrow_forward_rounded,
-                    color: Colors.white,
-                    size: 21,
-                  ),
+                  const Icon(AppIcons.forward, color: Colors.white, size: 21),
                 ],
               ),
               if (widget.showDetails) ...[
@@ -266,14 +263,12 @@ class ProfileSubscriptionCardState extends State<ProfileSubscriptionCard> {
                     dense: true,
                     title: const Text('Limitlar va foydalanish'),
                     leading: Icon(
-                      Icons.donut_small_rounded,
+                      AppIcons.pieChart,
                       color: colors.primary,
                       size: 21,
                     ),
                     trailing: Icon(
-                      _expanded
-                          ? Icons.expand_less_rounded
-                          : Icons.expand_more_rounded,
+                      _expanded ? AppIcons.chevronUp : AppIcons.chevronDown,
                     ),
                     onTap: () => setState(() => _expanded = !_expanded),
                   ),

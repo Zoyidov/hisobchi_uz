@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,6 +23,7 @@ import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/document_models.dart';
 import '../../data/documents_repository.dart';
 import '../cubit/workers_cubit.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Ishchilar (MOBILE_APP_TZ.md 11-bo'lim).
 class WorkersPage extends StatelessWidget {
@@ -49,18 +49,29 @@ class _View extends StatelessWidget {
         actions: [
           BlocBuilder<WorkersCubit, WorkersState>(
             builder: (context, state) {
-              final positions = state is WorkersLoaded ? state.positions : <SimpleDocument>[];
+              final positions = state is WorkersLoaded
+                  ? state.positions
+                  : <SimpleDocument>[];
               return Padding(
                 padding: const EdgeInsets.only(right: AppSpacing.sm),
                 child: FilledButton.tonalIcon(
                   style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     minimumSize: const Size(0, 36),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
-                  onPressed: () => _showWorkerForm(context, positions: positions),
-                  icon: const Icon(CupertinoIcons.plus, size: 15),
-                  label: const Text('Qo\'shish', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+                  onPressed: () =>
+                      _showWorkerForm(context, positions: positions),
+                  icon: const Icon(AppIcons.add, size: 15),
+                  label: const Text(
+                    'Qo\'shish',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                  ),
                 ),
               );
             },
@@ -71,33 +82,46 @@ class _View extends StatelessWidget {
         builder: (context, state) {
           return switch (state) {
             WorkersLoading() => const AppSkeletonList(),
-            WorkersError(:final failure) =>
-              AppErrorState(failure: failure, onRetry: () => context.read<WorkersCubit>().load()),
-            WorkersLoaded(:final items, :final positions) => items.isEmpty
-                ? AppEmptyState(
-                    title: 'Ishchi topilmadi',
-                    actionLabel: 'Ishchi qo\'shish',
-                    onAction: () => _showWorkerForm(context, positions: positions),
-                  )
-                : RefreshIndicator(
-                    onRefresh: () => context.read<WorkersCubit>().load(),
-                    child: ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 110),
-                      itemCount: items.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
-                      itemBuilder: (context, i) => _Tile(item: items[i], positions: positions),
+            WorkersError(:final failure) => AppErrorState(
+              failure: failure,
+              onRetry: () => context.read<WorkersCubit>().load(),
+            ),
+            WorkersLoaded(:final items, :final positions) =>
+              items.isEmpty
+                  ? AppEmptyState(
+                      title: 'Ishchi topilmadi',
+                      actionLabel: 'Ishchi qo\'shish',
+                      onAction: () =>
+                          _showWorkerForm(context, positions: positions),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: () => context.read<WorkersCubit>().load(),
+                      child: ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.md,
+                          AppSpacing.md,
+                          AppSpacing.md,
+                          110,
+                        ),
+                        itemCount: items.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: AppSpacing.sm),
+                        itemBuilder: (context, i) =>
+                            _Tile(item: items[i], positions: positions),
+                      ),
                     ),
-                  ),
           };
         },
       ),
       floatingActionButton: BlocBuilder<WorkersCubit, WorkersState>(
         builder: (context, state) {
-          final positions = state is WorkersLoaded ? state.positions : <SimpleDocument>[];
+          final positions = state is WorkersLoaded
+              ? state.positions
+              : <SimpleDocument>[];
           return AppFloatingAction(
             heroTag: 'workers_create_fab',
             onPressed: () => _showWorkerForm(context, positions: positions),
-            icon: CupertinoIcons.person_badge_plus,
+            icon: AppIcons.partnerAdd,
             label: 'Ishchi qo\'shish',
           );
         },
@@ -115,7 +139,9 @@ class _Tile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     return AppCard(
-      onTap: item.isDeleted ? null : () => _showWorkerForm(context, positions: positions, editing: item),
+      onTap: item.isDeleted
+          ? null
+          : () => _showWorkerForm(context, positions: positions, editing: item),
       child: Row(
         children: [
           AppAvatar(name: item.name, size: 44),
@@ -125,25 +151,38 @@ class _Tile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(item.name, style: Theme.of(context).textTheme.titleSmall),
-                Text(PhoneFormatter.toDisplay(item.phone), style: TextStyle(color: colors.textSecondary, fontSize: 13)),
+                Text(
+                  PhoneFormatter.toDisplay(item.phone),
+                  style: TextStyle(color: colors.textSecondary, fontSize: 13),
+                ),
                 if (item.positionName != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
-                    child: AppStatusChip(label: item.positionName!, tone: AppStatusChipTone.info),
+                    child: AppStatusChip(
+                      label: item.positionName!,
+                      tone: AppStatusChipTone.info,
+                    ),
                   ),
                 if (item.isDeleted)
                   const Padding(
                     padding: EdgeInsets.only(top: 4),
-                    child: AppStatusChip(label: 'O\'chirilgan', tone: AppStatusChipTone.neutral),
+                    child: AppStatusChip(
+                      label: 'O\'chirilgan',
+                      tone: AppStatusChipTone.neutral,
+                    ),
                   ),
               ],
             ),
           ),
           if (item.isDeleted)
-            AppButton.text(label: 'Tiklash', onPressed: () => context.read<WorkersCubit>().submitRestore(item.id))
+            AppButton.text(
+              label: 'Tiklash',
+              onPressed: () =>
+                  context.read<WorkersCubit>().submitRestore(item.id),
+            )
           else
             IconButton(
-              icon: Icon(Icons.delete_outline_rounded, color: colors.error),
+              icon: Icon(AppIcons.delete, color: colors.error),
               onPressed: () async {
                 final confirmed = await showAppConfirmationSheet(
                   context,
@@ -151,8 +190,12 @@ class _Tile extends StatelessWidget {
                   description: 'Bu amalni keyin qaytarib bo\'lmaydi.',
                 );
                 if (confirmed && context.mounted) {
-                  final error = await context.read<WorkersCubit>().submitDelete(item.id);
-                  if (error != null && context.mounted) AppSnackbar.error(context, error.message);
+                  final error = await context.read<WorkersCubit>().submitDelete(
+                    item.id,
+                  );
+                  if (error != null && context.mounted) {
+                    AppSnackbar.error(context, error.message);
+                  }
                 }
               },
             ),
@@ -162,12 +205,20 @@ class _Tile extends StatelessWidget {
   }
 }
 
-void _showWorkerForm(BuildContext context, {required List<SimpleDocument> positions, Worker? editing}) {
+void _showWorkerForm(
+  BuildContext context, {
+  required List<SimpleDocument> positions,
+  Worker? editing,
+}) {
   final cubit = context.read<WorkersCubit>();
   final nameController = TextEditingController(text: editing?.name);
   final phoneController = TextEditingController(text: editing?.phone);
-  final additionalPhoneController = TextEditingController(text: editing?.additionalPhone);
-  final descriptionController = TextEditingController(text: editing?.description);
+  final additionalPhoneController = TextEditingController(
+    text: editing?.additionalPhone,
+  );
+  final descriptionController = TextEditingController(
+    text: editing?.description,
+  );
   var positionId = editing?.positionId;
 
   showAppBottomSheet<void>(
@@ -184,7 +235,10 @@ void _showWorkerForm(BuildContext context, {required List<SimpleDocument> positi
             const SizedBox(height: AppSpacing.md),
             AppPhoneField(controller: phoneController, label: 'Telefon'),
             const SizedBox(height: AppSpacing.md),
-            AppPhoneField(controller: additionalPhoneController, label: 'Qo\'shimcha telefon'),
+            AppPhoneField(
+              controller: additionalPhoneController,
+              label: 'Qo\'shimcha telefon',
+            ),
             const SizedBox(height: AppSpacing.md),
             InkWell(
               onTap: () async {
@@ -192,19 +246,30 @@ void _showWorkerForm(BuildContext context, {required List<SimpleDocument> positi
                   context,
                   title: 'Lavozimni tanlang',
                   selectedValue: positionId,
-                  items: positions.map((p) => AppSelectionItem(value: p.id, label: p.name)).toList(),
+                  items: positions
+                      .map((p) => AppSelectionItem(value: p.id, label: p.name))
+                      .toList(),
                 );
                 if (selected != null) setState(() => positionId = selected);
               },
               child: InputDecorator(
                 decoration: const InputDecoration(labelText: 'Lavozim'),
                 child: Text(
-                  positions.where((p) => p.id == positionId).map((p) => p.name).firstOrNull ?? 'Tanlanmagan',
+                  positions
+                          .where((p) => p.id == positionId)
+                          .map((p) => p.name)
+                          .firstOrNull ??
+                      'Tanlanmagan',
                 ),
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            AppTextField(controller: descriptionController, label: 'Tavsif (ixtiyoriy)', maxLines: 2, minLines: 1),
+            AppTextField(
+              controller: descriptionController,
+              label: 'Tavsif (ixtiyoriy)',
+              maxLines: 2,
+              minLines: 1,
+            ),
           ],
         ),
       ),
@@ -214,7 +279,9 @@ void _showWorkerForm(BuildContext context, {required List<SimpleDocument> positi
         label: 'Saqlash',
         onPressed: () async {
           final name = nameController.text.trim();
-          if (name.isEmpty || !PhoneFormatter.isValid(phoneController.text)) return;
+          if (name.isEmpty || !PhoneFormatter.isValid(phoneController.text)) {
+            return;
+          }
           final failure = editing == null
               ? await cubit.submitCreate(
                   name: name,
@@ -232,7 +299,9 @@ void _showWorkerForm(BuildContext context, {required List<SimpleDocument> positi
                   description: descriptionController.text.trim(),
                 );
           if (failure != null) {
-            if (sheetContext.mounted) AppSnackbar.error(sheetContext, failure.message);
+            if (sheetContext.mounted) {
+              AppSnackbar.error(sheetContext, failure.message);
+            }
             return;
           }
           if (sheetContext.mounted) Navigator.of(sheetContext).pop();

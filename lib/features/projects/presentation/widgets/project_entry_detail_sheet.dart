@@ -9,6 +9,7 @@ import '../../../../core/utils/formatters/money_formatter.dart';
 import '../../../../core/widgets/cards/app_card.dart';
 import '../../../../core/widgets/sheets/app_bottom_sheet.dart';
 import '../../data/project_models.dart';
+import '../../../../core/icons/app_icons.dart';
 
 Future<void> showProjectIncomeDetail(
   BuildContext context,
@@ -82,9 +83,7 @@ Future<void> _show(
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Icon(
-                    expense
-                        ? Icons.north_east_rounded
-                        : Icons.south_west_rounded,
+                    expense ? AppIcons.expense : AppIcons.income,
                     color: accent,
                     size: 22,
                   ),
@@ -118,14 +117,14 @@ Future<void> _show(
                 _DetailRow(
                   label: 'Operatsiya',
                   value: '#$id',
-                  icon: Icons.receipt_long_outlined,
+                  icon: AppIcons.receipt,
                 ),
                 if (createdAt != null) ...[
                   Divider(height: 24, color: colors.divider),
                   _DetailRow(
                     label: 'Sana',
                     value: AppDateFormatter.displayDateTime(createdAt),
-                    icon: Icons.schedule_rounded,
+                    icon: AppIcons.clock,
                   ),
                 ],
                 if (costType?.isNotEmpty == true) ...[
@@ -133,7 +132,7 @@ Future<void> _show(
                   _DetailRow(
                     label: 'Xarajat turi',
                     value: costType!,
-                    icon: Icons.category_outlined,
+                    icon: AppIcons.category,
                   ),
                 ],
                 if (worker?.isNotEmpty == true) ...[
@@ -141,7 +140,7 @@ Future<void> _show(
                   _DetailRow(
                     label: 'Ishchi',
                     value: worker!,
-                    icon: Icons.person_outline_rounded,
+                    icon: AppIcons.user,
                   ),
                 ],
               ],

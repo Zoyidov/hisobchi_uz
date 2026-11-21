@@ -14,6 +14,7 @@ import '../../../documents/data/document_models.dart';
 import '../../../documents/data/documents_repository.dart';
 import '../../data/projects_repository.dart';
 import 'worker_selection_sheet.dart';
+import '../../../../core/icons/app_icons.dart';
 
 Future<bool?> showProjectWorkerAssignmentSheet(
   BuildContext context, {
@@ -128,7 +129,7 @@ class _AssignmentState extends State<_Assignment> {
                     onChanged: (value) => setState(() => _query = value.trim()),
                     decoration: const InputDecoration(
                       hintText: 'Ism, telefon yoki lavozim',
-                      prefixIcon: Icon(Icons.search_rounded),
+                      prefixIcon: Icon(AppIcons.search),
                     ),
                   ),
                 ),
@@ -136,7 +137,7 @@ class _AssignmentState extends State<_Assignment> {
                 IconButton.filled(
                   tooltip: 'Yangi ishchi yaratish',
                   onPressed: _saving || _creating ? null : _create,
-                  icon: const Icon(Icons.add_rounded),
+                  icon: const Icon(AppIcons.add),
                 ),
               ],
             ),

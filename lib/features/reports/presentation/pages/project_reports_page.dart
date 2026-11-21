@@ -16,6 +16,7 @@ import '../../../projects/presentation/widgets/project_costs_tab.dart';
 import '../../../projects/presentation/widgets/project_incomes_tab.dart';
 import '../../data/project_report_models.dart';
 import '../../data/reports_repository.dart';
+import '../../../../core/icons/app_icons.dart';
 
 class ProjectReportsPage extends StatefulWidget {
   const ProjectReportsPage({super.key});
@@ -106,18 +107,20 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
             child: OutlinedButton.icon(
               onPressed: _pickProject,
-              icon: const Icon(Icons.work_outline_rounded, size: 19),
+              icon: const Icon(AppIcons.project, size: 19),
               label: Row(
                 children: [
                   Expanded(
                     child: Text(
                       _project?.projectName ?? 'Loyihani tanlang',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const Icon(Icons.keyboard_arrow_down_rounded, size: 20),
+                  const Icon(AppIcons.chevronDown, size: 20),
                 ],
               ),
             ),
@@ -132,7 +135,7 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
       return const AppEmptyState(
         title: 'Loyiha tanlanmagan',
         description: 'Moliya hisobotini ko‘rish uchun loyihani tanlang',
-        icon: Icons.work_outline_rounded,
+        icon: AppIcons.project,
       );
     }
     if (_error != null) {
@@ -150,8 +153,8 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
           _FinanceCard(
             label: 'Qoldiq',
             icon: report.balanceUzs < Decimal.zero
-                ? Icons.trending_down_rounded
-                : Icons.trending_up_rounded,
+                ? AppIcons.chartDown
+                : AppIcons.chartUp,
             uzs: report.balanceUzs,
             usd: report.balanceUsd,
             tint: colors.primary,
@@ -160,7 +163,7 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
           const SizedBox(height: 16),
           _FinanceCard(
             label: 'Kirim',
-            icon: Icons.south_west_rounded,
+            icon: AppIcons.income,
             uzs: report.incomeUzs,
             usd: report.incomeUsd,
             tint: colors.success,
@@ -180,7 +183,7 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
               children: [
                 _FinanceHeader(
                   label: 'Chiqim',
-                  icon: Icons.north_east_rounded,
+                  icon: AppIcons.expense,
                   uzs: report.costsUzs,
                   usd: report.costsUsd,
                   tint: colors.error,
@@ -191,7 +194,7 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
                 Row(
                   children: [
                     Icon(
-                      Icons.category_outlined,
+                      AppIcons.category,
                       size: 17,
                       color: colors.textSecondary,
                     ),
@@ -222,7 +225,7 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
                     child: Column(
                       children: [
                         Icon(
-                          Icons.inbox_outlined,
+                          AppIcons.empty,
                           size: 36,
                           color: colors.textTertiary,
                         ),
@@ -391,7 +394,7 @@ class _FinanceHeader extends StatelessWidget {
             if (actionable) ...[
               const SizedBox(width: 4),
               Icon(
-                Icons.chevron_right_rounded,
+                AppIcons.chevronRight,
                 color: context.colors.textTertiary,
                 size: 17,
               ),
@@ -439,7 +442,7 @@ class _CategoryCard extends StatelessWidget {
                 ),
                 if (onTap != null)
                   Icon(
-                    Icons.chevron_right_rounded,
+                    AppIcons.chevronRight,
                     size: 19,
                     color: context.colors.textTertiary,
                   ),
@@ -588,7 +591,7 @@ class _ProjectPickerState extends State<_ProjectPicker> {
           controller: _controller,
           decoration: const InputDecoration(
             hintText: 'Loyihani qidirish',
-            prefixIcon: Icon(Icons.search_rounded),
+            prefixIcon: Icon(AppIcons.search),
           ),
           onChanged: (_) {
             _request++;
@@ -620,10 +623,10 @@ class _ProjectPickerState extends State<_ProjectPicker> {
                     ),
                   for (final project in _items)
                     ListTile(
-                      leading: const Icon(Icons.work_outline_rounded),
+                      leading: const Icon(AppIcons.project),
                       title: Text(project.projectName),
                       subtitle: Text(project.projectOwner),
-                      trailing: const Icon(Icons.chevron_right_rounded),
+                      trailing: const Icon(AppIcons.chevronRight),
                       onTap: () => Navigator.of(context).pop(project),
                     ),
                   if (_items.isNotEmpty && _error != null)

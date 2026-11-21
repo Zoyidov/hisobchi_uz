@@ -11,6 +11,7 @@ import '../../data/subscription_models.dart';
 import '../../data/subscription_repository.dart';
 import '../widgets/payment_flow_sheet.dart';
 import '../widgets/payment_provider_sheet.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// SMS paketlari (MOBILE_APP_TZ.md 13.5).
 class SmsPackagesPage extends StatefulWidget {
@@ -46,10 +47,7 @@ class _SmsPackagesPageState extends State<SmsPackagesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('SMS paketlari'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('SMS paketlari'), elevation: 0),
       body: _buildBody(context),
     );
   }
@@ -101,9 +99,7 @@ class _SmsPackagesPageState extends State<SmsPackagesPage> {
       decoration: BoxDecoration(
         color: colors.primaryContainer.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colors.primary.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,7 +112,7 @@ class _SmsPackagesPageState extends State<SmsPackagesPage> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
-              Icons.mark_chat_unread_rounded,
+              AppIcons.messageUnread,
               color: colors.primary,
               size: 22,
             ),
@@ -183,10 +179,7 @@ class _SmsPackagesPageState extends State<SmsPackagesPage> {
 }
 
 class _SmsPackageCard extends StatelessWidget {
-  const _SmsPackageCard({
-    required this.package,
-    required this.onPurchase,
-  });
+  const _SmsPackageCard({required this.package, required this.onPurchase});
 
   final SmsPackage package;
   final VoidCallback onPurchase;
@@ -247,11 +240,7 @@ class _SmsPackageCard extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
-                    Icon(
-                      Icons.auto_awesome_rounded,
-                      size: 14,
-                      color: Colors.white,
-                    ),
+                    Icon(AppIcons.magic, size: 14, color: Colors.white),
                     SizedBox(width: 6),
                     Text(
                       'ENG OMMABOP PAKET',
@@ -284,8 +273,10 @@ class _SmsPackageCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Icon(
-                          Icons.sms_rounded,
-                          color: _isPopular ? colors.primary : colors.textPrimary,
+                          AppIcons.message,
+                          color: _isPopular
+                              ? colors.primary
+                              : colors.textPrimary,
                           size: 24,
                         ),
                       ),
@@ -310,7 +301,9 @@ class _SmsPackageCard extends StatelessWidget {
                                     vertical: 3,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: colors.primary.withValues(alpha: 0.1),
+                                    color: colors.primary.withValues(
+                                      alpha: 0.1,
+                                    ),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
@@ -385,7 +378,7 @@ class _SmsPackageCard extends StatelessWidget {
                         size: AppButtonSize.medium,
                         expand: false,
                         icon: const Icon(
-                          Icons.arrow_forward_rounded,
+                          AppIcons.forward,
                           size: 16,
                           color: Colors.white,
                         ),

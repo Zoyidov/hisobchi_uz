@@ -9,6 +9,7 @@ import '../../../../core/widgets/states/app_error_state.dart';
 import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/document_models.dart';
 import '../../data/documents_repository.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Valyuta kurslari (CBU) + konvertor (MOBILE_APP_TZ.md 11-bo'lim).
 class CurrencyRatesPage extends StatefulWidget {
@@ -35,7 +36,8 @@ class _CurrencyRatesPageState extends State<CurrencyRatesPage> {
       _rates = null;
       _error = null;
     });
-    final result = await getIt<DocumentsRepository>().getCurrencyExchangeRates();
+    final result = await getIt<DocumentsRepository>()
+        .getCurrencyExchangeRates();
     if (!mounted) return;
     result.when(
       success: (rates) => setState(() {
@@ -62,10 +64,19 @@ class _CurrencyRatesPageState extends State<CurrencyRatesPage> {
 
   Widget _buildBody(BuildContext context) {
     if (_error != null) {
-      return AppErrorState(title: 'Kurslarni yuklab bo\'lmadi', description: _error, onRetry: _load);
+      return AppErrorState(
+        title: 'Kurslarni yuklab bo\'lmadi',
+        description: _error,
+        onRetry: _load,
+      );
     }
     if (_rates == null) return const AppSkeletonList();
-    if (_rates!.isEmpty) return const AppEmptyState(title: 'Kurslar topilmadi', icon: Icons.currency_exchange_rounded);
+    if (_rates!.isEmpty) {
+      return const AppEmptyState(
+        title: 'Kurslar topilmadi',
+        icon: AppIcons.exchange,
+      );
+    }
 
     final colors = context.colors;
     return RefreshIndicator(
@@ -77,7 +88,10 @@ class _CurrencyRatesPageState extends State<CurrencyRatesPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Konvertor', style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  'Konvertor',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const SizedBox(height: AppSpacing.sm),
                 Row(
                   children: [
@@ -86,11 +100,13 @@ class _CurrencyRatesPageState extends State<CurrencyRatesPage> {
                         controller: _amountController,
                         keyboardType: TextInputType.number,
                         onChanged: (_) => setState(() {}),
-                        decoration: InputDecoration(labelText: _selected?.code ?? ''),
+                        decoration: InputDecoration(
+                          labelText: _selected?.code ?? '',
+                        ),
                       ),
                     ),
                     const SizedBox(width: AppSpacing.sm),
-                    const Icon(Icons.arrow_forward_rounded),
+                    const Icon(AppIcons.forward),
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
@@ -117,25 +133,46 @@ class _CurrencyRatesPageState extends State<CurrencyRatesPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(rate.code, style: Theme.of(context).textTheme.titleSmall),
-                          Text(rate.nameUz, style: TextStyle(color: colors.textSecondary, fontSize: 12)),
+                          Text(
+                            rate.code,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          Text(
+                            rate.nameUz,
+                            style: TextStyle(
+                              color: colors.textSecondary,
+                              fontSize: 12,
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text(rate.rate.toStringAsFixed(2), style: Theme.of(context).textTheme.titleSmall),
+                        Text(
+                          rate.rate.toStringAsFixed(2),
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
                         Row(
                           children: [
                             Icon(
-                              rate.diff >= 0 ? Icons.arrow_drop_up_rounded : Icons.arrow_drop_down_rounded,
-                              color: rate.diff >= 0 ? colors.success : colors.error,
+                              rate.diff >= 0
+                                  ? AppIcons.chevronUp
+                                  : AppIcons.chevronDown,
+                              color: rate.diff >= 0
+                                  ? colors.success
+                                  : colors.error,
                               size: 18,
                             ),
                             Text(
                               rate.diff.abs().toStringAsFixed(2),
-                              style: TextStyle(color: rate.diff >= 0 ? colors.success : colors.error, fontSize: 12),
+                              style: TextStyle(
+                                color: rate.diff >= 0
+                                    ? colors.success
+                                    : colors.error,
+                                fontSize: 12,
+                              ),
                             ),
                           ],
                         ),

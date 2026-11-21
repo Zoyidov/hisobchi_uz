@@ -10,6 +10,7 @@ import '../../data/partner_models.dart';
 import '../../data/partners_repository.dart';
 import '../../data/sms_models.dart';
 import '../cubit/partner_sms_cubit.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Tab 3: SMS tarixi (MOBILE_APP_TZ.md 8.9).
 class PartnerSmsHistoryTab extends StatefulWidget {
@@ -30,10 +31,9 @@ class _PartnerSmsHistoryTabState extends State<PartnerSmsHistoryTab>
   Widget build(BuildContext context) {
     super.build(context);
     return BlocProvider(
-      create: (_) => PartnerSmsHistoryCubit(
-        getIt<PartnersRepository>(),
-        widget.partner.id,
-      )..loadFirst(),
+      create: (_) =>
+          PartnerSmsHistoryCubit(getIt<PartnersRepository>(), widget.partner.id)
+            ..loadFirst(),
       child: Builder(
         builder: (context) {
           final cubit = context.watch<PartnerSmsHistoryCubit>();
@@ -42,16 +42,14 @@ class _PartnerSmsHistoryTabState extends State<PartnerSmsHistoryTab>
             onLoadMore: cubit.loadMore,
             onRefresh: cubit.refresh,
             onRetry: cubit.loadFirst,
-            emptyIcon: Icons.sms_outlined,
+            emptyIcon: AppIcons.message,
             emptyTitle: 'SMS tarixi bo\'sh',
             itemBuilder: (context, sms, index) => AppCard(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
-                    sms.isSuccess
-                        ? Icons.check_circle_outline_rounded
-                        : Icons.error_outline_rounded,
+                    sms.isSuccess ? AppIcons.success : AppIcons.error,
                     color: sms.isSuccess
                         ? context.colors.success
                         : context.colors.error,

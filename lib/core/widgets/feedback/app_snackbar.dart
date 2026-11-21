@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../../icons/app_icons.dart';
 
 enum AppSnackbarType { success, error, warning }
 
@@ -21,9 +22,9 @@ abstract final class AppSnackbar {
       AppSnackbarType.warning => colors.warning,
     };
     final icon = switch (type) {
-      AppSnackbarType.success => Icons.check_circle,
-      AppSnackbarType.error => Icons.error,
-      AppSnackbarType.warning => Icons.warning_amber_rounded,
+      AppSnackbarType.success => AppIcons.success,
+      AppSnackbarType.error => AppIcons.error,
+      AppSnackbarType.warning => AppIcons.warning,
     };
 
     ScaffoldMessenger.of(context)
@@ -48,11 +49,15 @@ abstract final class AppSnackbar {
   static void success(BuildContext context, String message) =>
       show(context, message, type: AppSnackbarType.success);
 
-  static void error(BuildContext context, String message, {VoidCallback? onRetry}) => show(
-        context,
-        message,
-        type: AppSnackbarType.error,
-        actionLabel: onRetry != null ? 'Qayta urinish' : null,
-        onAction: onRetry,
-      );
+  static void error(
+    BuildContext context,
+    String message, {
+    VoidCallback? onRetry,
+  }) => show(
+    context,
+    message,
+    type: AppSnackbarType.error,
+    actionLabel: onRetry != null ? 'Qayta urinish' : null,
+    onAction: onRetry,
+  );
 }

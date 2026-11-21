@@ -15,6 +15,7 @@ import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../data/staff_repository.dart';
 import '../cubit/staff_create_cubit.dart';
 import '../widgets/permission_group_list.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Xodim qo'shish — 3 qadam (MOBILE_APP_TZ.md 15.1).
 class StaffCreatePage extends StatelessWidget {
@@ -23,7 +24,8 @@ class StaffCreatePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => StaffCreateCubit(getIt<StaffRepository>())..loadPermissionGroups(),
+      create: (_) =>
+          StaffCreateCubit(getIt<StaffRepository>())..loadPermissionGroups(),
       child: const _View(),
     );
   }
@@ -50,7 +52,10 @@ class _View extends StatelessWidget {
             return Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.sm,
+                  ),
                   child: _StepIndicator(step: state.step),
                 ),
                 Expanded(
@@ -92,8 +97,8 @@ class _StepIndicator extends StatelessWidget {
                   color: current
                       ? colors.primary
                       : active
-                          ? colors.primary.withValues(alpha: 0.2)
-                          : colors.surfaceSecondary,
+                      ? colors.primary.withValues(alpha: 0.2)
+                      : colors.surfaceSecondary,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
                     color: current ? colors.primary : colors.borderSubtle,
@@ -101,15 +106,15 @@ class _StepIndicator extends StatelessWidget {
                 ),
                 alignment: Alignment.center,
                 child: active && !current
-                    ? Icon(Icons.check_rounded, size: 16, color: colors.primary)
+                    ? Icon(AppIcons.check, size: 16, color: colors.primary)
                     : Text(
                         '${i + 1}',
                         style: TextStyle(
                           color: current
                               ? Colors.white
                               : active
-                                  ? colors.primary
-                                  : colors.textTertiary,
+                              ? colors.primary
+                              : colors.textTertiary,
                           fontWeight: FontWeight.w700,
                           fontSize: 13,
                         ),
@@ -124,8 +129,8 @@ class _StepIndicator extends StatelessWidget {
                   color: current
                       ? colors.textPrimary
                       : active
-                          ? colors.textSecondary
-                          : colors.textTertiary,
+                      ? colors.textSecondary
+                      : colors.textTertiary,
                 ),
               ),
             ],
@@ -153,13 +158,19 @@ class _PhoneStepState extends State<_PhoneStep> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AppPhoneField(controller: _phoneController, label: 'Xodim telefoni', onChanged: (_) => setState(() {})),
+          AppPhoneField(
+            controller: _phoneController,
+            label: 'Xodim telefoni',
+            onChanged: (_) => setState(() {}),
+          ),
           const SizedBox(height: AppSpacing.lg),
           AppButton.primary(
             label: 'Davom etish',
             isLoading: state.isLoading,
             onPressed: PhoneFormatter.isValid(_phoneController.text)
-                ? () => context.read<StaffCreateCubit>().submitPhone(_phoneController.text)
+                ? () => context.read<StaffCreateCubit>().submitPhone(
+                    _phoneController.text,
+                  )
                 : null,
           ),
         ],
@@ -192,7 +203,10 @@ class _OtpStepState extends State<_OtpStep> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(PhoneFormatter.toDisplay(state.phone), style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            PhoneFormatter.toDisplay(state.phone),
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: AppSpacing.lg),
           PinCodeTextField(
             appContext: context,
@@ -214,9 +228,14 @@ class _OtpStepState extends State<_OtpStep> {
               inactiveFillColor: colors.surfaceSecondary,
             ),
             onChanged: (_) {},
-            onCompleted: (code) => context.read<StaffCreateCubit>().submitOtp(code),
+            onCompleted: (code) =>
+                context.read<StaffCreateCubit>().submitOtp(code),
           ),
-          if (state.isLoading) const Padding(padding: EdgeInsets.only(top: 16), child: Center(child: CircularProgressIndicator())),
+          if (state.isLoading)
+            const Padding(
+              padding: EdgeInsets.only(top: 16),
+              child: Center(child: CircularProgressIndicator()),
+            ),
         ],
       ),
     );
@@ -245,7 +264,11 @@ class _DetailsStepState extends State<_DetailsStep> {
         children: [
           AppTextField(controller: _nameController, label: 'Ism'),
           const SizedBox(height: AppSpacing.md),
-          AppTextField(controller: _passwordController, label: 'Parol', obscureText: true),
+          AppTextField(
+            controller: _passwordController,
+            label: 'Parol',
+            obscureText: true,
+          ),
           const SizedBox(height: AppSpacing.lg),
           Text('Ruxsatlar', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: AppSpacing.sm),
@@ -260,12 +283,17 @@ class _DetailsStepState extends State<_DetailsStep> {
             isLoading: state.isLoading,
             onPressed: () {
               final nameError = Validators.required(_nameController.text);
-              final passwordError = Validators.password(_passwordController.text);
+              final passwordError = Validators.password(
+                _passwordController.text,
+              );
               if (nameError != null || passwordError != null) {
                 AppSnackbar.error(context, nameError ?? passwordError!);
                 return;
               }
-              cubit.submitDetails(name: _nameController.text.trim(), password: _passwordController.text);
+              cubit.submitDetails(
+                name: _nameController.text.trim(),
+                password: _passwordController.text,
+              );
             },
           ),
         ],

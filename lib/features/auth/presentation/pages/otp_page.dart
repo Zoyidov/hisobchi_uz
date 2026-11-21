@@ -15,6 +15,7 @@ import '../../../../core/utils/formatters/phone_formatter.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/feedback/app_snackbar.dart';
 import '../cubit/otp_cubit.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// OTP tasdiqlash — Senior Level FinTech 4-xonali avtomatik tasdiqlash ekrani.
 class OtpPage extends StatelessWidget {
@@ -26,7 +27,8 @@ class OtpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => OtpCubit(getIt<AuthRepository>(), phone: phone, mode: mode),
+      create: (_) =>
+          OtpCubit(getIt<AuthRepository>(), phone: phone, mode: mode),
       child: _OtpView(phone: phone, mode: mode),
     );
   }
@@ -42,7 +44,8 @@ class _OtpView extends StatefulWidget {
   State<_OtpView> createState() => _OtpViewState();
 }
 
-class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin {
+class _OtpViewState extends State<_OtpView>
+    with SingleTickerProviderStateMixin {
   final _controller = TextEditingController();
   late final AnimationController _animController;
   late final Animation<double> _fadeAnimation;
@@ -61,13 +64,10 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
       curve: Curves.easeOutCubic,
     );
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.04),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animController,
-      curve: Curves.easeOutCubic,
-    ));
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.04), end: Offset.zero).animate(
+          CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+        );
 
     _animController.forward();
   }
@@ -91,15 +91,15 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
           if (state is OtpVerified) {
             HapticFeedback.mediumImpact();
             if (widget.mode == OtpMode.register) {
-              context.push(RoutePaths.register, extra: {
-                'phone': widget.phone,
-                'verifyToken': state.payload,
-              });
+              context.push(
+                RoutePaths.register,
+                extra: {'phone': widget.phone, 'verifyToken': state.payload},
+              );
             } else {
-              context.push(RoutePaths.resetPassword, extra: {
-                'phone': widget.phone,
-                'otpCode': state.payload,
-              });
+              context.push(
+                RoutePaths.resetPassword,
+                extra: {'phone': widget.phone, 'otpCode': state.payload},
+              );
             }
           } else if (state is OtpInvalid) {
             HapticFeedback.heavyImpact();
@@ -124,7 +124,9 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          colors.primary.withValues(alpha: isDark ? 0.22 : 0.12),
+                          colors.primary.withValues(
+                            alpha: isDark ? 0.22 : 0.12,
+                          ),
                           colors.primary.withValues(alpha: 0.0),
                         ],
                       ),
@@ -143,7 +145,9 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          colors.accentViolet.withValues(alpha: isDark ? 0.15 : 0.08),
+                          colors.accentViolet.withValues(
+                            alpha: isDark ? 0.15 : 0.08,
+                          ),
                           colors.accentViolet.withValues(alpha: 0.0),
                         ],
                       ),
@@ -158,10 +162,15 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                   builder: (context, constraints) {
                     return SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
-                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.xl,
+                      ),
                       child: ConstrainedBox(
-                        constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                        ),
                         child: IntrinsicHeight(
                           child: FadeTransition(
                             opacity: _fadeAnimation,
@@ -174,7 +183,8 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
 
                                   // Top Navigation Bar
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       InkWell(
                                         onTap: () => context.pop(),
@@ -183,15 +193,18 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                                           width: 44,
                                           height: 44,
                                           decoration: BoxDecoration(
-                                            color: colors.surfaceSecondary.withValues(alpha: 0.8),
-                                            borderRadius: BorderRadius.circular(14),
+                                            color: colors.surfaceSecondary
+                                                .withValues(alpha: 0.8),
+                                            borderRadius: BorderRadius.circular(
+                                              14,
+                                            ),
                                             border: Border.all(
                                               color: colors.borderSubtle,
                                               width: 1,
                                             ),
                                           ),
                                           child: Icon(
-                                            Icons.arrow_back_ios_new_rounded,
+                                            AppIcons.back,
                                             size: 18,
                                             color: colors.textPrimary,
                                           ),
@@ -203,12 +216,15 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                                           vertical: 6,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: colors.primaryContainer.withValues(
-                                            alpha: isDark ? 0.4 : 0.8,
-                                          ),
+                                          color: colors.primaryContainer
+                                              .withValues(
+                                                alpha: isDark ? 0.4 : 0.8,
+                                              ),
                                           borderRadius: AppRadius.pillRadius,
                                           border: Border.all(
-                                            color: colors.primary.withValues(alpha: 0.2),
+                                            color: colors.primary.withValues(
+                                              alpha: 0.2,
+                                            ),
                                           ),
                                         ),
                                         child: Text(
@@ -236,8 +252,12 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                                           width: 76,
                                           height: 76,
                                           decoration: BoxDecoration(
-                                            color: colors.primary.withValues(alpha: 0.18),
-                                            borderRadius: BorderRadius.circular(26),
+                                            color: colors.primary.withValues(
+                                              alpha: 0.18,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              26,
+                                            ),
                                           ),
                                         ),
                                         Container(
@@ -249,22 +269,29 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                                               end: Alignment.bottomRight,
                                               colors: [
                                                 colors.primary,
-                                                colors.primary.withValues(alpha: 0.85),
+                                                colors.primary.withValues(
+                                                  alpha: 0.85,
+                                                ),
                                               ],
                                             ),
-                                            borderRadius: BorderRadius.circular(22),
+                                            borderRadius: BorderRadius.circular(
+                                              22,
+                                            ),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: colors.primary.withValues(
-                                                  alpha: isDark ? 0.5 : 0.32,
-                                                ),
+                                                color: colors.primary
+                                                    .withValues(
+                                                      alpha: isDark
+                                                          ? 0.5
+                                                          : 0.32,
+                                                    ),
                                                 blurRadius: 18,
                                                 offset: const Offset(0, 8),
                                               ),
                                             ],
                                           ),
                                           child: const Icon(
-                                            Icons.sms_rounded,
+                                            AppIcons.message,
                                             size: 32,
                                             color: Colors.white,
                                           ),
@@ -278,7 +305,10 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                                   // Headings
                                   Text(
                                     'Tasdiqlash kodi 🔐',
-                                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineLarge
+                                        ?.copyWith(
                                           fontSize: 27,
                                           fontWeight: FontWeight.w800,
                                           letterSpacing: -0.5,
@@ -305,9 +335,10 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                                         vertical: 8,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: colors.surfaceSecondary.withValues(
-                                          alpha: isDark ? 0.6 : 0.8,
-                                        ),
+                                        color: colors.surfaceSecondary
+                                            .withValues(
+                                              alpha: isDark ? 0.6 : 0.8,
+                                            ),
                                         borderRadius: BorderRadius.circular(14),
                                         border: Border.all(
                                           color: colors.borderSubtle,
@@ -317,10 +348,15 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          const Text('🇺🇿', style: TextStyle(fontSize: 17)),
+                                          const Text(
+                                            '🇺🇿',
+                                            style: TextStyle(fontSize: 17),
+                                          ),
                                           const SizedBox(width: 8),
                                           Text(
-                                            PhoneFormatter.toDisplay(widget.phone),
+                                            PhoneFormatter.toDisplay(
+                                              widget.phone,
+                                            ),
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 14.5,
@@ -331,12 +367,15 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                                           const SizedBox(width: 10),
                                           InkWell(
                                             onTap: () => context.pop(),
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
                                             child: Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: 6,
-                                                vertical: 2,
-                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 6,
+                                                    vertical: 2,
+                                                  ),
                                               child: Text(
                                                 'O\'zgartirish',
                                                 style: TextStyle(
@@ -370,7 +409,9 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                                         fontSize: 26,
                                         fontWeight: FontWeight.w800,
                                         color: colors.textPrimary,
-                                        fontFeatures: const [FontFeature.tabularFigures()],
+                                        fontFeatures: const [
+                                          FontFeature.tabularFigures(),
+                                        ],
                                       ),
                                       pinTheme: PinTheme(
                                         shape: PinCodeFieldShape.box,
@@ -380,12 +421,20 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                                         borderWidth: 1.8,
                                         activeColor: colors.primary,
                                         selectedColor: colors.primary,
-                                        inactiveColor: colors.border.withValues(alpha: 0.8),
-                                        activeFillColor: isDark ? colors.surfaceSecondary : colors.surface,
-                                        selectedFillColor: isDark ? colors.surfaceSecondary : colors.surface,
+                                        inactiveColor: colors.border.withValues(
+                                          alpha: 0.8,
+                                        ),
+                                        activeFillColor: isDark
+                                            ? colors.surfaceSecondary
+                                            : colors.surface,
+                                        selectedFillColor: isDark
+                                            ? colors.surfaceSecondary
+                                            : colors.surface,
                                         inactiveFillColor: isDark
-                                            ? colors.surfaceSecondary.withValues(alpha: 0.5)
-                                            : colors.surfaceSecondary.withValues(alpha: 0.6),
+                                            ? colors.surfaceSecondary
+                                                  .withValues(alpha: 0.5)
+                                            : colors.surfaceSecondary
+                                                  .withValues(alpha: 0.6),
                                       ),
                                       onChanged: (_) {},
                                       onCompleted: (code) {
@@ -408,7 +457,10 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                                                 height: 18,
                                                 child: CircularProgressIndicator(
                                                   strokeWidth: 2.2,
-                                                  valueColor: AlwaysStoppedAnimation(colors.primary),
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation(
+                                                        colors.primary,
+                                                      ),
                                                 ),
                                               ),
                                               const SizedBox(width: 10),
@@ -423,90 +475,105 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                                             ],
                                           )
                                         : state.secondsRemaining > 0
-                                            ? Container(
-                                                padding: const EdgeInsets.symmetric(
-                                                  horizontal: 16,
-                                                  vertical: 8,
+                                        ? Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 8,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: colors.surfaceSecondary
+                                                  .withValues(alpha: 0.5),
+                                              borderRadius:
+                                                  AppRadius.pillRadius,
+                                              border: Border.all(
+                                                color: colors.borderSubtle,
+                                              ),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  AppIcons.timer,
+                                                  size: 16,
+                                                  color: colors.textSecondary,
                                                 ),
+                                                const SizedBox(width: 6),
+                                                Text(
+                                                  'Kodni qayta yuborish: ',
+                                                  style: TextStyle(
+                                                    color: colors.textSecondary,
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  '00:${state.secondsRemaining.toString().padLeft(2, '0')}',
+                                                  style: TextStyle(
+                                                    color: colors.primary,
+                                                    fontSize: 13.5,
+                                                    fontWeight: FontWeight.w700,
+                                                    fontFeatures: const [
+                                                      FontFeature.tabularFigures(),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        : AppButtonPressable(
+                                            child: InkWell(
+                                              borderRadius:
+                                                  BorderRadius.circular(999),
+                                              onTap: () {
+                                                HapticFeedback.mediumImpact();
+                                                context
+                                                    .read<OtpCubit>()
+                                                    .resend();
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 18,
+                                                      vertical: 10,
+                                                    ),
                                                 decoration: BoxDecoration(
-                                                  color: colors.surfaceSecondary.withValues(alpha: 0.5),
-                                                  borderRadius: AppRadius.pillRadius,
+                                                  color: colors.primaryContainer
+                                                      .withValues(
+                                                        alpha: isDark
+                                                            ? 0.4
+                                                            : 0.8,
+                                                      ),
+                                                  borderRadius:
+                                                      AppRadius.pillRadius,
                                                   border: Border.all(
-                                                    color: colors.borderSubtle,
+                                                    color: colors.primary
+                                                        .withValues(alpha: 0.3),
                                                   ),
                                                 ),
                                                 child: Row(
-                                                  mainAxisSize: MainAxisSize.min,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
                                                   children: [
                                                     Icon(
-                                                      Icons.timer_outlined,
+                                                      AppIcons.refresh,
                                                       size: 16,
-                                                      color: colors.textSecondary,
+                                                      color: colors.primary,
                                                     ),
-                                                    const SizedBox(width: 6),
+                                                    const SizedBox(width: 8),
                                                     Text(
-                                                      'Kodni qayta yuborish: ',
-                                                      style: TextStyle(
-                                                        color: colors.textSecondary,
-                                                        fontSize: 13,
-                                                        fontWeight: FontWeight.w500,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      '00:${state.secondsRemaining.toString().padLeft(2, '0')}',
+                                                      'Kodni qayta yuborish',
                                                       style: TextStyle(
                                                         color: colors.primary,
                                                         fontSize: 13.5,
-                                                        fontWeight: FontWeight.w700,
-                                                        fontFeatures: const [FontFeature.tabularFigures()],
+                                                        fontWeight:
+                                                            FontWeight.w700,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                              )
-                                            : AppButtonPressable(
-                                                child: InkWell(
-                                                  borderRadius: BorderRadius.circular(999),
-                                                  onTap: () {
-                                                    HapticFeedback.mediumImpact();
-                                                    context.read<OtpCubit>().resend();
-                                                  },
-                                                  child: Container(
-                                                    padding: const EdgeInsets.symmetric(
-                                                      horizontal: 18,
-                                                      vertical: 10,
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                      color: colors.primaryContainer.withValues(
-                                                        alpha: isDark ? 0.4 : 0.8,
-                                                      ),
-                                                      borderRadius: AppRadius.pillRadius,
-                                                      border: Border.all(
-                                                        color: colors.primary.withValues(alpha: 0.3),
-                                                      ),
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisSize: MainAxisSize.min,
-                                                      children: [
-                                                        Icon(
-                                                          Icons.replay_rounded,
-                                                          size: 16,
-                                                          color: colors.primary,
-                                                        ),
-                                                        const SizedBox(width: 8),
-                                                        Text(
-                                                          'Kodni qayta yuborish',
-                                                          style: TextStyle(
-                                                            color: colors.primary,
-                                                            fontSize: 13.5,
-                                                            fontWeight: FontWeight.w700,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
                                               ),
+                                            ),
+                                          ),
                                   ),
 
                                   const Spacer(flex: 3),
@@ -514,17 +581,23 @@ class _OtpViewState extends State<_OtpView> with SingleTickerProviderStateMixin 
                                   // Trust & Security Footer
                                   Center(
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 14,
+                                        vertical: 8,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: colors.surfaceSecondary.withValues(alpha: 0.5),
+                                        color: colors.surfaceSecondary
+                                            .withValues(alpha: 0.5),
                                         borderRadius: AppRadius.pillRadius,
-                                        border: Border.all(color: colors.borderSubtle),
+                                        border: Border.all(
+                                          color: colors.borderSubtle,
+                                        ),
                                       ),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Icon(
-                                            Icons.shield_outlined,
+                                            AppIcons.shield,
                                             size: 15,
                                             color: colors.textTertiary,
                                           ),

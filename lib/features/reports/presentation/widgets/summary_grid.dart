@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters/money_formatter.dart';
+import '../../../../core/icons/app_icons.dart';
 
 class SummaryGrid extends StatelessWidget {
   const SummaryGrid({
@@ -30,7 +31,7 @@ class SummaryGrid extends StatelessWidget {
           title: 'Jami kirim',
           amount: totalIncome,
           currency: currency,
-          icon: Icons.trending_down_rounded,
+          icon: AppIcons.chartDown,
           color: context.colors.success,
           onTap: onIncomeTap,
         );
@@ -38,7 +39,7 @@ class SummaryGrid extends StatelessWidget {
           title: 'Jami chiqim',
           amount: totalExpense,
           currency: currency,
-          icon: Icons.trending_up_rounded,
+          icon: AppIcons.chartUp,
           color: context.colors.error,
           onTap: onExpenseTap,
         );
@@ -104,7 +105,7 @@ class _SummaryCard extends StatelessWidget {
                 const Spacer(),
                 if (onTap != null)
                   Icon(
-                    Icons.chevron_right_rounded,
+                    AppIcons.chevronRight,
                     color: context.colors.textTertiary,
                     size: 19,
                   ),

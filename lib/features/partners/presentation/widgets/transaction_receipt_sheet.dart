@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
@@ -12,6 +11,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/feedback/app_snackbar.dart';
 import '../../../../core/widgets/media/app_file_preview.dart';
 import '../../data/partner_models.dart';
+import '../../../../core/icons/app_icons.dart';
 
 enum ReceiptAction { cancel, delete }
 
@@ -173,11 +173,7 @@ class _BankReceiptSheet extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(
-                      Icons.receipt_long_rounded,
-                      size: 20,
-                      color: colors.primary,
-                    ),
+                    Icon(AppIcons.receipt, size: 20, color: colors.primary),
                     const SizedBox(width: 8),
                     Text(
                       'To\'lov cheki',
@@ -199,7 +195,7 @@ class _BankReceiptSheet extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      Icons.close_rounded,
+                      AppIcons.close,
                       size: 18,
                       color: colors.textSecondary,
                     ),
@@ -263,7 +259,7 @@ class _BankReceiptSheet extends StatelessWidget {
                                           ),
                                         ),
                                         child: const Icon(
-                                          Icons.account_balance_rounded,
+                                          AppIcons.bank,
                                           size: 16,
                                           color: Colors.white,
                                         ),
@@ -354,8 +350,8 @@ class _BankReceiptSheet extends StatelessWidget {
                                     ),
                                     child: Icon(
                                       isCancelled
-                                          ? Icons.close_rounded
-                                          : Icons.check_rounded,
+                                          ? AppIcons.close
+                                          : AppIcons.check,
                                       color: Colors.white,
                                       size: 30,
                                     ),
@@ -505,7 +501,7 @@ class _BankReceiptSheet extends StatelessWidget {
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 6),
                                     child: Icon(
-                                      Icons.copy_rounded,
+                                      AppIcons.copy,
                                       size: 14,
                                       color: colors.primary,
                                     ),
@@ -585,8 +581,8 @@ class _BankReceiptSheet extends StatelessWidget {
                                       ),
                                       child: Icon(
                                         isCancelled
-                                            ? Icons.cancel_outlined
-                                            : Icons.verified_rounded,
+                                            ? AppIcons.cancel
+                                            : AppIcons.verified,
                                         size: 17,
                                         color: statusColor,
                                       ),
@@ -674,7 +670,7 @@ class _BankReceiptSheet extends StatelessWidget {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: const [
                                       Icon(
-                                        CupertinoIcons.share,
+                                        AppIcons.share,
                                         color: Colors.white,
                                         size: 19,
                                       ),
@@ -712,7 +708,7 @@ class _BankReceiptSheet extends StatelessWidget {
                               boxShadow: colors.cardShadow,
                             ),
                             child: Icon(
-                              CupertinoIcons.doc_on_doc,
+                              AppIcons.copy,
                               size: 20,
                               color: colors.textPrimary,
                             ),
@@ -741,7 +737,7 @@ class _BankReceiptSheet extends StatelessWidget {
                               HapticFeedback.mediumImpact();
                               Navigator.of(context).pop(ReceiptAction.cancel);
                             },
-                            icon: const Icon(Icons.cancel_outlined, size: 16),
+                            icon: const Icon(AppIcons.cancel, size: 16),
                             label: const Text(
                               'Tranzaksiyani bekor qilish',
                               style: TextStyle(
@@ -768,10 +764,7 @@ class _BankReceiptSheet extends StatelessWidget {
                               HapticFeedback.mediumImpact();
                               Navigator.of(context).pop(ReceiptAction.delete);
                             },
-                            icon: const Icon(
-                              Icons.delete_outline_rounded,
-                              size: 16,
-                            ),
+                            icon: const Icon(AppIcons.delete, size: 16),
                             label: const Text(
                               'O\'chirish',
                               style: TextStyle(

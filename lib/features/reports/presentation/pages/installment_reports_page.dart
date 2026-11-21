@@ -17,6 +17,7 @@ import '../../../../core/widgets/states/app_error_state.dart';
 import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/installment_report_models.dart';
 import '../../data/reports_repository.dart';
+import '../../../../core/icons/app_icons.dart';
 
 ReportsRepository get _repository => getIt<ReportsRepository>();
 String _money(Decimal amount, int currency) =>
@@ -56,7 +57,7 @@ class InstallmentReportsPage extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           _ReportEntry(
-            icon: Icons.trending_up_rounded,
+            icon: AppIcons.chartUp,
             color: context.colors.success,
             title: 'Undirish samaradorligi',
             subtitle: 'To‘lov samaradorligi va undirilgan summalar',
@@ -64,7 +65,7 @@ class InstallmentReportsPage extends StatelessWidget {
                 _open(context, _RecoveryPage(initialCurrency: currency)),
           ),
           _ReportEntry(
-            icon: Icons.calendar_month_rounded,
+            icon: AppIcons.calendar,
             color: context.colors.accentViolet,
             title: 'Kutilayotgan to‘lovlar',
             subtitle: '30/60/90 kunlik prognoz',
@@ -72,7 +73,7 @@ class InstallmentReportsPage extends StatelessWidget {
                 _open(context, _ForecastPage(initialCurrency: currency)),
           ),
           _ReportEntry(
-            icon: Icons.bar_chart_rounded,
+            icon: AppIcons.chart,
             color: context.colors.primary,
             title: 'Oylik dinamika',
             subtitle: 'Oylar bo‘yicha to‘lov grafigi',
@@ -80,14 +81,14 @@ class InstallmentReportsPage extends StatelessWidget {
                 _open(context, _MonthlyPage(initialCurrency: currency)),
           ),
           _ReportEntry(
-            icon: Icons.warning_amber_rounded,
+            icon: AppIcons.warning,
             color: context.colors.error,
             title: 'Muammoli mijozlar',
             subtitle: 'Kechiktirilgan va xavfli mijozlar ro‘yxati',
             onTap: () => _open(context, _RiskyPage(initialCurrency: currency)),
           ),
           _ReportEntry(
-            icon: Icons.people_alt_outlined,
+            icon: AppIcons.partners,
             color: context.colors.warning,
             title: 'Mijozlar bo‘yicha',
             subtitle: 'Mijoz bo‘yicha muddatli to‘lov hisoboti',
@@ -220,7 +221,7 @@ class _SummaryCard extends StatelessWidget {
                 child: _Metric(
                   label: 'Faol rejalar',
                   value: '${summary.activeCount} ta',
-                  icon: Icons.play_circle_outline_rounded,
+                  icon: AppIcons.playCircle,
                   color: colors.primary,
                 ),
               ),
@@ -229,7 +230,7 @@ class _SummaryCard extends StatelessWidget {
                 child: _Metric(
                   label: 'Tugallangan',
                   value: '${summary.completedCount} ta',
-                  icon: Icons.check_circle_outline_rounded,
+                  icon: AppIcons.success,
                   color: colors.success,
                 ),
               ),
@@ -238,7 +239,7 @@ class _SummaryCard extends StatelessWidget {
                 child: _Metric(
                   label: 'Bekor qilingan',
                   value: '${summary.cancelledCount} ta',
-                  icon: Icons.cancel_outlined,
+                  icon: AppIcons.cancel,
                   color: colors.textTertiary,
                 ),
               ),
@@ -252,14 +253,14 @@ class _SummaryCard extends StatelessWidget {
                 amount: summary.totalGiven,
                 currency: currency,
                 color: colors.accentViolet,
-                icon: Icons.account_balance_wallet_outlined,
+                icon: AppIcons.wallet,
               );
               final paid = _AmountTile(
                 label: 'To‘langan',
                 amount: summary.totalPaid,
                 currency: currency,
                 color: colors.success,
-                icon: Icons.check_circle_outline_rounded,
+                icon: AppIcons.success,
               );
               if (constraints.maxWidth < 300 ||
                   MediaQuery.textScalerOf(context).scale(14) > 19) {
@@ -283,7 +284,7 @@ class _SummaryCard extends StatelessWidget {
             amount: summary.totalRemaining,
             currency: currency,
             color: colors.warning,
-            icon: Icons.hourglass_bottom_rounded,
+            icon: AppIcons.hourglass,
             wide: true,
           ),
           if (summary.overdueAmount > Decimal.zero) ...[
@@ -293,7 +294,7 @@ class _SummaryCard extends StatelessWidget {
               amount: summary.overdueAmount,
               currency: currency,
               color: colors.error,
-              icon: Icons.warning_amber_rounded,
+              icon: AppIcons.warning,
               wide: true,
             ),
           ],
@@ -459,7 +460,7 @@ class _ReportEntry extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Icon(
-            Icons.chevron_right_rounded,
+            AppIcons.chevronRight,
             color: context.colors.textTertiary,
             size: 20,
           ),
@@ -566,7 +567,7 @@ class _RecoveryPage extends StatelessWidget {
           const SizedBox(height: 12),
           for (final status in ['paid', 'partial', 'overdue', 'pending'])
             _ReportEntry(
-              icon: Icons.receipt_long_outlined,
+              icon: AppIcons.receipt,
               color: _statusColor(context, status),
               title: _statusLabel(status),
               subtitle: '${report.byItems[status] ?? 0} ta to‘lov',
@@ -631,7 +632,7 @@ class _ForecastPageState extends State<_ForecastPage> {
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton.icon(
-                  icon: const Icon(Icons.date_range_rounded, size: 18),
+                  icon: const Icon(AppIcons.calendarRange, size: 18),
                   label: Text(
                     '${AppDateFormatter.display(from)} – ${AppDateFormatter.display(to)}',
                     style: const TextStyle(fontSize: 12),
@@ -667,7 +668,7 @@ class _ForecastPageState extends State<_ForecastPage> {
                     amount: report.expectedAmount,
                     currency: currency,
                     color: context.colors.accentViolet,
-                    icon: Icons.calendar_month_rounded,
+                    icon: AppIcons.calendar,
                     wide: true,
                   ),
                   const SizedBox(height: 16),
@@ -677,7 +678,7 @@ class _ForecastPageState extends State<_ForecastPage> {
                         child: _Metric(
                           label: 'To‘lovlar',
                           value: '${report.itemsCount} ta',
-                          icon: Icons.receipt_long_outlined,
+                          icon: AppIcons.receipt,
                           color: context.colors.primary,
                         ),
                       ),
@@ -686,7 +687,7 @@ class _ForecastPageState extends State<_ForecastPage> {
                         child: _Metric(
                           label: 'Mijozlar',
                           value: '${report.partnersCount} ta',
-                          icon: Icons.people_outline,
+                          icon: AppIcons.partners,
                           color: context.colors.success,
                         ),
                       ),
@@ -725,7 +726,7 @@ class _MonthlyPageState extends State<_MonthlyPage> {
               IconButton(
                 tooltip: 'Oldingi yil',
                 onPressed: () => setState(() => _year--),
-                icon: const Icon(Icons.chevron_left),
+                icon: const Icon(AppIcons.back),
               ),
               Text(
                 '$_year',
@@ -737,7 +738,7 @@ class _MonthlyPageState extends State<_MonthlyPage> {
               IconButton(
                 tooltip: 'Keyingi yil',
                 onPressed: () => setState(() => _year++),
-                icon: const Icon(Icons.chevron_right),
+                icon: const Icon(AppIcons.chevronRight),
               ),
             ],
           ),
@@ -760,7 +761,7 @@ class _MonthlyPageState extends State<_MonthlyPage> {
                   ),
                   currency: currency,
                   color: context.colors.primary,
-                  icon: Icons.bar_chart_rounded,
+                  icon: AppIcons.chart,
                   wide: true,
                 ),
                 const SizedBox(height: 16),
@@ -823,7 +824,7 @@ class _MonthlyPageState extends State<_MonthlyPage> {
                 if (items.isEmpty)
                   const AppEmptyState(
                     title: 'Ma’lumot yo‘q',
-                    icon: Icons.bar_chart_rounded,
+                    icon: AppIcons.chart,
                   ),
                 for (final item in items)
                   Padding(
@@ -876,7 +877,7 @@ class _RiskyPage extends StatelessWidget {
           if (items.isEmpty)
             const AppEmptyState(
               title: 'Muammoli mijozlar yo‘q',
-              icon: Icons.check_circle_outline_rounded,
+              icon: AppIcons.success,
             ),
           for (final item in items)
             Padding(
@@ -1166,10 +1167,7 @@ class _PagedReportState<T> extends State<_PagedReport<T>> {
       onRefresh: () => _load(reset: true),
       children: [
         if (_items.isEmpty)
-          const AppEmptyState(
-            title: 'Ma’lumot yo‘q',
-            icon: Icons.receipt_long_outlined,
-          ),
+          const AppEmptyState(title: 'Ma’lumot yo‘q', icon: AppIcons.receipt),
         for (final item in _items)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),

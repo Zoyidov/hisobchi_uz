@@ -21,6 +21,7 @@ import '../../data/projects_repository.dart';
 import '../cubit/project_subtabs_cubit.dart';
 import 'project_entry_detail_sheet.dart';
 import 'project_form_lifetime.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Tab B: Daromadlar (MOBILE_APP_TZ.md 10.4-B).
 class ProjectIncomesTab extends StatelessWidget {
@@ -53,7 +54,7 @@ class _View extends StatelessWidget {
               onRefresh: context.read<ProjectIncomesCubit>().refresh,
               onRetry: context.read<ProjectIncomesCubit>().loadFirst,
               emptyTitle: 'Daromadlar yo‘q',
-              emptyIcon: Icons.trending_up_rounded,
+              emptyIcon: AppIcons.chartUp,
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.md,
                 AppSpacing.md,
@@ -74,7 +75,7 @@ class _View extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
-                          Icons.arrow_downward_rounded,
+                          AppIcons.arrowDown,
                           color: context.colors.success,
                           size: 20,
                         ),
@@ -109,7 +110,7 @@ class _View extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Icon(
-                        Icons.chevron_right_rounded,
+                        AppIcons.chevronRight,
                         color: context.colors.textTertiary,
                         size: 19,
                       ),
@@ -124,7 +125,7 @@ class _View extends StatelessWidget {
               child: FloatingActionButton(
                 heroTag: null,
                 onPressed: () => _showIncomeForm(context, projectId),
-                child: const Icon(Icons.add),
+                child: const Icon(AppIcons.add),
               ),
             ),
           ],

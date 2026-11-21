@@ -16,6 +16,7 @@ import '../../../../core/widgets/sheets/app_bottom_sheet.dart';
 import '../../../../core/widgets/states/app_error_state.dart';
 import '../../../documents/data/document_models.dart';
 import '../../../documents/data/documents_repository.dart';
+import '../../../../core/icons/app_icons.dart';
 
 Future<Worker?> showWorkerSelectionSheet(
   BuildContext context, {
@@ -134,7 +135,7 @@ class _WorkerSelectionState extends State<_WorkerSelection> {
                   onChanged: (value) => setState(() => _query = value.trim()),
                   decoration: const InputDecoration(
                     hintText: 'Ism yoki telefon orqali qidirish',
-                    prefixIcon: Icon(Icons.search_rounded),
+                    prefixIcon: Icon(AppIcons.search),
                   ),
                 ),
               ),
@@ -148,7 +149,7 @@ class _WorkerSelectionState extends State<_WorkerSelection> {
                   ),
                 ),
                 onPressed: _creating ? null : _create,
-                icon: const Icon(Icons.add_rounded),
+                icon: const Icon(AppIcons.add),
               ),
             ],
           ),
@@ -159,7 +160,7 @@ class _WorkerSelectionState extends State<_WorkerSelection> {
             child: SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                icon: const Icon(Icons.group_add_outlined, size: 19),
+                icon: const Icon(AppIcons.teamAdd, size: 19),
                 label: const Text('Loyihaga xodim biriktirish'),
                 onPressed: _creating
                     ? null
@@ -186,7 +187,7 @@ class _WorkerSelectionState extends State<_WorkerSelection> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          Icons.work_outline_rounded,
+                          AppIcons.project,
                           size: 36,
                           color: context.colors.textTertiary,
                         ),
@@ -201,7 +202,7 @@ class _WorkerSelectionState extends State<_WorkerSelection> {
                         const SizedBox(height: 12),
                         TextButton.icon(
                           onPressed: _creating ? null : _create,
-                          icon: const Icon(Icons.add_rounded),
+                          icon: const Icon(AppIcons.add),
                           label: const Text('Yangi ishchi yaratish'),
                         ),
                       ],
@@ -224,7 +225,7 @@ class _WorkerSelectionState extends State<_WorkerSelection> {
                       subtitle: Text(PhoneFormatter.toDisplay(item.phone)),
                       trailing: item.id == widget.selectedId
                           ? Icon(
-                              Icons.check_circle_rounded,
+                              AppIcons.success,
                               color: context.colors.primary,
                             )
                           : null,
@@ -390,7 +391,7 @@ class _WorkerFormState extends State<_WorkerForm> {
                 IconButton(
                   tooltip: 'Yopish',
                   onPressed: _saving ? null : () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close_rounded),
+                  icon: const Icon(AppIcons.close),
                 ),
               ],
             ),
@@ -404,10 +405,7 @@ class _WorkerFormState extends State<_WorkerForm> {
               onChanged: (_) => setState(() => _error = null),
               decoration: InputDecoration(
                 labelText: 'Ism *',
-                prefixIcon: Icon(
-                  Icons.person_outline_rounded,
-                  color: context.colors.primary,
-                ),
+                prefixIcon: Icon(AppIcons.user, color: context.colors.primary),
                 hintText: 'Ishchining ismi',
                 errorText: _error,
               ),
@@ -455,7 +453,7 @@ class _WorkerFormState extends State<_WorkerForm> {
                   labelText: 'Lavozim *',
                   errorText: _positionError,
                   prefixIcon: Icon(
-                    Icons.work_outline_rounded,
+                    AppIcons.project,
                     color: context.colors.accentViolet,
                   ),
                 ),
@@ -465,7 +463,7 @@ class _WorkerFormState extends State<_WorkerForm> {
                       child: Text(_position?.name ?? 'Lavozimni tanlang'),
                     ),
                     Icon(
-                      Icons.keyboard_arrow_down_rounded,
+                      AppIcons.chevronDown,
                       color: context.colors.textTertiary,
                     ),
                   ],
@@ -508,7 +506,7 @@ class _WorkerFormState extends State<_WorkerForm> {
                       height: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Icon(Icons.check_rounded, size: 20),
+                  : const Icon(AppIcons.check, size: 20),
               label: Text(_saving ? 'Saqlanmoqda…' : 'Yaratish va tanlash'),
             ),
           ],

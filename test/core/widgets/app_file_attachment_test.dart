@@ -1,3 +1,4 @@
+import 'package:hisobchi_uz/core/icons/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hisobchi_uz/core/theme/app_colors.dart';
@@ -57,7 +58,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('Fayl').hitTestable(), findsOneWidget);
         expect(tester.takeException(), isNull);
-        await tester.tap(find.byIcon(Icons.close_rounded));
+        await tester.tap(find.byIcon(AppIcons.close));
         await tester.pumpAndSettle();
       }
     },

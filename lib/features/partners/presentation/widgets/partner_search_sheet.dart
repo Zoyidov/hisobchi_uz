@@ -12,6 +12,7 @@ import '../../../../core/widgets/sheets/app_bottom_sheet.dart';
 import '../../data/partner_models.dart';
 import '../../data/partners_repository.dart';
 import '../cubit/partner_selection_cubit.dart';
+import '../../../../core/icons/app_icons.dart';
 
 Future<Partner?> showPartnerSearchSheet(BuildContext context) =>
     showAppBottomSheet<Partner>(
@@ -41,7 +42,7 @@ class _PartnerSearchList extends StatelessWidget {
               onChanged: cubit.search,
               decoration: const InputDecoration(
                 hintText: 'Ism yoki telefon orqali qidirish',
-                prefixIcon: Icon(Icons.search_rounded),
+                prefixIcon: Icon(AppIcons.search),
               ),
             ),
           ),
@@ -75,7 +76,7 @@ class _PartnerSearchList extends StatelessWidget {
                       emptyTitle: 'Hamkorlar topilmadi',
                       emptyDescription:
                           'Ism yoki telefonni o‘zgartirib qidiring.',
-                      emptyIcon: Icons.search_off_rounded,
+                      emptyIcon: AppIcons.search,
                       itemBuilder: (context, partner, index) => ListTile(
                         key: ValueKey(partner.id),
                         contentPadding: const EdgeInsets.symmetric(
@@ -88,7 +89,7 @@ class _PartnerSearchList extends StatelessWidget {
                           style: TextStyle(color: context.colors.textSecondary),
                         ),
                         trailing: Icon(
-                          Icons.chevron_right_rounded,
+                          AppIcons.chevronRight,
                           color: context.colors.textTertiary,
                         ),
                         onTap: partner.isDeleted

@@ -6,6 +6,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/sheets/app_bottom_sheet.dart';
 import '../../data/project_models.dart';
 import '../../data/projects_repository.dart';
+import '../../../../core/icons/app_icons.dart';
 
 Future<bool?> showProjectStatusSheet(
   BuildContext context, {
@@ -138,17 +139,17 @@ class _StatusOption extends StatelessWidget {
     final (accent, icon, description) = switch (status) {
       ProjectStatus.inProgress => (
         colors.primary,
-        Icons.play_arrow_rounded,
+        AppIcons.play,
         'Loyiha bo‘yicha ishlar davom etmoqda',
       ),
       ProjectStatus.frozen => (
         colors.warning,
-        Icons.pause_rounded,
+        AppIcons.pause,
         'Ishlar vaqtincha to‘xtatilgan',
       ),
       ProjectStatus.completed => (
         colors.success,
-        Icons.check_rounded,
+        AppIcons.check,
         'Loyiha bo‘yicha ishlar yakunlangan',
       ),
     };
@@ -216,7 +217,7 @@ class _StatusOption extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Icon(
-                  selected ? Icons.check_circle_rounded : Icons.circle_outlined,
+                  selected ? AppIcons.success : AppIcons.radioOff,
                   color: selected ? accent : colors.textTertiary,
                   size: 22,
                 ),

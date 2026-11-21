@@ -1,5 +1,4 @@
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -20,6 +19,7 @@ import '../widgets/partner_installment_report_tab.dart';
 import '../widgets/summary_grid.dart';
 import 'partner_debt_detail_page.dart';
 import 'partner_history_wallets_page.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Hamkor bo'yicha to'liq hisobot ekrani (ReportClientShowPage standarti)
 /// 2 ta asosiy tab:
@@ -188,10 +188,7 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
                 borderRadius: BorderRadius.circular(16),
               ),
               color: colors.surface,
-              icon: Icon(
-                CupertinoIcons.ellipsis_vertical,
-                color: colors.textPrimary,
-              ),
+              icon: Icon(AppIcons.more, color: colors.textPrimary),
               onSelected: (val) {
                 if (val == 1) _exportExcel();
               },
@@ -203,11 +200,7 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.file_download_outlined,
-                        color: colors.primary,
-                        size: 20,
-                      ),
+                      Icon(AppIcons.download, color: colors.primary, size: 20),
                       const SizedBox(width: 10),
                       Text(
                         'Excel hisobot',

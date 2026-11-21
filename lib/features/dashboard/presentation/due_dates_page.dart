@@ -17,6 +17,7 @@ import '../../../core/widgets/typography/money_text.dart';
 import '../../partners/presentation/pages/wallet_form_page.dart';
 import '../data/dashboard_models.dart';
 import '../data/dashboard_repository.dart';
+import '../../../core/icons/app_icons.dart';
 
 class PartnerDueDatesCubit extends PagedListCubit<PartnerDueItem> {
   PartnerDueDatesCubit(this._repository, this.type) {
@@ -67,13 +68,13 @@ class InstallmentDueDatesCubit extends PagedListCubit<InstallmentDueItem> {
 }
 
 String _titleFor(DueDateType type) => switch (type) {
-      DueDateType.qarzExpired => 'Muddati o\'tgan qarzlar',
-      DueDateType.qarzToday => 'Bugun muddati',
-      DueDateType.qarz3Days => '3 kun ichida',
-      DueDateType.installmentExpired => 'Muddati o\'tgan (bo\'lib to\'lash)',
-      DueDateType.installmentToday => 'Bugun (bo\'lib to\'lash)',
-      DueDateType.installment3Days => '3 kun ichida (bo\'lib to\'lash)',
-    };
+  DueDateType.qarzExpired => 'Muddati o\'tgan qarzlar',
+  DueDateType.qarzToday => 'Bugun muddati',
+  DueDateType.qarz3Days => '3 kun ichida',
+  DueDateType.installmentExpired => 'Muddati o\'tgan (bo\'lib to\'lash)',
+  DueDateType.installmentToday => 'Bugun (bo\'lib to\'lash)',
+  DueDateType.installment3Days => '3 kun ichida (bo\'lib to\'lash)',
+};
 
 /// Dashboard kartasi bosilganda ochiladigan detal ro'yxat (MOBILE_APP_TZ.md 7.2).
 class DueDatesPage extends StatelessWidget {
@@ -85,12 +86,15 @@ class DueDatesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     if (type.isInstallment) {
       return BlocProvider(
-        create: (_) => InstallmentDueDatesCubit(getIt<DashboardRepository>(), type)..loadFirst(),
+        create: (_) =>
+            InstallmentDueDatesCubit(getIt<DashboardRepository>(), type)
+              ..loadFirst(),
         child: _InstallmentDueView(type: type),
       );
     }
     return BlocProvider(
-      create: (_) => PartnerDueDatesCubit(getIt<DashboardRepository>(), type)..loadFirst(),
+      create: (_) =>
+          PartnerDueDatesCubit(getIt<DashboardRepository>(), type)..loadFirst(),
       child: _PartnerDueView(type: type),
     );
   }
@@ -112,7 +116,7 @@ class _PartnerDueView extends StatelessWidget {
             onLoadMore: cubit.loadMore,
             onRefresh: cubit.refresh,
             onRetry: cubit.loadFirst,
-            emptyIcon: Icons.check_circle_outline_rounded,
+            emptyIcon: AppIcons.success,
             emptyTitle: 'Bu bo\'limda ma\'lumot yo\'q',
             itemBuilder: (context, item, index) => AppCard(
               child: Row(
@@ -121,13 +125,22 @@ class _PartnerDueView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(item.partnerName, style: Theme.of(context).textTheme.titleSmall),
+                        Text(
+                          item.partnerName,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
                         const SizedBox(height: 4),
-                        MoneyText(item.remainingAmount, currencyTypeId: item.currencyTypeId, size: MoneySize.list),
+                        MoneyText(
+                          item.remainingAmount,
+                          currencyTypeId: item.currencyTypeId,
+                          size: MoneySize.list,
+                        ),
                         const SizedBox(height: 4),
                         AppStatusChip(
                           label: item.status,
-                          tone: (item.daysOverdue ?? 0) > 0 ? AppStatusChipTone.error : AppStatusChipTone.warning,
+                          tone: (item.daysOverdue ?? 0) > 0
+                              ? AppStatusChipTone.error
+                              : AppStatusChipTone.warning,
                         ),
                       ],
                     ),
@@ -135,13 +148,24 @@ class _PartnerDueView extends StatelessWidget {
                   Column(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.call_rounded, color: context.colors.primary),
-                        onPressed: () => launchUrl(Uri.parse('tel:${item.partnerPhone}')),
+                        icon: Icon(
+                          AppIcons.call,
+                          color: context.colors.primary,
+                        ),
+                        onPressed: () =>
+                            launchUrl(Uri.parse('tel:${item.partnerPhone}')),
                       ),
                       IconButton(
-                        icon: Icon(Icons.add_circle_outline_rounded, color: context.colors.success),
+                        icon: Icon(
+                          AppIcons.addCircle,
+                          color: context.colors.success,
+                        ),
                         onPressed: () async {
-                          final res = await showWalletFormSheet(context, type: 'debt', partnerId: item.partnerId);
+                          final res = await showWalletFormSheet(
+                            context,
+                            type: 'debt',
+                            partnerId: item.partnerId,
+                          );
                           if (res != null && context.mounted) {
                             context.read<PartnerDueDatesCubit>().refresh();
                           }
@@ -167,44 +191,57 @@ class _InstallmentDueView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(_titleFor(type))),
-      body: BlocBuilder<InstallmentDueDatesCubit, PagedListState<InstallmentDueItem>>(
-        builder: (context, state) {
-          final cubit = context.read<InstallmentDueDatesCubit>();
-          return AppPagedListView<InstallmentDueItem>(
-            state: state,
-            onLoadMore: cubit.loadMore,
-            onRefresh: cubit.refresh,
-            onRetry: cubit.loadFirst,
-            emptyIcon: Icons.check_circle_outline_rounded,
-            emptyTitle: 'Bu bo\'limda ma\'lumot yo\'q',
-            itemBuilder: (context, item, index) => AppCard(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(item.partnerName, style: Theme.of(context).textTheme.titleSmall),
-                        const SizedBox(height: 4),
-                        MoneyText(item.remaining, size: MoneySize.list),
-                        const SizedBox(height: 4),
-                        AppStatusChip(
-                          label: item.statusLabel,
-                          tone: (item.daysOverdue ?? 0) > 0 ? AppStatusChipTone.error : AppStatusChipTone.warning,
+      body:
+          BlocBuilder<
+            InstallmentDueDatesCubit,
+            PagedListState<InstallmentDueItem>
+          >(
+            builder: (context, state) {
+              final cubit = context.read<InstallmentDueDatesCubit>();
+              return AppPagedListView<InstallmentDueItem>(
+                state: state,
+                onLoadMore: cubit.loadMore,
+                onRefresh: cubit.refresh,
+                onRetry: cubit.loadFirst,
+                emptyIcon: AppIcons.success,
+                emptyTitle: 'Bu bo\'limda ma\'lumot yo\'q',
+                itemBuilder: (context, item, index) => AppCard(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.partnerName,
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            const SizedBox(height: 4),
+                            MoneyText(item.remaining, size: MoneySize.list),
+                            const SizedBox(height: 4),
+                            AppStatusChip(
+                              label: item.statusLabel,
+                              tone: (item.daysOverdue ?? 0) > 0
+                                  ? AppStatusChipTone.error
+                                  : AppStatusChipTone.warning,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          AppIcons.call,
+                          color: context.colors.primary,
+                        ),
+                        onPressed: () =>
+                            launchUrl(Uri.parse('tel:${item.partnerPhone}')),
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    icon: Icon(Icons.call_rounded, color: context.colors.primary),
-                    onPressed: () => launchUrl(Uri.parse('tel:${item.partnerPhone}')),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+                ),
+              );
+            },
+          ),
     );
   }
 }

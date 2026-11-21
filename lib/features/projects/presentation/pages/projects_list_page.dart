@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,6 +15,7 @@ import '../cubit/projects_cubit.dart';
 import '../widgets/project_card.dart';
 import 'project_detail_page.dart';
 import 'project_form_page.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Loyihalar ro'yxati (MOBILE_APP_TZ.md 10.2).
 class ProjectsListPage extends StatelessWidget {
@@ -47,13 +47,21 @@ class _View extends StatelessWidget {
               padding: const EdgeInsets.only(right: AppSpacing.sm),
               child: FilledButton.tonalIcon(
                 style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   minimumSize: const Size(0, 36),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
                 onPressed: () => _openCreate(context),
-                icon: const Icon(CupertinoIcons.plus, size: 15),
-                label: const Text('Qo\'shish', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+                icon: const Icon(AppIcons.add, size: 15),
+                label: const Text(
+                  'Qo\'shish',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                ),
               ),
             ),
           ),
@@ -62,8 +70,16 @@ class _View extends StatelessWidget {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.sm),
-            child: AppSearchField(onChanged: cubit.updateSearch, hint: 'Loyiha nomi bo\'yicha qidirish'),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.sm,
+              AppSpacing.md,
+              AppSpacing.sm,
+            ),
+            child: AppSearchField(
+              onChanged: cubit.updateSearch,
+              hint: 'Loyiha nomi bo\'yicha qidirish',
+            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -74,7 +90,11 @@ class _View extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(right: AppSpacing.xs),
-                    child: AppFilterChip(label: 'Barchasi', selected: cubit.status == null, onTap: () => cubit.updateStatus(null)),
+                    child: AppFilterChip(
+                      label: 'Barchasi',
+                      selected: cubit.status == null,
+                      onTap: () => cubit.updateStatus(null),
+                    ),
                   ),
                   for (final status in ProjectStatus.values)
                     Padding(
@@ -95,20 +115,28 @@ class _View extends StatelessWidget {
               builder: (context, state) {
                 return AppPagedListView<Project>(
                   state: state,
-                  padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.xs, AppSpacing.md, 110),
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.md,
+                    AppSpacing.xs,
+                    AppSpacing.md,
+                    110,
+                  ),
                   onLoadMore: cubit.loadMore,
                   onRefresh: cubit.refresh,
                   onRetry: cubit.loadFirst,
-                  emptyIcon: CupertinoIcons.briefcase,
+                  emptyIcon: AppIcons.project,
                   emptyTitle: 'Loyihalar topilmadi',
                   emptyAction: 'Loyiha qo\'shish',
                   onEmptyAction: () => _openCreate(context),
                   itemBuilder: (context, project, index) => ProjectCard(
                     project: project,
                     onTap: () async {
-                      await Navigator.of(context).push(MaterialPageRoute<void>(
-                        builder: (_) => ProjectDetailPage(projectId: project.id),
-                      ));
+                      await Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) =>
+                              ProjectDetailPage(projectId: project.id),
+                        ),
+                      );
                       if (context.mounted) cubit.refresh();
                     },
                   ),
@@ -123,7 +151,9 @@ class _View extends StatelessWidget {
 
   Future<void> _openCreate(BuildContext context) async {
     final cubit = context.read<ProjectsCubit>();
-    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ProjectFormPage()));
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const ProjectFormPage()));
     if (context.mounted) cubit.refresh();
   }
 }

@@ -13,6 +13,7 @@ import '../../data/installment_models.dart';
 import '../../data/installments_repository.dart';
 import '../cubit/installment_create_cubit.dart';
 import '../widgets/installment_form_widgets.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// The legacy installment flow, adapted to the application's semantic theme.
 class InstallmentWizardPage extends StatelessWidget {
@@ -67,7 +68,7 @@ class _WizardView extends StatelessWidget {
                 ),
                 leading: IconButton(
                   tooltip: 'Orqaga',
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                  icon: const Icon(AppIcons.back, size: 20),
                   onPressed: state.isSubmitting
                       ? null
                       : () {
@@ -601,9 +602,7 @@ class _ScheduleTypeCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Icon(
-                    equal
-                        ? Icons.calculate_rounded
-                        : Icons.edit_calendar_rounded,
+                    equal ? AppIcons.calculator : AppIcons.calendarEdit,
                     size: 28,
                     color: colors.primary,
                   ),
@@ -637,7 +636,7 @@ class _ScheduleTypeCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Icon(
-                  selected ? Icons.check_circle_rounded : Icons.circle_outlined,
+                  selected ? AppIcons.success : AppIcons.radioOff,
                   color: selected ? colors.primary : colors.border,
                   size: 24,
                 ),
@@ -727,7 +726,7 @@ class _DistributionStep extends StatelessWidget {
             title: 'Rejani tekshiring',
             description: state.step2ValidationError!,
             color: context.colors.warning,
-            icon: Icons.error_outline_rounded,
+            icon: AppIcons.error,
           ),
         ],
       ],
@@ -767,7 +766,7 @@ class _AdvanceToggle extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              enabled ? Icons.payments_rounded : Icons.money_off_rounded,
+              enabled ? AppIcons.payments : AppIcons.advance,
               color: tint,
               size: 24,
             ),
@@ -838,10 +837,7 @@ class _EqualSettings extends StatelessWidget {
           ),
         ),
         isExpanded: true,
-        icon: Icon(
-          Icons.keyboard_arrow_down_rounded,
-          color: context.colors.primary,
-        ),
+        icon: Icon(AppIcons.chevronDown, color: context.colors.primary),
         items: List.generate(
           60,
           (index) => DropdownMenuItem(
@@ -922,9 +918,7 @@ class _CustomItemsEditor extends StatelessWidget {
               : remaining < Decimal.zero
               ? context.colors.error
               : context.colors.warning,
-          icon: valid
-              ? Icons.check_circle_outline_rounded
-              : Icons.info_outline_rounded,
+          icon: valid ? AppIcons.success : AppIcons.info,
         ),
         const SizedBox(height: 16),
         for (var index = 0; index < state.customItems.length; index++) ...[
@@ -954,7 +948,7 @@ class _CustomItemsEditor extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
             ),
           ),
-          icon: const Icon(Icons.add_circle_outline_rounded),
+          icon: const Icon(AppIcons.addCircle),
           label: const Text(
             'Yangi qism qo‘shish',
             style: TextStyle(fontWeight: FontWeight.w700),

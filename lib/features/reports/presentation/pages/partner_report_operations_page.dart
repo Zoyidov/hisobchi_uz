@@ -12,6 +12,7 @@ import '../../../../core/widgets/cards/app_card.dart';
 import '../../../../core/widgets/lists/app_paged_list_view.dart';
 import '../../data/partner_operation_models.dart';
 import 'partner_detail_report_page.dart';
+import '../../../../core/icons/app_icons.dart';
 
 class _OperationsCubit extends PagedListCubit<PartnerOperation> {
   _OperationsCubit(this.fetcher);
@@ -44,7 +45,7 @@ class PartnerReportOperationsPage extends StatelessWidget {
             onLoadMore: cubit.loadMore,
             onRefresh: cubit.refresh,
             onRetry: cubit.loadFirst,
-            emptyIcon: Icons.receipt_long_outlined,
+            emptyIcon: AppIcons.receipt,
             emptyTitle: 'Operatsiyalar topilmadi',
             padding: const EdgeInsets.all(16),
             itemBuilder: (context, item, index) =>
@@ -170,9 +171,7 @@ class _OperationCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      item.isCredit
-                          ? Icons.north_east_rounded
-                          : Icons.south_west_rounded,
+                      item.isCredit ? AppIcons.expense : AppIcons.income,
                       size: 12,
                       color: tint,
                     ),
@@ -189,11 +188,7 @@ class _OperationCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              Icon(
-                Icons.calendar_today_outlined,
-                size: 12,
-                color: colors.textTertiary,
-              ),
+              Icon(AppIcons.calendar, size: 12, color: colors.textTertiary),
               const SizedBox(width: 5),
               Expanded(
                 child: Text(
@@ -203,7 +198,7 @@ class _OperationCard extends StatelessWidget {
               ),
               if (item.partnerId > 0)
                 Icon(
-                  Icons.chevron_right_rounded,
+                  AppIcons.chevronRight,
                   size: 16,
                   color: colors.textTertiary,
                 ),

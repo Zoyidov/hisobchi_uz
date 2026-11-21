@@ -8,6 +8,7 @@ import '../../../../core/widgets/navigation/permission_guard.dart';
 import 'installment_reports_page.dart';
 import 'partner_reports_page.dart';
 import 'project_reports_page.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Hisobotlar bosh sahifasi (MOBILE_APP_TZ.md 12-bo'lim).
 class ReportsHomePage extends StatelessWidget {
@@ -19,36 +20,55 @@ class ReportsHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Hisobotlar')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 100),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.md,
+          100,
+        ),
         children: [
           PermissionGuard(
             permission: AppPermission.reportPartnersView,
             child: _ReportCard(
-              icon: Icons.people_alt_rounded,
+              icon: AppIcons.partners,
               color: colors.primary,
               title: 'Hamkorlar hisoboti',
-              subtitle: 'Umumiy balans, davr bo\'yicha, qarz muddatlari, xodimlar',
-              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const PartnerReportsPage())),
+              subtitle:
+                  'Umumiy balans, davr bo\'yicha, qarz muddatlari, xodimlar',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const PartnerReportsPage(),
+                ),
+              ),
             ),
           ),
           PermissionGuard(
             permission: AppPermission.reportInstallmentsView,
             child: _ReportCard(
-              icon: Icons.calendar_month_rounded,
+              icon: AppIcons.calendar,
               color: const Color(0xFF8B5CF6),
               title: 'Muddatli to‘lov hisoboti',
-              subtitle: 'Umumiy tahlil, kutilayotgan to‘lovlar va undirish dinamikasi',
-              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const InstallmentReportsPage())),
+              subtitle:
+                  'Umumiy tahlil, kutilayotgan to‘lovlar va undirish dinamikasi',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const InstallmentReportsPage(),
+                ),
+              ),
             ),
           ),
           PermissionGuard(
             permission: AppPermission.reportProjectView,
             child: _ReportCard(
-              icon: Icons.account_tree_rounded,
+              icon: AppIcons.projectStructure,
               color: colors.warning,
               title: 'Loyihalar hisoboti',
               subtitle: 'Loyiha balansi, xarajatlar va daromadlar tahlili',
-              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ProjectReportsPage())),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const ProjectReportsPage(),
+                ),
+              ),
             ),
           ),
         ],
@@ -102,19 +122,23 @@ class _ReportCard extends StatelessWidget {
                   Text(
                     title,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: TextStyle(color: colors.textSecondary, fontSize: 12, height: 1.3),
+                    style: TextStyle(
+                      color: colors.textSecondary,
+                      fontSize: 12,
+                      height: 1.3,
+                    ),
                   ),
                 ],
               ),
             ),
             const SizedBox(width: 4),
-            Icon(Icons.chevron_right_rounded, color: colors.textTertiary, size: 22),
+            Icon(AppIcons.chevronRight, color: colors.textTertiary, size: 22),
           ],
         ),
       ),

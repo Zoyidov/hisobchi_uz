@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters/date_formatter.dart';
 import '../../../../core/utils/formatters/money_formatter.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Shared visual language for the three installment creation steps.
 class InstallmentSectionCard extends StatelessWidget {
@@ -143,11 +144,7 @@ class _InstallmentAmountInputState extends State<InstallmentAmountInput> {
   Widget build(BuildContext context) => Row(
     children: [
       if (widget.large) ...[
-        Icon(
-          Icons.account_balance_wallet_rounded,
-          size: 22,
-          color: context.colors.primary,
-        ),
+        Icon(AppIcons.wallet, size: 22, color: context.colors.primary),
         const SizedBox(width: 12),
       ],
       Expanded(
@@ -218,11 +215,7 @@ class InstallmentDateButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
         child: Row(
           children: [
-            Icon(
-              Icons.calendar_today_rounded,
-              size: 16,
-              color: context.colors.primary,
-            ),
+            Icon(AppIcons.calendar, size: 16, color: context.colors.primary),
             const SizedBox(width: 8),
             Flexible(
               child: Text(
@@ -246,7 +239,7 @@ class InstallmentInfoBox extends StatelessWidget {
     required this.title,
     required this.description,
     this.color,
-    this.icon = Icons.info_outline_rounded,
+    this.icon = AppIcons.info,
   });
   final String title;
   final String description;
@@ -431,7 +424,7 @@ class _InstallmentPaymentCardState extends State<InstallmentPaymentCard> {
                   tooltip: 'Qismni olib tashlash',
                   onPressed: widget.onDelete,
                   icon: Icon(
-                    Icons.remove_circle_outline_rounded,
+                    AppIcons.removeCircle,
                     color: colors.error,
                     size: 22,
                   ),
@@ -471,7 +464,7 @@ class _InstallmentPaymentCardState extends State<InstallmentPaymentCard> {
               style: const TextStyle(fontSize: 13),
               decoration: InputDecoration(
                 hintText: 'Izoh (ixtiyoriy)',
-                prefixIcon: const Icon(Icons.notes_rounded, size: 18),
+                prefixIcon: const Icon(AppIcons.notes, size: 18),
                 filled: true,
                 fillColor: colors.surfaceSecondary,
                 contentPadding: const EdgeInsets.all(12),

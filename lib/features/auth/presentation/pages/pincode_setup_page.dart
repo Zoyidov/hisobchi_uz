@@ -9,6 +9,7 @@ import '../../../../core/storage/secure_storage_service.dart';
 import '../auth_navigation.dart';
 import '../cubit/pincode_setup_cubit.dart';
 import '../widgets/pincode_widgets.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// PIN yaratish — login/register'dan keyingi ixtiyoriy taklif ekrani
 /// (MOBILE_APP_TZ.md 5.6, 5.8).
@@ -130,7 +131,7 @@ class _PincodeSetupViewState extends State<_PincodeSetupView> {
           return PincodeScreenLayout(
             topLabel: 'Xavfsiz kirish',
             onExit: _onExitOrSkip,
-            exitIcon: Icons.close_rounded,
+            exitIcon: AppIcons.close,
             title: title,
             subtitle: subtitle,
             errorMessage: _error,

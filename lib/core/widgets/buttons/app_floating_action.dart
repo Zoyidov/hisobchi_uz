@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../theme/app_colors.dart';
+import '../../icons/app_icons.dart';
 
 /// Bottom navigatsiya ustida suzib turadigan zamonaviy iOS uslubidagi harakat tugmasi.
 /// Bottom navbar bilan to'qnashmasligi uchun pastdan avtomatik bo'shliqqa ega.
@@ -11,7 +11,7 @@ class AppFloatingAction extends StatefulWidget {
     super.key,
     required this.onPressed,
     required this.label,
-    this.icon = CupertinoIcons.plus,
+    this.icon = AppIcons.add,
     this.heroTag,
     this.bottomOffset,
   });
@@ -26,7 +26,8 @@ class AppFloatingAction extends StatefulWidget {
   State<AppFloatingAction> createState() => _AppFloatingActionState();
 }
 
-class _AppFloatingActionState extends State<AppFloatingAction> with SingleTickerProviderStateMixin {
+class _AppFloatingActionState extends State<AppFloatingAction>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _scaleAnimation;
 
@@ -37,9 +38,10 @@ class _AppFloatingActionState extends State<AppFloatingAction> with SingleTicker
       vsync: this,
       duration: const Duration(milliseconds: 120),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.94).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.94,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
   }
 
   @override
@@ -78,7 +80,8 @@ class _AppFloatingActionState extends State<AppFloatingAction> with SingleTicker
             gradient: LinearGradient(
               colors: [
                 colors.primary,
-                Color.lerp(colors.primary, const Color(0xFF1D4ED8), 0.3) ?? colors.primary,
+                Color.lerp(colors.primary, const Color(0xFF1D4ED8), 0.3) ??
+                    colors.primary,
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -122,7 +125,10 @@ class _AppFloatingActionState extends State<AppFloatingAction> with SingleTicker
     );
 
     if (widget.heroTag != null) {
-      button = Hero(tag: widget.heroTag!, child: Material(type: MaterialType.transparency, child: button));
+      button = Hero(
+        tag: widget.heroTag!,
+        child: Material(type: MaterialType.transparency, child: button),
+      );
     }
 
     final bottomInset = MediaQuery.of(context).padding.bottom;

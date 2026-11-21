@@ -16,6 +16,7 @@ import '../../../../core/utils/formatters/phone_formatter.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/feedback/app_snackbar.dart';
 import '../cubit/phone_cubit.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Telefon raqam kiritish — Senior Level Modern FinTech Auth ekrani.
 class PhonePage extends StatelessWidget {
@@ -302,11 +303,7 @@ class _PhoneViewState extends State<_PhoneView>
               if (hasValidPhone)
                 Row(
                   children: [
-                    Icon(
-                      Icons.check_circle_rounded,
-                      size: 14,
-                      color: colors.success,
-                    ),
+                    Icon(AppIcons.success, size: 14, color: colors.success),
                     const SizedBox(width: 4),
                     Text(
                       'To\'g\'ri format',
@@ -438,7 +435,7 @@ class _PhoneViewState extends State<_PhoneView>
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          Icons.check_rounded,
+                          AppIcons.check,
                           size: 18,
                           color: colors.success,
                         ),
@@ -451,7 +448,7 @@ class _PhoneViewState extends State<_PhoneView>
                         child: Padding(
                           padding: const EdgeInsets.all(4),
                           child: Icon(
-                            Icons.cancel_rounded,
+                            AppIcons.cancel,
                             size: 20,
                             color: colors.textTertiary,
                           ),
@@ -506,7 +503,7 @@ class _PhoneViewState extends State<_PhoneView>
                     : null,
               ),
               child: _agreed
-                  ? const Icon(Icons.check, size: 15, color: Colors.white)
+                  ? const Icon(AppIcons.check, size: 15, color: Colors.white)
                   : null,
             ),
           ),
@@ -653,7 +650,7 @@ class _PhoneViewState extends State<_PhoneView>
                           ),
                           const SizedBox(width: 8),
                           Icon(
-                            Icons.arrow_forward_rounded,
+                            AppIcons.forward,
                             size: 19,
                             color: enabled
                                 ? Colors.white
@@ -684,7 +681,7 @@ class _PhoneViewState extends State<_PhoneView>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.shield_outlined, size: 15, color: colors.textTertiary),
+            Icon(AppIcons.shield, size: 15, color: colors.textTertiary),
             const SizedBox(width: 6),
             Text(
               '256-bit shifrlangan • Ma\'lumotlar to\'liq xavfsiz',
@@ -738,7 +735,7 @@ class _PhoneViewState extends State<_PhoneView>
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
-                        Icons.description_outlined,
+                        AppIcons.file,
                         color: colors.primary,
                         size: 22,
                       ),
@@ -797,11 +794,7 @@ class _PhoneViewState extends State<_PhoneView>
                   color: colors.error.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  Icons.lock_person_rounded,
-                  color: colors.error,
-                  size: 30,
-                ),
+                child: Icon(AppIcons.private, color: colors.error, size: 30),
               ),
               const SizedBox(height: 16),
               Text(

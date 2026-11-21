@@ -1,3 +1,4 @@
+import 'package:hisobchi_uz/core/icons/app_icons.dart';
 import 'dart:async';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
@@ -129,7 +130,7 @@ void main() {
         expect(find.text('04.03.2026 11:44'), findsOneWidget);
         expect(find.text('Izoh kiritilmagan'), findsOneWidget);
         if (expense) expect(find.text('Umidjon'), findsOneWidget);
-        await tester.tap(find.byIcon(Icons.close_rounded));
+        await tester.tap(find.byIcon(AppIcons.close));
         await tester.pumpAndSettle();
         await tester.tap(find.byType(FloatingActionButton));
         await tester.pumpAndSettle();

@@ -18,6 +18,7 @@ import '../../../../core/widgets/cards/app_grouped_section.dart';
 import '../../../../core/widgets/feedback/app_snackbar.dart';
 import '../../../../core/widgets/sheets/app_confirmation_sheet.dart';
 import '../../../../core/widgets/sheets/app_selection_sheet.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Til, mavzu, pincode boshqaruvi (E_HISOB_FLUTTER_UI_UX_TZ.md 63-bo'lim).
 class SettingsPage extends StatefulWidget {
@@ -99,7 +100,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 color: colors.error.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.lock_open_rounded, color: colors.error, size: 24),
+              child: Icon(AppIcons.unlock, color: colors.error, size: 24),
             ),
             const SizedBox(width: 12),
             const Expanded(
@@ -112,18 +113,27 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         content: Text(
           'Ilovaga kirishda PIN-kod va biometriya so\'ralmaydi. Hisobingiz xavfsizligi kamayishi mumkin.\n\nRostdan ham o\'chirmoqchimisiz?',
-          style: TextStyle(fontSize: 14, color: colors.textSecondary, height: 1.4),
+          style: TextStyle(
+            fontSize: 14,
+            color: colors.textSecondary,
+            height: 1.4,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text('Bekor qilish', style: TextStyle(color: colors.textSecondary)),
+            child: Text(
+              'Bekor qilish',
+              style: TextStyle(color: colors.textSecondary),
+            ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: colors.error,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             onPressed: () => Navigator.of(dialogContext).pop(true),
             child: const Text('Ha, o\'chirilsin'),
@@ -141,14 +151,19 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Sozlamalar')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.xxl),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.sm,
+          AppSpacing.md,
+          AppSpacing.xxl,
+        ),
         children: [
           // 1. Umumiy sozlamalar (Til, Mavzu)
           const _SectionHeader(title: 'UMUMIY'),
           AppGroupedSection(
             children: [
               // AppGroupedTile(
-              //   icon: Icons.language_rounded,
+              //   icon: AppIcons.language,
               //   label: 'Til',
               //   value: locale.languageCode == 'ru' ? 'Русский' : 'O\'zbek',
               //   onTap: () async {
@@ -167,7 +182,7 @@ class _SettingsPageState extends State<SettingsPage> {
               //   },
               // ),
               AppGroupedTile(
-                icon: Icons.dark_mode_outlined,
+                icon: AppIcons.darkMode,
                 label: 'Mavzu',
                 value: _themeLabel(themeMode),
                 onTap: () async {
@@ -176,8 +191,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: 'Mavzu',
                     selectedValue: themeMode,
                     items: const [
-                      AppSelectionItem(value: ThemeMode.light, label: 'Yorug\''),
-                      AppSelectionItem(value: ThemeMode.dark, label: 'Qorong\'i'),
+                      AppSelectionItem(
+                        value: ThemeMode.light,
+                        label: 'Yorug\'',
+                      ),
+                      AppSelectionItem(
+                        value: ThemeMode.dark,
+                        label: 'Qorong\'i',
+                      ),
                       AppSelectionItem(value: ThemeMode.system, label: 'Tizim'),
                     ],
                   );
@@ -194,7 +215,7 @@ class _SettingsPageState extends State<SettingsPage> {
           AppGroupedSection(
             children: [
               AppGroupedTile(
-                icon: _hasPincode ? Icons.lock_rounded : Icons.lock_open_rounded,
+                icon: _hasPincode ? AppIcons.lock : AppIcons.unlock,
                 iconColor: _hasPincode ? colors.primary : colors.textTertiary,
                 label: 'PIN-kod bilan himoyalash',
                 subtitle: _hasPincode
@@ -215,7 +236,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               if (_hasPincode) ...[
                 AppGroupedTile(
-                  icon: Icons.password_rounded,
+                  icon: AppIcons.password,
                   iconColor: colors.accentViolet,
                   label: 'PIN-kodni o\'zgartirish',
                   subtitle: 'Yangi 4 xonali kod o\'rnatish',
@@ -231,7 +252,7 @@ class _SettingsPageState extends State<SettingsPage> {
             margin: EdgeInsets.zero,
             children: [
               AppGroupedTile(
-                icon: Icons.delete_outline_rounded,
+                icon: AppIcons.delete,
                 label: 'Hisobni o\'chirish',
                 destructive: true,
                 showChevron: false,
@@ -245,16 +266,17 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   String _themeLabel(ThemeMode mode) => switch (mode) {
-        ThemeMode.light => 'Yorug\'',
-        ThemeMode.dark => 'Qorong\'i',
-        ThemeMode.system => 'Tizim',
-      };
+    ThemeMode.light => 'Yorug\'',
+    ThemeMode.dark => 'Qorong\'i',
+    ThemeMode.system => 'Tizim',
+  };
 
   Future<void> _confirmDeleteAccount(BuildContext context) async {
     final confirmed = await showAppConfirmationSheet(
       context,
       title: 'Hisobni o\'chirish',
-      description: 'Barcha hamkorlar, tranzaksiyalar, loyihalar va hisobotlar butunlay o\'chiriladi. Bu amalni qaytarib bo\'lmaydi. Rostdan ham hisobingizni o\'chirmoqchimisiz?',
+      description:
+          'Barcha hamkorlar, tranzaksiyalar, loyihalar va hisobotlar butunlay o\'chiriladi. Bu amalni qaytarib bo\'lmaydi. Rostdan ham hisobingizni o\'chirmoqchimisiz?',
       confirmLabel: 'Ha, o\'chirish',
       destructive: true,
     );

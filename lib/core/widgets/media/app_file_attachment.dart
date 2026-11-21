@@ -13,6 +13,7 @@ import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../feedback/app_snackbar.dart';
 import '../sheets/app_bottom_sheet.dart';
+import '../../icons/app_icons.dart';
 
 const _maxFileSizeBytes = 5 * 1024 * 1024;
 const _allowedExtensions = [
@@ -87,17 +88,17 @@ class _AppFileAttachmentState extends State<AppFileAttachment> {
         padding: EdgeInsets.zero,
         children: [
           ListTile(
-            leading: const Icon(Icons.camera_alt_outlined),
+            leading: const Icon(AppIcons.camera),
             title: const Text('Kamera'),
             onTap: () => Navigator.pop(context, 'camera'),
           ),
           ListTile(
-            leading: const Icon(Icons.photo_outlined),
+            leading: const Icon(AppIcons.gallery),
             title: const Text('Galereya'),
             onTap: () => Navigator.pop(context, 'gallery'),
           ),
           ListTile(
-            leading: const Icon(Icons.insert_drive_file_outlined),
+            leading: const Icon(AppIcons.file),
             title: const Text('Fayl'),
             onTap: () => Navigator.pop(context, 'file'),
           ),
@@ -202,7 +203,7 @@ class _AppFileAttachmentState extends State<AppFileAttachment> {
             actions: [
               IconButton(
                 tooltip: 'Rasmni olib tashlash',
-                icon: const Icon(Icons.delete_outline_rounded),
+                icon: const Icon(AppIcons.delete),
                 onPressed: () {
                   if (mounted) _remove(file);
                   Navigator.of(previewContext).pop();
@@ -215,17 +216,13 @@ class _AppFileAttachmentState extends State<AppFileAttachment> {
               child: local != null
                   ? Image.file(
                       local,
-                      errorBuilder: (_, _, _) => const Icon(
-                        Icons.broken_image_outlined,
-                        color: Colors.white,
-                      ),
+                      errorBuilder: (_, _, _) =>
+                          const Icon(AppIcons.brokenImage, color: Colors.white),
                     )
                   : Image.network(
                       file.url,
-                      errorBuilder: (_, _, _) => const Icon(
-                        Icons.broken_image_outlined,
-                        color: Colors.white,
-                      ),
+                      errorBuilder: (_, _, _) =>
+                          const Icon(AppIcons.brokenImage, color: Colors.white),
                     ),
             ),
           ),
@@ -267,10 +264,10 @@ class _AppFileAttachmentState extends State<AppFileAttachment> {
                           height: 24,
                           fit: BoxFit.cover,
                           errorBuilder: (_, _, _) =>
-                              const Icon(Icons.image_outlined, size: 16),
+                              const Icon(AppIcons.gallery, size: 16),
                         ),
                       )
-                    : const Icon(Icons.insert_drive_file, size: 16),
+                    : const Icon(AppIcons.file, size: 16),
                 onDeleted: () => _remove(f),
               ),
             for (final name in _uploadingNames)
@@ -292,11 +289,7 @@ class _AppFileAttachmentState extends State<AppFileAttachment> {
                 onPressed: () => _upload(_failedFiles[name]!),
                 label: Text('$name · Qayta urinish'),
                 backgroundColor: colors.error.withValues(alpha: 0.1),
-                avatar: Icon(
-                  Icons.error_outline,
-                  size: 16,
-                  color: colors.error,
-                ),
+                avatar: Icon(AppIcons.error, size: 16, color: colors.error),
                 onDeleted: () => setState(() => _failedFiles.remove(name)),
               ),
           ],
@@ -314,7 +307,7 @@ class _AppFileAttachmentState extends State<AppFileAttachment> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.attach_file, size: 18, color: colors.primary),
+                Icon(AppIcons.attachment, size: 18, color: colors.primary),
                 const SizedBox(width: 6),
                 Flexible(
                   child: Text(

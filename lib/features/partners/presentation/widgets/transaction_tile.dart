@@ -6,6 +6,7 @@ import '../../../../core/utils/formatters/date_formatter.dart';
 import '../../../../core/widgets/cards/app_card.dart';
 import '../../../../core/widgets/typography/money_text.dart';
 import '../../data/partner_models.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// `TransactionCard` — business component (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 25,
 /// MOBILE_APP_TZ.md 8.6).
@@ -46,9 +47,7 @@ class TransactionTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
-              isExpense
-                  ? Icons.arrow_upward_rounded
-                  : Icons.arrow_downward_rounded,
+              isExpense ? AppIcons.arrowUp : AppIcons.arrowDown,
               color: color,
               size: compact ? 16 : 20,
             ),

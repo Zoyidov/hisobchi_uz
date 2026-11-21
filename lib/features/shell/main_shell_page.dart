@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
+import '../../core/icons/app_icons.dart';
 
 /// Bottom navigatsiya — `liquid_glass_widgets` orqali iOS 26 uslubidagi
 /// suzuvchi "liquid glass" panel, orqa fon to'liq ko'rinib turishi uchun
@@ -13,28 +13,28 @@ class MainShellPage extends StatelessWidget {
 
   static const _tabs = [
     GlassTab(
-      icon: Icon(CupertinoIcons.house),
-      activeIcon: Icon(CupertinoIcons.house_fill),
+      icon: Icon(AppIcons.home),
+      activeIcon: Icon(AppIcons.homeActive),
       label: 'Asosiy',
     ),
     GlassTab(
-      icon: Icon(CupertinoIcons.person_2),
-      activeIcon: Icon(CupertinoIcons.person_2_fill),
+      icon: Icon(AppIcons.partners),
+      activeIcon: Icon(AppIcons.partnersActive),
       label: 'Hamkorlar',
     ),
     GlassTab(
-      icon: Icon(CupertinoIcons.briefcase),
-      activeIcon: Icon(CupertinoIcons.briefcase_fill),
+      icon: Icon(AppIcons.project),
+      activeIcon: Icon(AppIcons.projectActive),
       label: 'Loyihalar',
     ),
     GlassTab(
-      icon: Icon(CupertinoIcons.chart_bar_alt_fill),
-      activeIcon: Icon(CupertinoIcons.chart_bar_square_fill),
+      icon: Icon(AppIcons.reports),
+      activeIcon: Icon(AppIcons.reportsActive),
       label: 'Hisobotlar',
     ),
     GlassTab(
-      icon: Icon(CupertinoIcons.person_crop_circle),
-      activeIcon: Icon(CupertinoIcons.person_crop_circle_fill),
+      icon: Icon(AppIcons.profile),
+      activeIcon: Icon(AppIcons.profileActive),
       label: 'Profil',
     ),
   ];

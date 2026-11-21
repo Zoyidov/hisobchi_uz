@@ -14,20 +14,27 @@ import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../../../core/widgets/typography/money_text.dart';
 import '../../data/installment_models.dart';
 import '../../data/installments_repository.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// To'lovlar tarixi — faqat oxirgi bekor qilinmagan to'lov bekor qilinadi
 /// (MOBILE_APP_TZ.md 9.7).
 class InstallmentPaymentHistoryPage extends StatefulWidget {
-  const InstallmentPaymentHistoryPage({super.key, required this.planId, required this.currencyTypeId});
+  const InstallmentPaymentHistoryPage({
+    super.key,
+    required this.planId,
+    required this.currencyTypeId,
+  });
 
   final int planId;
   final int currencyTypeId;
 
   @override
-  State<InstallmentPaymentHistoryPage> createState() => _InstallmentPaymentHistoryPageState();
+  State<InstallmentPaymentHistoryPage> createState() =>
+      _InstallmentPaymentHistoryPageState();
 }
 
-class _InstallmentPaymentHistoryPageState extends State<InstallmentPaymentHistoryPage> {
+class _InstallmentPaymentHistoryPageState
+    extends State<InstallmentPaymentHistoryPage> {
   List<InstallmentPaymentRecord>? _payments;
   String? _error;
 
@@ -42,7 +49,9 @@ class _InstallmentPaymentHistoryPageState extends State<InstallmentPaymentHistor
       _payments = null;
       _error = null;
     });
-    final result = await getIt<InstallmentsRepository>().getPaymentHistory(widget.planId);
+    final result = await getIt<InstallmentsRepository>().getPaymentHistory(
+      widget.planId,
+    );
     if (!mounted) return;
     result.when(
       success: (list) => setState(() => _payments = list),
@@ -65,7 +74,10 @@ class _InstallmentPaymentHistoryPageState extends State<InstallmentPaymentHistor
       description: 'Bu amalni keyin qaytarib bo\'lmaydi.',
     );
     if (!confirmed || !mounted) return;
-    final result = await getIt<InstallmentsRepository>().cancelPayment(widget.planId, paymentId);
+    final result = await getIt<InstallmentsRepository>().cancelPayment(
+      widget.planId,
+      paymentId,
+    );
     if (!mounted) return;
     result.when(
       success: (_) {
@@ -85,9 +97,20 @@ class _InstallmentPaymentHistoryPageState extends State<InstallmentPaymentHistor
   }
 
   Widget _buildBody(BuildContext context) {
-    if (_error != null) return AppErrorState(title: 'Yuklab bo\'lmadi', description: _error, onRetry: _load);
+    if (_error != null) {
+      return AppErrorState(
+        title: 'Yuklab bo\'lmadi',
+        description: _error,
+        onRetry: _load,
+      );
+    }
     if (_payments == null) return const AppSkeletonList();
-    if (_payments!.isEmpty) return const AppEmptyState(title: 'To\'lovlar yo\'q', icon: Icons.receipt_long_outlined);
+    if (_payments!.isEmpty) {
+      return const AppEmptyState(
+        title: 'To\'lovlar yo\'q',
+        icon: AppIcons.receipt,
+      );
+    }
 
     final colors = context.colors;
     return RefreshIndicator(
@@ -108,24 +131,53 @@ class _InstallmentPaymentHistoryPageState extends State<InstallmentPaymentHistor
                     children: [
                       Opacity(
                         opacity: payment.isCancelled ? 0.5 : 1,
-                        child: MoneyText(payment.amount, currencyTypeId: widget.currencyTypeId, signed: true, colorOverride: colors.success),
+                        child: MoneyText(
+                          payment.amount,
+                          currencyTypeId: widget.currencyTypeId,
+                          signed: true,
+                          colorOverride: colors.success,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       if (payment.createdAt != null)
-                        Text(AppDateFormatter.displayDateTime(payment.createdAt!), style: TextStyle(color: colors.textSecondary, fontSize: 12)),
+                        Text(
+                          AppDateFormatter.displayDateTime(payment.createdAt!),
+                          style: TextStyle(
+                            color: colors.textSecondary,
+                            fontSize: 12,
+                          ),
+                        ),
                       if (payment.note != null && payment.note!.isNotEmpty)
-                        Text(payment.note!, style: TextStyle(color: colors.textSecondary, fontSize: 13)),
-                      Text('${payment.receivedByName} qabul qildi', style: TextStyle(color: colors.textTertiary, fontSize: 11)),
+                        Text(
+                          payment.note!,
+                          style: TextStyle(
+                            color: colors.textSecondary,
+                            fontSize: 13,
+                          ),
+                        ),
+                      Text(
+                        '${payment.receivedByName} qabul qildi',
+                        style: TextStyle(
+                          color: colors.textTertiary,
+                          fontSize: 11,
+                        ),
+                      ),
                       if (payment.isCancelled)
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
-                          child: Text('Bekor qilingan', style: TextStyle(color: colors.error, fontSize: 12)),
+                          child: Text(
+                            'Bekor qilingan',
+                            style: TextStyle(color: colors.error, fontSize: 12),
+                          ),
                         ),
                     ],
                   ),
                 ),
                 if (i == _lastActiveIndex)
-                  AppButton.text(label: 'Bekor qilish', onPressed: () => _cancelPayment(payment.id)),
+                  AppButton.text(
+                    label: 'Bekor qilish',
+                    onPressed: () => _cancelPayment(payment.id),
+                  ),
               ],
             ),
           );

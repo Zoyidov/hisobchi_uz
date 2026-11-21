@@ -16,6 +16,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/feedback/app_snackbar.dart';
 import '../auth_navigation.dart';
 import '../cubit/login_cubit.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Parol bilan kirish — Senior Level FinTech Login ekrani.
 class LoginPage extends StatelessWidget {
@@ -26,7 +27,8 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => LoginCubit(getIt<AuthRepository>(), getIt<DeviceInfoService>()),
+      create: (_) =>
+          LoginCubit(getIt<AuthRepository>(), getIt<DeviceInfoService>()),
       child: _LoginView(phone: phone),
     );
   }
@@ -40,7 +42,8 @@ class _LoginView extends StatefulWidget {
   State<_LoginView> createState() => _LoginViewState();
 }
 
-class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMixin {
+class _LoginViewState extends State<_LoginView>
+    with SingleTickerProviderStateMixin {
   final _passwordController = TextEditingController();
   final _focusNode = FocusNode();
 
@@ -64,13 +67,10 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
       curve: Curves.easeOutCubic,
     );
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.04),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animController,
-      curve: Curves.easeOutCubic,
-    ));
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.04), end: Offset.zero).animate(
+          CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+        );
 
     _focusNode.addListener(() {
       setState(() {
@@ -124,7 +124,9 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          colors.primary.withValues(alpha: isDark ? 0.22 : 0.12),
+                          colors.primary.withValues(
+                            alpha: isDark ? 0.22 : 0.12,
+                          ),
                           colors.primary.withValues(alpha: 0.0),
                         ],
                       ),
@@ -143,7 +145,9 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          colors.accentViolet.withValues(alpha: isDark ? 0.15 : 0.08),
+                          colors.accentViolet.withValues(
+                            alpha: isDark ? 0.15 : 0.08,
+                          ),
                           colors.accentViolet.withValues(alpha: 0.0),
                         ],
                       ),
@@ -158,10 +162,15 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                   builder: (context, constraints) {
                     return SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
-                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.xl,
+                      ),
                       child: ConstrainedBox(
-                        constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                        ),
                         child: IntrinsicHeight(
                           child: FadeTransition(
                             opacity: _fadeAnimation,
@@ -174,7 +183,8 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
 
                                   // Top Navigation Bar
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       InkWell(
                                         onTap: () => context.pop(),
@@ -183,15 +193,18 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                                           width: 44,
                                           height: 44,
                                           decoration: BoxDecoration(
-                                            color: colors.surfaceSecondary.withValues(alpha: 0.8),
-                                            borderRadius: BorderRadius.circular(14),
+                                            color: colors.surfaceSecondary
+                                                .withValues(alpha: 0.8),
+                                            borderRadius: BorderRadius.circular(
+                                              14,
+                                            ),
                                             border: Border.all(
                                               color: colors.borderSubtle,
                                               width: 1,
                                             ),
                                           ),
                                           child: Icon(
-                                            Icons.arrow_back_ios_new_rounded,
+                                            AppIcons.back,
                                             size: 18,
                                             color: colors.textPrimary,
                                           ),
@@ -203,12 +216,15 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                                           vertical: 6,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: colors.primaryContainer.withValues(
-                                            alpha: isDark ? 0.4 : 0.8,
-                                          ),
+                                          color: colors.primaryContainer
+                                              .withValues(
+                                                alpha: isDark ? 0.4 : 0.8,
+                                              ),
                                           borderRadius: AppRadius.pillRadius,
                                           border: Border.all(
-                                            color: colors.primary.withValues(alpha: 0.2),
+                                            color: colors.primary.withValues(
+                                              alpha: 0.2,
+                                            ),
                                           ),
                                         ),
                                         child: Text(
@@ -238,7 +254,10 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                                   // Headings
                                   Text(
                                     'Hisobga kirish 👋',
-                                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineLarge
+                                        ?.copyWith(
                                           fontSize: 27,
                                           fontWeight: FontWeight.w800,
                                           letterSpacing: -0.5,
@@ -279,11 +298,14 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                                           height: 38,
                                           alignment: Alignment.center,
                                           decoration: BoxDecoration(
-                                            color: colors.primaryContainer.withValues(alpha: 0.6),
-                                            borderRadius: BorderRadius.circular(10),
+                                            color: colors.primaryContainer
+                                                .withValues(alpha: 0.6),
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
                                           ),
                                           child: Icon(
-                                            Icons.phone_iphone_rounded,
+                                            AppIcons.phone,
                                             size: 20,
                                             color: colors.primary,
                                           ),
@@ -291,7 +313,8 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                                         const SizedBox(width: 12),
                                         Expanded(
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 'Telefon raqamingiz',
@@ -303,7 +326,9 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                                               ),
                                               const SizedBox(height: 2),
                                               Text(
-                                                PhoneFormatter.toDisplay(widget.phone),
+                                                PhoneFormatter.toDisplay(
+                                                  widget.phone,
+                                                ),
                                                 style: TextStyle(
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.w700,
@@ -316,7 +341,9 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                                         ),
                                         InkWell(
                                           onTap: () => context.pop(),
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
                                               horizontal: 8,
@@ -340,39 +367,59 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
 
                                   // Password Input Card
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.only(left: 4, bottom: 8),
+                                        padding: const EdgeInsets.only(
+                                          left: 4,
+                                          bottom: 8,
+                                        ),
                                         child: Text(
                                           'Parol',
                                           style: TextStyle(
                                             fontSize: 13,
                                             fontWeight: FontWeight.w600,
-                                            color: _isFocused ? colors.primary : colors.textSecondary,
+                                            color: _isFocused
+                                                ? colors.primary
+                                                : colors.textSecondary,
                                             letterSpacing: 0.1,
                                           ),
                                         ),
                                       ),
                                       AnimatedContainer(
-                                        duration: const Duration(milliseconds: 220),
+                                        duration: const Duration(
+                                          milliseconds: 220,
+                                        ),
                                         curve: Curves.easeInOut,
-                                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 14,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: isDark
-                                              ? colors.surfaceSecondary.withValues(alpha: 0.65)
+                                              ? colors.surfaceSecondary
+                                                    .withValues(alpha: 0.65)
                                               : colors.surface,
-                                          borderRadius: BorderRadius.circular(18),
+                                          borderRadius: BorderRadius.circular(
+                                            18,
+                                          ),
                                           border: Border.all(
                                             color: _isFocused
                                                 ? colors.primary
-                                                : colors.border.withValues(alpha: 0.95),
+                                                : colors.border.withValues(
+                                                    alpha: 0.95,
+                                                  ),
                                             width: _isFocused ? 1.8 : 1.2,
                                           ),
                                           boxShadow: _isFocused
                                               ? [
                                                   BoxShadow(
-                                                    color: colors.primary.withValues(alpha: isDark ? 0.3 : 0.14),
+                                                    color: colors.primary
+                                                        .withValues(
+                                                          alpha: isDark
+                                                              ? 0.3
+                                                              : 0.14,
+                                                        ),
                                                     blurRadius: 14,
                                                     offset: const Offset(0, 4),
                                                   ),
@@ -382,24 +429,33 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                                         child: Row(
                                           children: [
                                             Icon(
-                                              Icons.lock_outline_rounded,
+                                              AppIcons.lock,
                                               size: 20,
-                                              color: _isFocused ? colors.primary : colors.textTertiary,
+                                              color: _isFocused
+                                                  ? colors.primary
+                                                  : colors.textTertiary,
                                             ),
                                             const SizedBox(width: 12),
                                             Expanded(
                                               child: TextField(
                                                 controller: _passwordController,
                                                 focusNode: _focusNode,
-                                                onTapOutside: (_) => _focusNode.unfocus(),
+                                                onTapOutside: (_) =>
+                                                    _focusNode.unfocus(),
                                                 autofocus: true,
                                                 obscureText: _obscure,
-                                                onChanged: (_) => setState(() {}),
+                                                onChanged: (_) =>
+                                                    setState(() {}),
                                                 onSubmitted: canSubmit
                                                     ? (_) {
-                                                        context.read<LoginCubit>().submit(
-                                                              phone: widget.phone,
-                                                              password: _passwordController.text,
+                                                        context
+                                                            .read<LoginCubit>()
+                                                            .submit(
+                                                              phone:
+                                                                  widget.phone,
+                                                              password:
+                                                                  _passwordController
+                                                                      .text,
                                                             );
                                                       }
                                                     : null,
@@ -410,31 +466,40 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                                                 ),
                                                 decoration: InputDecoration(
                                                   isDense: true,
-                                                  contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                                                  contentPadding:
+                                                      const EdgeInsets.symmetric(
+                                                        vertical: 16,
+                                                      ),
                                                   hintText: 'Parolni kiriting',
                                                   hintStyle: TextStyle(
                                                     fontSize: 15,
                                                     fontWeight: FontWeight.w400,
-                                                    color: colors.textTertiary.withValues(alpha: 0.8),
+                                                    color: colors.textTertiary
+                                                        .withValues(alpha: 0.8),
                                                   ),
                                                   filled: false,
                                                   border: InputBorder.none,
-                                                  enabledBorder: InputBorder.none,
-                                                  focusedBorder: InputBorder.none,
+                                                  enabledBorder:
+                                                      InputBorder.none,
+                                                  focusedBorder:
+                                                      InputBorder.none,
                                                   errorBorder: InputBorder.none,
-                                                  focusedErrorBorder: InputBorder.none,
+                                                  focusedErrorBorder:
+                                                      InputBorder.none,
                                                 ),
                                               ),
                                             ),
                                             IconButton(
                                               icon: Icon(
                                                 _obscure
-                                                    ? Icons.visibility_off_rounded
-                                                    : Icons.visibility_rounded,
+                                                    ? AppIcons.eyeClosed
+                                                    : AppIcons.eye,
                                                 size: 20,
                                                 color: colors.textTertiary,
                                               ),
-                                              onPressed: () => setState(() => _obscure = !_obscure),
+                                              onPressed: () => setState(
+                                                () => _obscure = !_obscure,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -476,14 +541,18 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                                   AppButtonPressable(
                                     enabled: canSubmit,
                                     child: AnimatedContainer(
-                                      duration: const Duration(milliseconds: 220),
+                                      duration: const Duration(
+                                        milliseconds: 220,
+                                      ),
                                       height: 54,
                                       decoration: BoxDecoration(
                                         gradient: canSubmit
                                             ? LinearGradient(
                                                 colors: [
                                                   colors.primary,
-                                                  colors.primary.withValues(alpha: 0.9),
+                                                  colors.primary.withValues(
+                                                    alpha: 0.9,
+                                                  ),
                                                 ],
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.bottomRight,
@@ -491,12 +560,15 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                                             : null,
                                         color: canSubmit
                                             ? null
-                                            : colors.disabled.withValues(alpha: 0.6),
+                                            : colors.disabled.withValues(
+                                                alpha: 0.6,
+                                              ),
                                         borderRadius: BorderRadius.circular(16),
                                         boxShadow: canSubmit
                                             ? [
                                                 BoxShadow(
-                                                  color: colors.primary.withValues(alpha: 0.38),
+                                                  color: colors.primary
+                                                      .withValues(alpha: 0.38),
                                                   blurRadius: 18,
                                                   offset: const Offset(0, 6),
                                                 ),
@@ -506,49 +578,73 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                                       child: Material(
                                         color: Colors.transparent,
                                         child: InkWell(
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
                                           onTap: canSubmit
                                               ? () {
                                                   HapticFeedback.mediumImpact();
-                                                  context.read<LoginCubit>().submit(
+                                                  context
+                                                      .read<LoginCubit>()
+                                                      .submit(
                                                         phone: widget.phone,
-                                                        password: _passwordController.text,
+                                                        password:
+                                                            _passwordController
+                                                                .text,
                                                       );
                                                 }
                                               : null,
                                           child: Center(
                                             child: AnimatedSwitcher(
-                                              duration: const Duration(milliseconds: 200),
+                                              duration: const Duration(
+                                                milliseconds: 200,
+                                              ),
                                               child: isLoading
                                                   ? const SizedBox(
                                                       width: 22,
                                                       height: 22,
                                                       child: CircularProgressIndicator(
                                                         strokeWidth: 2.4,
-                                                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                                                        valueColor:
+                                                            AlwaysStoppedAnimation(
+                                                              Colors.white,
+                                                            ),
                                                       ),
                                                     )
                                                   : Row(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
                                                       children: [
                                                         Text(
                                                           'Kirish',
                                                           style: TextStyle(
                                                             fontSize: 16,
-                                                            fontWeight: FontWeight.w700,
+                                                            fontWeight:
+                                                                FontWeight.w700,
                                                             color: canSubmit
                                                                 ? Colors.white
-                                                                : Colors.white.withValues(alpha: 0.6),
+                                                                : Colors.white
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.6,
+                                                                      ),
                                                             letterSpacing: 0.2,
                                                           ),
                                                         ),
-                                                        const SizedBox(width: 8),
+                                                        const SizedBox(
+                                                          width: 8,
+                                                        ),
                                                         Icon(
-                                                          Icons.arrow_forward_rounded,
+                                                          AppIcons.forward,
                                                           size: 19,
                                                           color: canSubmit
                                                               ? Colors.white
-                                                              : Colors.white.withValues(alpha: 0.6),
+                                                              : Colors.white
+                                                                    .withValues(
+                                                                      alpha:
+                                                                          0.6,
+                                                                    ),
                                                         ),
                                                       ],
                                                     ),
@@ -564,17 +660,23 @@ class _LoginViewState extends State<_LoginView> with SingleTickerProviderStateMi
                                   // Trust & Security Footer
                                   Center(
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 14,
+                                        vertical: 8,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: colors.surfaceSecondary.withValues(alpha: 0.5),
+                                        color: colors.surfaceSecondary
+                                            .withValues(alpha: 0.5),
                                         borderRadius: AppRadius.pillRadius,
-                                        border: Border.all(color: colors.borderSubtle),
+                                        border: Border.all(
+                                          color: colors.borderSubtle,
+                                        ),
                                       ),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Icon(
-                                            Icons.shield_outlined,
+                                            AppIcons.shield,
                                             size: 15,
                                             color: colors.textTertiary,
                                           ),

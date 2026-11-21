@@ -10,6 +10,7 @@ import '../../../../core/widgets/lists/app_paged_list_view.dart';
 import '../../../../core/widgets/typography/money_text.dart';
 import '../../data/partner_report_models.dart';
 import 'partner_detail_report_page.dart';
+import '../../../../core/icons/app_icons.dart';
 
 class _DetailCubit extends PagedListCubit<PartnerReportDetailItem> {
   _DetailCubit(this._fetcher);
@@ -56,7 +57,7 @@ class ReportDetailListPage extends StatelessWidget {
                   onLoadMore: cubit.loadMore,
                   onRefresh: cubit.refresh,
                   onRetry: cubit.loadFirst,
-                  emptyIcon: Icons.people_outline_rounded,
+                  emptyIcon: AppIcons.partners,
                   emptyTitle: 'Ma\'lumot topilmadi',
                   padding: const EdgeInsets.all(AppSpacing.md),
                   itemBuilder: (context, item, index) => AppCard(
@@ -83,7 +84,7 @@ class ReportDetailListPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 6),
-                        const Icon(Icons.chevron_right_rounded, size: 18),
+                        const Icon(AppIcons.chevronRight, size: 18),
                       ],
                     ),
                   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import '../../icons/app_icons.dart';
 
 /// `+998 (__) ___-__-__` maskasi — faqat 9 raqam saqlanadi/yuboriladi
 /// (MOBILE_APP_TZ.md 5.3, E_HISOB_FLUTTER_UI_UX_TZ.md 14-bo'lim).
@@ -75,9 +76,16 @@ class _AppPhoneFieldState extends State<AppPhoneField> {
             errorText: widget.errorText,
             prefixIcon: Padding(
               padding: const EdgeInsets.only(left: 14, right: 10),
-              child: Icon(Icons.phone_outlined, size: 20, color: Theme.of(context).colorScheme.primary),
+              child: Icon(
+                AppIcons.call,
+                size: 20,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
-            prefixIconConstraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+            prefixIconConstraints: const BoxConstraints(
+              minWidth: 44,
+              minHeight: 44,
+            ),
           ),
         ),
       ],

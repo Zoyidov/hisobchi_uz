@@ -8,6 +8,7 @@ import '../../../../core/widgets/states/app_error_state.dart';
 import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/partner_operation_models.dart';
 import '../../data/reports_repository.dart';
+import '../../../../core/icons/app_icons.dart';
 
 class PartnerDebtDetailPage extends StatefulWidget {
   final String type;
@@ -51,7 +52,8 @@ class _PartnerDebtDetailPageState extends State<PartnerDebtDetailPage> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.9 &&
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent * 0.9 &&
         !_isLoadingMore &&
         _hasMore) {
       _loadPage(_currentPage + 1);
@@ -102,7 +104,9 @@ class _PartnerDebtDetailPageState extends State<PartnerDebtDetailPage> {
 
   String _formatCurrency(String amount) {
     final value = double.tryParse(amount) ?? 0.0;
-    return value.toStringAsFixed(0).replaceAllMapped(
+    return value
+        .toStringAsFixed(0)
+        .replaceAllMapped(
           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (Match m) => '${m[1]} ',
         );
@@ -117,9 +121,9 @@ class _PartnerDebtDetailPageState extends State<PartnerDebtDetailPage> {
       appBar: AppBar(
         title: Text(
           widget.title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
         ),
         centerTitle: true,
       ),
@@ -147,7 +151,7 @@ class _PartnerDebtDetailPageState extends State<PartnerDebtDetailPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.inbox_outlined, size: 48, color: colors.textTertiary),
+            Icon(AppIcons.empty, size: 48, color: colors.textTertiary),
             const SizedBox(height: 12),
             Text(
               'Tranzaksiyalar mavjud emas',
@@ -187,7 +191,9 @@ class _PartnerDebtDetailPageState extends State<PartnerDebtDetailPage> {
 
           final op = _items[index];
           final isIncoming = op.isIncoming;
-          final amountColor = isIncoming ? const Color(0xFF16A34A) : const Color(0xFFDC2626);
+          final amountColor = isIncoming
+              ? const Color(0xFF16A34A)
+              : const Color(0xFFDC2626);
 
           return Container(
             decoration: BoxDecoration(
@@ -214,7 +220,7 @@ class _PartnerDebtDetailPageState extends State<PartnerDebtDetailPage> {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      isIncoming ? Icons.south_west_rounded : Icons.north_east_rounded,
+                      isIncoming ? AppIcons.income : AppIcons.expense,
                       color: amountColor,
                       size: 20,
                     ),
@@ -234,7 +240,8 @@ class _PartnerDebtDetailPageState extends State<PartnerDebtDetailPage> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        if (op.partnerPhone != null && op.partnerPhone!.isNotEmpty) ...[
+                        if (op.partnerPhone != null &&
+                            op.partnerPhone!.isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Text(
                             PhoneFormatter.toDisplay(op.partnerPhone!),

@@ -1,5 +1,4 @@
 import 'package:decimal/decimal.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,6 +34,7 @@ import '../widgets/transaction_date_filter_sheet.dart';
 import '../widgets/transaction_receipt_sheet.dart';
 import '../widgets/transaction_tile.dart';
 import 'wallet_form_page.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Hamkor kartochkasi — 3 tabli ekran (MOBILE_APP_TZ.md 8.5).
 class PartnerDetailPage extends StatelessWidget {
@@ -239,7 +239,7 @@ class _Loaded extends StatelessWidget {
                         context.read<WalletListCubit>().refresh();
                       }
                     },
-                    icon: const Icon(Icons.south_west_rounded, size: 18),
+                    icon: const Icon(AppIcons.income, size: 18),
                     label: const Text(
                       'Kirim',
                       style: TextStyle(
@@ -274,7 +274,7 @@ class _Loaded extends StatelessWidget {
                         context.read<WalletListCubit>().refresh();
                       }
                     },
-                    icon: const Icon(Icons.north_east_rounded, size: 18),
+                    icon: const Icon(AppIcons.expense, size: 18),
                     label: const Text(
                       'Chiqim',
                       style: TextStyle(
@@ -304,13 +304,13 @@ class _QuickActionsRow extends StatelessWidget {
       children: [
         _action(
           context,
-          Icons.call_rounded,
+          AppIcons.call,
           'Qo\'ng\'iroq',
           () => launchUrl(Uri.parse('tel:${partner.phone}')),
         ),
         _action(
           context,
-          Icons.sms_outlined,
+          AppIcons.message,
           'SMS',
           () => launchUrl(Uri.parse('sms:${partner.phone}')),
         ),
@@ -318,7 +318,7 @@ class _QuickActionsRow extends StatelessWidget {
           permission: AppPermission.reportPartnerView,
           child: _action(
             context,
-            Icons.bar_chart_rounded,
+            AppIcons.chart,
             'Hisobot',
             () => context.push(
               RoutePaths.reportPartnerDetail(partner.id),
@@ -328,7 +328,7 @@ class _QuickActionsRow extends StatelessWidget {
         ),
         _action(
           context,
-          Icons.file_download_outlined,
+          AppIcons.download,
           'Excel',
           () => downloadAndShareExcel(
             context,
@@ -339,7 +339,7 @@ class _QuickActionsRow extends StatelessWidget {
         ),
         _action(
           context,
-          Icons.settings_outlined,
+          AppIcons.settings,
           'SMS sozlama',
           () => context.push(RoutePaths.smsSettings(partner.id)),
         ),
@@ -355,10 +355,10 @@ class _QuickActionsRow extends StatelessWidget {
   ) {
     final colors = context.colors;
     final accent = switch (icon) {
-      Icons.call_rounded => colors.success,
-      Icons.sms_outlined => colors.info,
-      Icons.bar_chart_rounded => colors.accentViolet,
-      Icons.file_download_outlined => colors.success,
+      AppIcons.call => colors.success,
+      AppIcons.message => colors.info,
+      AppIcons.chart => colors.accentViolet,
+      AppIcons.download => colors.success,
       _ => colors.warning,
     };
     return Tooltip(
@@ -801,7 +801,7 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
                   'Kirim',
                   account.debt,
                   colors.success,
-                  Icons.south_west_rounded,
+                  AppIcons.income,
                   currency,
                 ),
               ),
@@ -817,7 +817,7 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
                   'Chiqim',
                   account.credit,
                   colors.error,
-                  Icons.north_east_rounded,
+                  AppIcons.expense,
                   currency,
                 ),
               ),
@@ -835,11 +835,7 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
             ),
             child: Row(
               children: [
-                Icon(
-                  Icons.calendar_month_outlined,
-                  size: 14,
-                  color: colors.info,
-                ),
+                Icon(AppIcons.calendar, size: 14, color: colors.info),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
@@ -970,7 +966,7 @@ class _TransactionsTab extends StatelessWidget {
                       minHeight: 36,
                     ),
                     icon: Icon(
-                      CupertinoIcons.calendar,
+                      AppIcons.calendar,
                       size: 18,
                       color: cubit.hasDateFilter
                           ? colors.primary
@@ -1008,11 +1004,7 @@ class _TransactionsTab extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        CupertinoIcons.calendar,
-                        size: 13,
-                        color: colors.primary,
-                      ),
+                      Icon(AppIcons.calendar, size: 13, color: colors.primary),
                       const SizedBox(width: 5),
                       Text(
                         '${AppDateFormatter.display(cubit.dateFrom!)} — ${AppDateFormatter.display(cubit.dateTo!)}',
@@ -1032,7 +1024,7 @@ class _TransactionsTab extends StatelessWidget {
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
-                            Icons.close_rounded,
+                            AppIcons.close,
                             size: 12,
                             color: colors.primary,
                           ),
@@ -1057,7 +1049,7 @@ class _TransactionsTab extends StatelessWidget {
                   wallets.isEmpty
                       ? const AppEmptyState(
                           title: 'Hozircha tranzaksiya yo\'q',
-                          icon: Icons.receipt_long_outlined,
+                          icon: AppIcons.receipt,
                         )
                       : RefreshIndicator(
                           onRefresh: () =>

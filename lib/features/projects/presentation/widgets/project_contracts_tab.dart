@@ -20,6 +20,7 @@ import '../../data/project_models.dart';
 import '../../data/projects_repository.dart';
 import '../cubit/project_subtabs_cubit.dart';
 import 'work_type_selection_sheet.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Tab A: Shartnomalar (MOBILE_APP_TZ.md 10.4-A).
 class ProjectContractsTab extends StatelessWidget {
@@ -56,7 +57,7 @@ class _View extends StatelessWidget {
                 items.isEmpty
                     ? const AppEmptyState(
                         title: 'Shartnomalar yo\'q',
-                        icon: Icons.description_outlined,
+                        icon: AppIcons.file,
                       )
                     : RefreshIndicator(
                         onRefresh: () =>
@@ -86,7 +87,7 @@ class _View extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Icon(
-                                      Icons.description_outlined,
+                                      AppIcons.file,
                                       color: context.colors.primary,
                                       size: 20,
                                     ),
@@ -142,7 +143,7 @@ class _View extends StatelessWidget {
               child: FloatingActionButton(
                 heroTag: null,
                 onPressed: () => _showContractForm(context, projectId),
-                child: const Icon(Icons.add),
+                child: const Icon(AppIcons.add),
               ),
             ),
           ],
@@ -204,7 +205,7 @@ Future<void> _showContractForm(BuildContext context, int projectId) async {
                         Expanded(
                           child: Text(workTypeName ?? 'Ish turini tanlang'),
                         ),
-                        const Icon(Icons.keyboard_arrow_down_rounded, size: 20),
+                        const Icon(AppIcons.chevronDown, size: 20),
                       ],
                     ),
                   ),

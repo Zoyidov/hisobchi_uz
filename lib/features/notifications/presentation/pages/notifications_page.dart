@@ -14,6 +14,7 @@ import '../../data/notification_models.dart';
 import '../../data/notifications_repository.dart';
 import '../cubit/notification_badge_cubit.dart';
 import '../cubit/notifications_cubit.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Bildirishnomalar ro'yxati + deep-link navigatsiya (MOBILE_APP_TZ.md 14.2-14.3).
 class NotificationsPage extends StatelessWidget {
@@ -22,7 +23,8 @@ class NotificationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => NotificationsCubit(getIt<NotificationsRepository>())..loadFirst(),
+      create: (_) =>
+          NotificationsCubit(getIt<NotificationsRepository>())..loadFirst(),
       child: const _View(),
     );
   }
@@ -41,7 +43,8 @@ class _ViewState extends State<_View> {
   void initState() {
     super.initState();
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
         context.read<NotificationsCubit>().loadMore();
       }
     });
@@ -83,9 +86,17 @@ class _ViewState extends State<_View> {
         builder: (context, state) {
           if (state.isLoading) return const AppSkeletonList();
           if (state.failure != null && state.items.isEmpty) {
-            return AppErrorState(failure: state.failure, onRetry: cubit.loadFirst);
+            return AppErrorState(
+              failure: state.failure,
+              onRetry: cubit.loadFirst,
+            );
           }
-          if (state.isEmpty) return const AppEmptyState(title: 'Bildirishnoma yo\'q', icon: Icons.notifications_none_rounded);
+          if (state.isEmpty) {
+            return const AppEmptyState(
+              title: 'Bildirishnoma yo\'q',
+              icon: AppIcons.notification,
+            );
+          }
 
           return RefreshIndicator(
             onRefresh: cubit.refresh,
@@ -93,7 +104,8 @@ class _ViewState extends State<_View> {
               controller: _scrollController,
               padding: const EdgeInsets.all(AppSpacing.md),
               itemCount: state.items.length + (state.hasNext ? 1 : 0),
-              separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
+              separatorBuilder: (_, __) =>
+                  const SizedBox(height: AppSpacing.sm),
               itemBuilder: (context, i) {
                 if (i >= state.items.length) {
                   return const Padding(
@@ -104,14 +116,19 @@ class _ViewState extends State<_View> {
                 final n = state.items[i];
                 final colors = context.colors;
                 return Material(
-                  color: n.isRead ? colors.surface : colors.primary.withValues(alpha: 0.06),
+                  color: n.isRead
+                      ? colors.surface
+                      : colors.primary.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(16),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: () => _handleTap(context, n),
                     child: Container(
                       padding: const EdgeInsets.all(AppSpacing.md),
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), border: Border.all(color: colors.border)),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: colors.border),
+                      ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -120,7 +137,10 @@ class _ViewState extends State<_View> {
                               margin: const EdgeInsets.only(top: 6, right: 8),
                               width: 8,
                               height: 8,
-                              decoration: BoxDecoration(color: colors.primary, shape: BoxShape.circle),
+                              decoration: BoxDecoration(
+                                color: colors.primary,
+                                shape: BoxShape.circle,
+                              ),
                             ),
                           Expanded(
                             child: Column(
@@ -128,15 +148,29 @@ class _ViewState extends State<_View> {
                               children: [
                                 Text(
                                   n.title,
-                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                        fontWeight: n.isRead ? FontWeight.w500 : FontWeight.w700,
+                                  style: Theme.of(context).textTheme.titleSmall
+                                      ?.copyWith(
+                                        fontWeight: n.isRead
+                                            ? FontWeight.w500
+                                            : FontWeight.w700,
                                       ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text(n.body, style: TextStyle(color: colors.textSecondary)),
+                                Text(
+                                  n.body,
+                                  style: TextStyle(color: colors.textSecondary),
+                                ),
                                 const SizedBox(height: 6),
                                 if (n.createdAt != null)
-                                  Text(AppDateFormatter.displayDateTime(n.createdAt!), style: TextStyle(color: colors.textTertiary, fontSize: 12)),
+                                  Text(
+                                    AppDateFormatter.displayDateTime(
+                                      n.createdAt!,
+                                    ),
+                                    style: TextStyle(
+                                      color: colors.textTertiary,
+                                      fontSize: 12,
+                                    ),
+                                  ),
                               ],
                             ),
                           ),

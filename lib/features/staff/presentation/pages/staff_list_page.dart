@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,6 +17,7 @@ import '../../data/staff_repository.dart';
 import '../cubit/staff_list_cubit.dart';
 import 'staff_create_page.dart';
 import 'staff_edit_page.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Xodimlar ro'yxati — faqat owner (MOBILE_APP_TZ.md 15.2).
 class StaffListPage extends StatelessWidget {
@@ -45,13 +45,21 @@ class _View extends StatelessWidget {
             padding: const EdgeInsets.only(right: AppSpacing.sm),
             child: FilledButton.tonalIcon(
               style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 minimumSize: const Size(0, 36),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               onPressed: () => _openCreate(context),
-              icon: const Icon(CupertinoIcons.plus, size: 15),
-              label: const Text('Qo\'shish', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+              icon: const Icon(AppIcons.add, size: 15),
+              label: const Text(
+                'Qo\'shish',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+              ),
             ),
           ),
         ],
@@ -60,30 +68,40 @@ class _View extends StatelessWidget {
         builder: (context, state) {
           return switch (state) {
             StaffListLoading() => const AppSkeletonList(),
-            StaffListError(:final failure) =>
-              AppErrorState(failure: failure, onRetry: () => context.read<StaffListCubit>().load()),
-            StaffListLoaded(:final items) => items.isEmpty
-                ? AppEmptyState(
-                    title: 'Xodimlar yo\'q',
-                    actionLabel: 'Xodim qo\'shish',
-                    onAction: () => _openCreate(context),
-                  )
-                : RefreshIndicator(
-                    onRefresh: () => context.read<StaffListCubit>().load(),
-                    child: ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 110),
-                      itemCount: items.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
-                      itemBuilder: (context, i) => _StaffTile(staff: items[i]),
+            StaffListError(:final failure) => AppErrorState(
+              failure: failure,
+              onRetry: () => context.read<StaffListCubit>().load(),
+            ),
+            StaffListLoaded(:final items) =>
+              items.isEmpty
+                  ? AppEmptyState(
+                      title: 'Xodimlar yo\'q',
+                      actionLabel: 'Xodim qo\'shish',
+                      onAction: () => _openCreate(context),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: () => context.read<StaffListCubit>().load(),
+                      child: ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.md,
+                          AppSpacing.md,
+                          AppSpacing.md,
+                          110,
+                        ),
+                        itemCount: items.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: AppSpacing.sm),
+                        itemBuilder: (context, i) =>
+                            _StaffTile(staff: items[i]),
+                      ),
                     ),
-                  ),
           };
         },
       ),
       floatingActionButton: AppFloatingAction(
         heroTag: 'staff_create_fab',
         onPressed: () => _openCreate(context),
-        icon: CupertinoIcons.person_badge_plus,
+        icon: AppIcons.partnerAdd,
         label: 'Xodim qo\'shish',
       ),
     );
@@ -91,7 +109,9 @@ class _View extends StatelessWidget {
 
   Future<void> _openCreate(BuildContext context) async {
     final cubit = context.read<StaffListCubit>();
-    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const StaffCreatePage()));
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const StaffCreatePage()));
     cubit.load();
   }
 }
@@ -104,12 +124,20 @@ class _StaffTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final initials = staff.name.trim().isNotEmpty
-        ? staff.name.trim().split(' ').map((e) => e.isNotEmpty ? e[0] : '').take(2).join().toUpperCase()
+        ? staff.name
+              .trim()
+              .split(' ')
+              .map((e) => e.isNotEmpty ? e[0] : '')
+              .take(2)
+              .join()
+              .toUpperCase()
         : '?';
 
     return AppCard(
       onTap: () async {
-        await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => StaffEditPage(staff: staff)));
+        await Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (_) => StaffEditPage(staff: staff)),
+        );
         if (context.mounted) context.read<StaffListCubit>().load();
       },
       child: Row(
@@ -142,7 +170,9 @@ class _StaffTile extends StatelessWidget {
               children: [
                 Text(
                   staff.name,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -155,14 +185,21 @@ class _StaffTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: colors.surfaceSecondary,
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
                     '${staff.permissions.length} ta ruxsat',
-                    style: TextStyle(color: colors.textTertiary, fontSize: 11, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      color: colors.textTertiary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
@@ -171,12 +208,16 @@ class _StaffTile extends StatelessWidget {
           Switch(
             value: staff.isActive,
             onChanged: (_) async {
-              final error = await context.read<StaffListCubit>().toggleActive(staff);
-              if (error != null && context.mounted) AppSnackbar.error(context, error.message);
+              final error = await context.read<StaffListCubit>().toggleActive(
+                staff,
+              );
+              if (error != null && context.mounted) {
+                AppSnackbar.error(context, error.message);
+              }
             },
           ),
           IconButton(
-            icon: Icon(Icons.delete_outline_rounded, color: colors.error),
+            icon: Icon(AppIcons.delete, color: colors.error),
             onPressed: () async {
               final confirmed = await showAppConfirmationSheet(
                 context,
@@ -184,8 +225,12 @@ class _StaffTile extends StatelessWidget {
                 description: 'Bu amalni keyin qaytarib bo\'lmaydi.',
               );
               if (confirmed && context.mounted) {
-                final error = await context.read<StaffListCubit>().delete(staff.id);
-                if (error != null && context.mounted) AppSnackbar.error(context, error.message);
+                final error = await context.read<StaffListCubit>().delete(
+                  staff.id,
+                );
+                if (error != null && context.mounted) {
+                  AppSnackbar.error(context, error.message);
+                }
               }
             },
           ),

@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../domain/entities/app_file.dart';
 import '../../theme/app_colors.dart';
 import '../feedback/app_snackbar.dart';
+import '../../icons/app_icons.dart';
 
 class AppFilePreview extends StatelessWidget {
   const AppFilePreview({super.key, required this.files});
@@ -99,7 +100,7 @@ class AppFilePreview extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(
-                                      Icons.insert_drive_file_outlined,
+                                      AppIcons.file,
                                       color: context.colors.primary,
                                       size: 28,
                                     ),
@@ -165,7 +166,7 @@ class _RemoteImageState extends State<_RemoteImage> {
         color: Theme.of(context).brightness == Brightness.dark
             ? Colors.white70
             : context.colors.textSecondary,
-        icon: const Icon(Icons.refresh_rounded),
+        icon: const Icon(AppIcons.refresh),
         onPressed: () async {
           await NetworkImage(widget.file.url).evict();
           if (mounted) setState(() => _attempt++);

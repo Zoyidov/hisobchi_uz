@@ -11,6 +11,7 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/formatters/phone_formatter.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Parolni tiklash — Senior Level FinTech OTP jo'natish ekrani.
 class ForgotPasswordPage extends StatefulWidget {
@@ -22,7 +23,8 @@ class ForgotPasswordPage extends StatefulWidget {
   State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
 }
 
-class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTickerProviderStateMixin {
+class _ForgotPasswordPageState extends State<ForgotPasswordPage>
+    with SingleTickerProviderStateMixin {
   bool _loading = true;
   String? _error;
 
@@ -36,7 +38,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
-    _fadeAnimation = CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic);
+    _fadeAnimation = CurvedAnimation(
+      parent: _animController,
+      curve: Curves.easeOutCubic,
+    );
     _animController.forward();
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _send());
@@ -115,7 +120,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      colors.accentViolet.withValues(alpha: isDark ? 0.15 : 0.08),
+                      colors.accentViolet.withValues(
+                        alpha: isDark ? 0.15 : 0.08,
+                      ),
                       colors.accentViolet.withValues(alpha: 0.0),
                     ],
                   ),
@@ -148,7 +155,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
                           border: Border.all(color: colors.borderSubtle),
                         ),
                         child: Icon(
-                          Icons.arrow_back_ios_new_rounded,
+                          AppIcons.back,
                           size: 18,
                           color: colors.textPrimary,
                         ),
@@ -172,7 +179,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
                   // Trust Footer
                   Center(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: colors.surfaceSecondary.withValues(alpha: 0.5),
                         borderRadius: AppRadius.pillRadius,
@@ -181,7 +191,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.shield_outlined, size: 15, color: colors.textTertiary),
+                          Icon(
+                            AppIcons.shield,
+                            size: 15,
+                            color: colors.textTertiary,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             '256-bit shifrlangan • Ma\'lumotlar to\'liq xavfsiz',
@@ -232,20 +246,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
                 valueColor: AlwaysStoppedAnimation(colors.primary),
               ),
             ),
-            Icon(
-              Icons.lock_reset_rounded,
-              size: 32,
-              color: colors.primary,
-            ),
+            Icon(AppIcons.restore, size: 32, color: colors.primary),
           ],
         ),
         const SizedBox(height: AppSpacing.xl),
         Text(
           'SMS kod yuborilmoqda...',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w800,
-                fontSize: 20,
-              ),
+            fontWeight: FontWeight.w800,
+            fontSize: 20,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
@@ -259,10 +269,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
         const SizedBox(height: 4),
         Text(
           'Iltimos, biroz kuting',
-          style: TextStyle(
-            color: colors.textSecondary,
-            fontSize: 13,
-          ),
+          style: TextStyle(color: colors.textSecondary, fontSize: 13),
         ),
       ],
     );
@@ -289,18 +296,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
               color: colors.error.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              Icons.error_outline_rounded,
-              color: colors.error,
-              size: 30,
-            ),
+            child: Icon(AppIcons.error, color: colors.error, size: 30),
           ),
           const SizedBox(height: 16),
           Text(
             'Kod yuborilmadi',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
@@ -314,10 +317,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> with SingleTick
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
-          AppButton.primary(
-            label: 'Qayta urinish',
-            onPressed: _send,
-          ),
+          AppButton.primary(label: 'Qayta urinish', onPressed: _send),
         ],
       ),
     );

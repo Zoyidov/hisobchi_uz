@@ -15,6 +15,7 @@ import '../../../../core/widgets/media/app_file_attachment.dart';
 import '../../data/project_models.dart';
 import '../../data/projects_repository.dart';
 import '../cubit/project_form_cubit.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Loyiha yaratish/tahrirlash (MOBILE_APP_TZ.md 10.3).
 class ProjectFormPage extends StatelessWidget {
@@ -158,7 +159,7 @@ class _ViewState extends State<_View> {
                                           ),
                                         ),
                                         child: Icon(
-                                          Icons.work_outline_rounded,
+                                          AppIcons.project,
                                           color: colors.primary,
                                           size: 24,
                                         ),
@@ -216,7 +217,7 @@ class _ViewState extends State<_View> {
                                       label: 'Loyiha nomi *',
                                       hint: 'Masalan, yangi ofis qurilishi',
                                       prefixIcon: Icon(
-                                        Icons.work_outline_rounded,
+                                        AppIcons.project,
                                         size: 20,
                                         color: colors.primary,
                                       ),
@@ -235,7 +236,7 @@ class _ViewState extends State<_View> {
                                       label: 'Buyurtmachi *',
                                       hint: 'Ism yoki tashkilot nomi',
                                       prefixIcon: Icon(
-                                        Icons.person_outline_rounded,
+                                        AppIcons.user,
                                         size: 20,
                                         color: colors.accentViolet,
                                       ),
@@ -260,7 +261,7 @@ class _ViewState extends State<_View> {
                                       hint:
                                           'Shahar, ko‘cha yoki loyiha manzili',
                                       prefixIcon: Icon(
-                                        Icons.location_on_outlined,
+                                        AppIcons.location,
                                         size: 20,
                                         color: colors.info,
                                       ),
@@ -286,7 +287,7 @@ class _ViewState extends State<_View> {
                                   shape: const Border(),
                                   collapsedShape: const Border(),
                                   leading: Icon(
-                                    Icons.attach_file_rounded,
+                                    AppIcons.attachment,
                                     color: colors.primary,
                                     size: 21,
                                   ),
@@ -348,7 +349,7 @@ class _ViewState extends State<_View> {
                             ? 'Saqlash'
                             : 'Loyihani yaratish',
                         icon: Icon(
-                          _isEditing ? Icons.check_rounded : Icons.add_rounded,
+                          _isEditing ? AppIcons.check : AppIcons.add,
                           size: 20,
                         ),
                         isLoading: isLoading || _filesUploading,

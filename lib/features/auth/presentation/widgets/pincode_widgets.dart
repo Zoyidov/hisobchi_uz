@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Neon capsule slot colors matching the design:
 /// Slot 0: Cyan / Electric Sky Blue
@@ -253,7 +254,7 @@ class PincodeNumericKeypad extends StatelessWidget {
               Expanded(
                 child: showBiometrics && onBiometrics != null
                     ? _buildActionKey(
-                        icon: Icons.fingerprint_rounded,
+                        icon: AppIcons.fingerprint,
                         iconSize: 32,
                         color: numberColor,
                         onTap: () {
@@ -268,7 +269,7 @@ class PincodeNumericKeypad extends StatelessWidget {
               // Bottom Right: Backspace Key
               Expanded(
                 child: _buildActionKey(
-                  icon: Icons.backspace_rounded,
+                  icon: AppIcons.backspace,
                   iconSize: 26,
                   color: numberColor,
                   onTap: () {
@@ -438,7 +439,7 @@ class PincodeScreenLayout extends StatelessWidget {
     super.key,
     required this.topLabel,
     this.onExit,
-    this.exitIcon = Icons.logout_rounded,
+    this.exitIcon = AppIcons.logout,
     required this.title,
     required this.subtitle,
     this.errorMessage,

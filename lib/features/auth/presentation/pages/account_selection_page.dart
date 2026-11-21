@@ -15,6 +15,7 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/media/app_avatar.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Hisob tanlash — Senior Level FinTech Multi-Tenant Account Switcher ekrani.
 class AccountSelectionPage extends StatefulWidget {
@@ -159,7 +160,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                       IconButton(
                         tooltip: 'Chiqish',
                         icon: Icon(
-                          Icons.logout_rounded,
+                          AppIcons.logout,
                           color: colors.textTertiary,
                           size: 20,
                         ),
@@ -228,7 +229,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                             ),
                             child: FilledButton.icon(
                               onPressed: _activating ? null : _activateOwner,
-                              icon: const Icon(Icons.add_business_rounded),
+                              icon: const Icon(AppIcons.shop),
                               label: Text(
                                 _activating
                                     ? 'Hisob ochilmoqda...'
@@ -299,7 +300,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                                               ),
                                             ),
                                             child: const Icon(
-                                              Icons.star_rounded,
+                                              AppIcons.star,
                                               size: 11,
                                               color: Colors.white,
                                             ),
@@ -365,7 +366,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                                       ),
                                       const SizedBox(width: 8),
                                       Icon(
-                                        Icons.chevron_right_rounded,
+                                        AppIcons.chevronRight,
                                         color: colors.primary,
                                         size: 24,
                                       ),
@@ -487,7 +488,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                                         ),
                                         const SizedBox(width: 8),
                                         Icon(
-                                          Icons.chevron_right_rounded,
+                                          AppIcons.chevronRight,
                                           color: colors.textTertiary,
                                           size: 22,
                                         ),
@@ -519,7 +520,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            Icons.shield_outlined,
+                            AppIcons.shield,
                             size: 15,
                             color: colors.textTertiary,
                           ),

@@ -6,6 +6,7 @@ import '../../../../core/widgets/states/app_error_state.dart';
 import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/partner_installment_report_models.dart';
 import '../../data/reports_repository.dart';
+import '../../../../core/icons/app_icons.dart';
 
 class PartnerInstallmentReportTab extends StatefulWidget {
   final int partnerId;
@@ -313,7 +314,7 @@ class _PartnerInstallmentReportTabState
                   borderRadius: BorderRadius.circular(9),
                 ),
                 child: Icon(
-                  Icons.dashboard_rounded,
+                  AppIcons.dashboard,
                   size: 16,
                   color: colors.primary,
                 ),
@@ -339,7 +340,7 @@ class _PartnerInstallmentReportTabState
                   label: 'Faol',
                   value: '${stat.activePlans}',
                   color: colors.primary,
-                  icon: Icons.play_circle_outline_rounded,
+                  icon: AppIcons.playCircle,
                 ),
               ),
               const SizedBox(width: 8),
@@ -348,7 +349,7 @@ class _PartnerInstallmentReportTabState
                   label: 'Tugallangan',
                   value: '${stat.completedPlans}',
                   color: const Color(0xFF22C55E),
-                  icon: Icons.check_circle_outline_rounded,
+                  icon: AppIcons.success,
                 ),
               ),
               const SizedBox(width: 8),
@@ -357,7 +358,7 @@ class _PartnerInstallmentReportTabState
                   label: 'Bekor',
                   value: '${stat.cancelledPlans}',
                   color: const Color(0xFF94A3B8),
-                  icon: Icons.cancel_outlined,
+                  icon: AppIcons.cancel,
                 ),
               ),
             ],
@@ -372,7 +373,7 @@ class _PartnerInstallmentReportTabState
                   label: 'Berilgan',
                   amount: '${_formatPrice(stat.totalGiven)} $currencyLabel',
                   color: const Color(0xFF6366F1),
-                  icon: Icons.account_balance_wallet_outlined,
+                  icon: AppIcons.wallet,
                 ),
               ),
               const SizedBox(width: 10),
@@ -381,7 +382,7 @@ class _PartnerInstallmentReportTabState
                   label: 'To\'langan',
                   amount: '${_formatPrice(stat.totalPaid)} $currencyLabel',
                   color: const Color(0xFF22C55E),
-                  icon: Icons.check_circle_outline_rounded,
+                  icon: AppIcons.success,
                 ),
               ),
             ],
@@ -405,7 +406,7 @@ class _PartnerInstallmentReportTabState
                 Row(
                   children: [
                     const Icon(
-                      Icons.hourglass_bottom_rounded,
+                      AppIcons.hourglass,
                       color: Color(0xFFD97706),
                       size: 18,
                     ),
@@ -448,7 +449,7 @@ class _PartnerInstallmentReportTabState
               child: Row(
                 children: [
                   const Icon(
-                    Icons.error_outline_rounded,
+                    AppIcons.error,
                     color: Color(0xFFEF4444),
                     size: 18,
                   ),
@@ -594,7 +595,7 @@ class _PartnerInstallmentReportTabState
                   borderRadius: BorderRadius.circular(9),
                 ),
                 child: Icon(
-                  Icons.calendar_month_rounded,
+                  AppIcons.calendar,
                   size: 16,
                   color: colors.accentViolet,
                 ),
@@ -794,7 +795,7 @@ class _PartnerInstallmentReportTabState
                   borderRadius: BorderRadius.circular(9),
                 ),
                 child: const Icon(
-                  Icons.history_rounded,
+                  AppIcons.history,
                   size: 16,
                   color: Color(0xFF22C55E),
                 ),
@@ -828,7 +829,7 @@ class _PartnerInstallmentReportTabState
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
-                      Icons.check_rounded,
+                      AppIcons.check,
                       color: Color(0xFF22C55E),
                       size: 14,
                     ),
@@ -901,7 +902,7 @@ class _PartnerInstallmentReportTabState
                   borderRadius: BorderRadius.circular(9),
                 ),
                 child: const Icon(
-                  Icons.event_note_rounded,
+                  AppIcons.calendarNote,
                   size: 16,
                   color: Color(0xFF3B82F6),
                 ),
@@ -1079,7 +1080,7 @@ class _PartnerInstallmentReportTabState
                   borderRadius: BorderRadius.circular(9),
                 ),
                 child: const Icon(
-                  Icons.bar_chart_rounded,
+                  AppIcons.chart,
                   size: 16,
                   color: Color(0xFF8B5CF6),
                 ),

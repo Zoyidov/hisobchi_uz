@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/sheets/app_bottom_sheet.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Senior-darajadagi to'lov provayderini tanlash bottom sheet'i.
 /// Foydalanuvchiga Payme va Click tizimlari orqali to'lovni xavfsiz va qulay
@@ -54,9 +55,7 @@ class _PaymentProviderSheetContent extends StatelessWidget {
             decoration: BoxDecoration(
               color: colors.primary.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: colors.primary.withValues(alpha: 0.15),
-              ),
+              border: Border.all(color: colors.primary.withValues(alpha: 0.15)),
             ),
             child: Row(
               children: [
@@ -68,7 +67,7 @@ class _PaymentProviderSheetContent extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
-                    Icons.receipt_long_rounded,
+                    AppIcons.receipt,
                     color: colors.primary,
                     size: 22,
                   ),
@@ -161,11 +160,7 @@ class _PaymentProviderSheetContent extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.verified_user_outlined,
-                size: 14,
-                color: colors.textTertiary,
-              ),
+              Icon(AppIcons.shield, size: 14, color: colors.textTertiary),
               const SizedBox(width: 6),
               Text(
                 'To\'lov xavfsizligi kafolatlangan (256-bit SSL)',
@@ -280,7 +275,7 @@ class _ProviderOptionCard extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Icons.arrow_forward_ios_rounded,
+                  AppIcons.chevronRight,
                   size: 13,
                   color: colors.textSecondary,
                 ),

@@ -23,6 +23,7 @@ import '../widgets/project_incomes_tab.dart';
 import '../widgets/project_workers_tab.dart';
 import '../widgets/project_status_sheet.dart';
 import 'project_form_page.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Loyiha kartochkasi — 4 tabli ekran (MOBILE_APP_TZ.md 10.4).
 class ProjectDetailPage extends StatelessWidget {
@@ -92,7 +93,7 @@ class _Loaded extends StatelessWidget {
             permission: AppPermission.projectsEdit,
             child: IconButton(
               tooltip: 'Loyiha holatini o‘zgartirish',
-              icon: const Icon(Icons.tune_rounded, size: 22),
+              icon: const Icon(AppIcons.tune, size: 22),
               onPressed: () => _changeStatus(context, project),
             ),
           ),
@@ -165,7 +166,7 @@ class _Loaded extends StatelessWidget {
                       Row(
                         children: [
                           Icon(
-                            Icons.person_outline_rounded,
+                            AppIcons.user,
                             size: 16,
                             color: Theme.of(context).colorScheme.primary,
                           ),
@@ -186,7 +187,7 @@ class _Loaded extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
-                      icon: const Icon(Icons.photo_library_outlined, size: 19),
+                      icon: const Icon(AppIcons.gallery, size: 19),
                       label: Text('Loyiha fayllari (${project.files.length})'),
                       onPressed: () => showAppBottomSheet<void>(
                         context,

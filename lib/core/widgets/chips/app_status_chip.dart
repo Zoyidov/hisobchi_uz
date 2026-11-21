@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
+import '../../icons/app_icons.dart';
 
 enum AppStatusChipTone { success, error, warning, info, neutral }
 
@@ -19,20 +20,20 @@ class AppStatusChip extends StatelessWidget {
   final IconData? icon;
 
   Color _color(AppColorsExtension colors) => switch (tone) {
-        AppStatusChipTone.success => colors.success,
-        AppStatusChipTone.error => colors.error,
-        AppStatusChipTone.warning => colors.warning,
-        AppStatusChipTone.info => colors.info,
-        AppStatusChipTone.neutral => colors.textTertiary,
-      };
+    AppStatusChipTone.success => colors.success,
+    AppStatusChipTone.error => colors.error,
+    AppStatusChipTone.warning => colors.warning,
+    AppStatusChipTone.info => colors.info,
+    AppStatusChipTone.neutral => colors.textTertiary,
+  };
 
   IconData _defaultIcon() => switch (tone) {
-        AppStatusChipTone.success => Icons.check_circle,
-        AppStatusChipTone.error => Icons.error,
-        AppStatusChipTone.warning => Icons.warning_amber_rounded,
-        AppStatusChipTone.info => Icons.info,
-        AppStatusChipTone.neutral => Icons.remove_circle_outline,
-      };
+    AppStatusChipTone.success => AppIcons.success,
+    AppStatusChipTone.error => AppIcons.error,
+    AppStatusChipTone.warning => AppIcons.warning,
+    AppStatusChipTone.info => AppIcons.info,
+    AppStatusChipTone.neutral => AppIcons.removeCircle,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -52,10 +53,10 @@ class AppStatusChip extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.2,
-                ),
+              color: color,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.2,
+            ),
           ),
         ],
       ),

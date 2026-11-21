@@ -11,6 +11,7 @@ import '../../../../core/widgets/states/app_error_state.dart';
 import '../auth_navigation.dart';
 import '../cubit/pincode_lock_cubit.dart';
 import '../widgets/pincode_widgets.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// PIN bilan qulflash ekrani — 5 xato urinishdan keyin parolga majburiy
 /// o'tkaziladi (MOBILE_APP_TZ.md 5.8).
@@ -122,7 +123,7 @@ class _PincodeLockViewState extends State<_PincodeLockView> {
         return PincodeScreenLayout(
           topLabel: 'Xavfsiz kirish',
           onExit: _onExitOrForgotPin,
-          exitIcon: Icons.logout_rounded,
+          exitIcon: AppIcons.logout,
           title: title,
           subtitle: 'PIN-kodingizni kiriting',
           errorMessage: errorMessage,

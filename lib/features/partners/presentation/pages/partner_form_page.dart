@@ -18,6 +18,7 @@ import '../../../documents/data/documents_repository.dart';
 import '../../data/partner_models.dart';
 import '../../data/partners_repository.dart';
 import '../cubit/partner_form_cubit.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Hamkor yaratish/tahrirlash (MOBILE_APP_TZ.md 8.3).
 class PartnerFormPage extends StatelessWidget {
@@ -150,7 +151,7 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                                                 width: 44,
                                                 height: 44,
                                                 child: Icon(
-                                                  Icons.person_outline_rounded,
+                                                  AppIcons.user,
                                                   color: colors.primary,
                                                   size: 28,
                                                 ),
@@ -206,7 +207,7 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                                 controller: _nameController,
                                 hint: 'Hamkorning ismi yoki tashkilot nomi',
                                 prefixIcon: Icon(
-                                  Icons.person_outline_rounded,
+                                  AppIcons.user,
                                   color: colors.textTertiary,
                                   size: 20,
                                 ),
@@ -245,7 +246,7 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                                     ),
                                   ),
                                   Icon(
-                                    Icons.payments_outlined,
+                                    AppIcons.payments,
                                     color: colors.primary,
                                     size: 19,
                                   ),
@@ -361,7 +362,7 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                                   shape: const Border(),
                                   collapsedShape: const Border(),
                                   leading: Icon(
-                                    Icons.attach_file_rounded,
+                                    AppIcons.attachment,
                                     color: colors.primary,
                                     size: 21,
                                   ),
@@ -413,7 +414,7 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                             ? 'O‘zgarishlarni saqlash'
                             : 'Hamkorni qo‘shish',
                         icon: Icon(
-                          _isEditing ? Icons.check_rounded : Icons.add_rounded,
+                          _isEditing ? AppIcons.check : AppIcons.add,
                           size: 20,
                         ),
                         isLoading: isLoading,

@@ -12,6 +12,7 @@ import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/activity_log_models.dart';
 import '../../data/activity_log_repository.dart';
 import '../cubit/activity_log_cubit.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Faollik jurnali — vaqt bo'yicha timeline (MOBILE_APP_TZ.md 16-bo'lim).
 class ActivityLogPage extends StatelessWidget {
@@ -20,7 +21,8 @@ class ActivityLogPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ActivityLogCubit(getIt<ActivityLogRepository>())..loadFirst(),
+      create: (_) =>
+          ActivityLogCubit(getIt<ActivityLogRepository>())..loadFirst(),
       child: const _View(),
     );
   }
@@ -39,7 +41,8 @@ class _ViewState extends State<_View> {
   void initState() {
     super.initState();
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
         context.read<ActivityLogCubit>().loadMore();
       }
     });
@@ -59,7 +62,7 @@ class _ViewState extends State<_View> {
         title: const Text('Faollik jurnali'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.filter_list_rounded),
+            icon: const Icon(AppIcons.filter),
             onPressed: () async {
               final selected = await showAppSelectionSheet<ActivityAction?>(
                 context,
@@ -67,7 +70,8 @@ class _ViewState extends State<_View> {
                 selectedValue: cubit.actionFilter,
                 items: [
                   const AppSelectionItem(value: null, label: 'Barchasi'),
-                  for (final a in ActivityAction.values) AppSelectionItem(value: a, label: a.label),
+                  for (final a in ActivityAction.values)
+                    AppSelectionItem(value: a, label: a.label),
                 ],
               );
               if (context.mounted) cubit.updateFilters(action: selected);
@@ -79,9 +83,17 @@ class _ViewState extends State<_View> {
         builder: (context, state) {
           if (state.isLoading) return const AppSkeletonList();
           if (state.failure != null && state.items.isEmpty) {
-            return AppErrorState(failure: state.failure, onRetry: cubit.loadFirst);
+            return AppErrorState(
+              failure: state.failure,
+              onRetry: cubit.loadFirst,
+            );
           }
-          if (state.isEmpty) return const AppEmptyState(title: 'Faoliyat topilmadi', icon: Icons.history_rounded);
+          if (state.isEmpty) {
+            return const AppEmptyState(
+              title: 'Faoliyat topilmadi',
+              icon: AppIcons.history,
+            );
+          }
 
           return RefreshIndicator(
             onRefresh: cubit.refresh,
@@ -134,8 +146,13 @@ class _TimelineTile extends StatelessWidget {
         children: [
           Column(
             children: [
-              Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-              if (!isLast) Expanded(child: Container(width: 2, color: colors.border)),
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              ),
+              if (!isLast)
+                Expanded(child: Container(width: 2, color: colors.border)),
             ],
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -145,11 +162,23 @@ class _TimelineTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(entry.summary, style: Theme.of(context).textTheme.bodyMedium),
+                  Text(
+                    entry.summary,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   const SizedBox(height: 2),
-                  Text(entry.modelType, style: TextStyle(color: colors.textTertiary, fontSize: 12)),
+                  Text(
+                    entry.modelType,
+                    style: TextStyle(color: colors.textTertiary, fontSize: 12),
+                  ),
                   if (entry.createdAt != null)
-                    Text(AppDateFormatter.displayDateTime(entry.createdAt!), style: TextStyle(color: colors.textTertiary, fontSize: 12)),
+                    Text(
+                      AppDateFormatter.displayDateTime(entry.createdAt!),
+                      style: TextStyle(
+                        color: colors.textTertiary,
+                        fontSize: 12,
+                      ),
+                    ),
                 ],
               ),
             ),

@@ -8,6 +8,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../data/subscription_models.dart';
 import '../cubit/payment_flow_cubit.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// To'lov oqimi ekrani — buyurtma yaratish → tashqi to'lov → polling
 /// (MOBILE_APP_TZ.md 13.4).
@@ -77,29 +78,29 @@ class _PaymentFlowView extends StatelessWidget {
               builder: (context, state) {
                 return switch (state) {
                   PaymentFlowCreatingOrder() => _buildLoadingState(
-                      context,
-                      title: 'Buyurtma shakllantirilmoqda',
-                      subtitle:
-                          'To\'lov tizimiga xavfsiz ulanish o\'rnatilmoqda...',
-                      icon: Icons.shield_outlined,
-                    ),
+                    context,
+                    title: 'Buyurtma shakllantirilmoqda',
+                    subtitle:
+                        'To\'lov tizimiga xavfsiz ulanish o\'rnatilmoqda...',
+                    icon: AppIcons.shield,
+                  ),
                   PaymentFlowPolling() => _buildLoadingState(
-                      context,
-                      title: 'To\'lov tekshirilmoqda',
-                      subtitle:
-                          'To\'lov ilovasida to\'lovni tasdiqlang. Tekshiruv avtomatik davom etmoqda...',
-                      icon: Icons.sync_rounded,
-                      showCancel: true,
-                    ),
+                    context,
+                    title: 'To\'lov tekshirilmoqda',
+                    subtitle:
+                        'To\'lov ilovasida to\'lovni tasdiqlang. Tekshiruv avtomatik davom etmoqda...',
+                    icon: AppIcons.refresh,
+                    showCancel: true,
+                  ),
                   PaymentFlowPending(:final orderNumber) => _buildPendingState(
-                      context,
-                      orderNumber: orderNumber,
-                    ),
+                    context,
+                    orderNumber: orderNumber,
+                  ),
                   PaymentFlowSuccess() => _buildSuccessState(context),
                   PaymentFlowFailed(:final failure) => _buildFailedState(
-                      context,
-                      errorMessage: failure?.message,
-                    ),
+                    context,
+                    errorMessage: failure?.message,
+                  ),
                   PaymentFlowIdle() => const SizedBox.shrink(),
                 };
               },
@@ -141,19 +142,15 @@ class _PaymentFlowView extends StatelessWidget {
                 backgroundColor: colors.primary.withValues(alpha: 0.15),
               ),
             ),
-            Icon(
-              icon,
-              size: 26,
-              color: colors.primary,
-            ),
+            Icon(icon, size: 26, color: colors.primary),
           ],
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
           title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 6),
@@ -193,18 +190,14 @@ class _PaymentFlowView extends StatelessWidget {
             color: colors.warning.withValues(alpha: 0.12),
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            Icons.hourglass_top_rounded,
-            size: 38,
-            color: colors.warning,
-          ),
+          child: Icon(AppIcons.hourglass, size: 38, color: colors.warning),
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
           'To\'lov kutilmoqda',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 6),
@@ -273,28 +266,21 @@ class _PaymentFlowView extends StatelessWidget {
             color: colors.success.withValues(alpha: 0.12),
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            Icons.check_circle_rounded,
-            size: 48,
-            color: colors.success,
-          ),
+          child: Icon(AppIcons.success, size: 48, color: colors.success),
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
           'Muvaffaqiyatli to\'landi!',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: colors.success,
-              ),
+            fontWeight: FontWeight.w700,
+            color: colors.success,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 6),
         Text(
           'To\'lov qabul qilindi va xizmatlar yangilandi',
-          style: TextStyle(
-            color: colors.textSecondary,
-            fontSize: 14,
-          ),
+          style: TextStyle(color: colors.textSecondary, fontSize: 14),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: AppSpacing.md),
@@ -314,18 +300,14 @@ class _PaymentFlowView extends StatelessWidget {
             color: colors.error.withValues(alpha: 0.12),
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            Icons.error_outline_rounded,
-            size: 38,
-            color: colors.error,
-          ),
+          child: Icon(AppIcons.error, size: 38, color: colors.error),
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
           'To\'lov amalga oshmadi',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 6),

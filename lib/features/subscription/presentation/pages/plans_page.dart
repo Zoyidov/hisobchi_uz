@@ -13,6 +13,7 @@ import '../../data/subscription_models.dart';
 import '../../data/subscription_repository.dart';
 import '../widgets/payment_flow_sheet.dart';
 import '../widgets/payment_provider_sheet.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Tariflar (MOBILE_APP_TZ.md 13.3).
 class PlansPage extends StatefulWidget {
@@ -40,14 +41,17 @@ class _PlansPageState extends State<PlansPage> {
     });
     final result = await getIt<SubscriptionRepository>().getPricingPlans();
     if (!mounted) return;
-    result.when(success: (plans) => setState(() => _plans = plans), failure: (f) => setState(() => _error = f.message));
+    result.when(
+      success: (plans) => setState(() => _plans = plans),
+      failure: (f) => setState(() => _error = f.message),
+    );
   }
 
   PriceOption? _priceFor(PricingPlan plan) => switch (_cycle) {
-        BillingCycle.monthly => plan.monthly,
-        BillingCycle.semiAnnual => plan.semiAnnual,
-        BillingCycle.annual => plan.annual,
-      };
+    BillingCycle.monthly => plan.monthly,
+    BillingCycle.semiAnnual => plan.semiAnnual,
+    BillingCycle.annual => plan.annual,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +62,13 @@ class _PlansPageState extends State<PlansPage> {
   }
 
   Widget _buildBody(BuildContext context) {
-    if (_error != null) return AppErrorState(title: 'Yuklab bo\'lmadi', description: _error, onRetry: _load);
+    if (_error != null) {
+      return AppErrorState(
+        title: 'Yuklab bo\'lmadi',
+        description: _error,
+        onRetry: _load,
+      );
+    }
     if (_plans == null) return const AppSkeletonList();
 
     return ListView(
@@ -66,7 +76,9 @@ class _PlansPageState extends State<PlansPage> {
       children: [
         AppSegmentedControl<BillingCycle>(
           value: _cycle,
-          segments: BillingCycle.values.map((c) => AppSegment(value: c, label: c.label)).toList(),
+          segments: BillingCycle.values
+              .map((c) => AppSegment(value: c, label: c.label))
+              .toList(),
           onChanged: (v) => setState(() => _cycle = v),
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -96,10 +108,11 @@ class _PlansPageState extends State<PlansPage> {
                       Text(
                         plan.displayName,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                      if (plan.description != null && plan.description!.isNotEmpty) ...[
+                      if (plan.description != null &&
+                          plan.description!.isNotEmpty) ...[
                         const SizedBox(height: 2),
                         Text(
                           plan.description!,
@@ -114,16 +127,21 @@ class _PlansPageState extends State<PlansPage> {
                 ),
                 if (isCurrent)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: colors.primary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: colors.primary.withValues(alpha: 0.25)),
+                      border: Border.all(
+                        color: colors.primary.withValues(alpha: 0.25),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.check_circle_rounded, size: 14, color: colors.primary),
+                        Icon(AppIcons.success, size: 14, color: colors.primary),
                         const SizedBox(width: 4),
                         Text(
                           'Joriy tarifingiz',
@@ -147,14 +165,17 @@ class _PlansPageState extends State<PlansPage> {
                   Text(
                     price.formatted,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
+                      fontWeight: FontWeight.w800,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
                   ),
                   if (price.discount != null && price.discount! > 0) ...[
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: colors.error.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
@@ -169,10 +190,14 @@ class _PlansPageState extends State<PlansPage> {
                       ),
                     ),
                   ],
-                  if (price.description1 != null && price.description1!.trim().isNotEmpty) ...[
+                  if (price.description1 != null &&
+                      price.description1!.trim().isNotEmpty) ...[
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: colors.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
@@ -189,7 +214,8 @@ class _PlansPageState extends State<PlansPage> {
                   ],
                 ],
               ),
-              if (price.description != null && price.description!.isNotEmpty) ...[
+              if (price.description != null &&
+                  price.description!.isNotEmpty) ...[
                 const SizedBox(height: 2),
                 Text(
                   price.description!,
@@ -202,10 +228,22 @@ class _PlansPageState extends State<PlansPage> {
               spacing: AppSpacing.sm,
               runSpacing: AppSpacing.xs,
               children: [
-                _featureChip(context, Icons.people_outline_rounded, '${plan.customersLabel} Hamkor'),
-                _featureChip(context, Icons.work_outline_rounded, '${plan.projectsLabel} Loyiha'),
-                _featureChip(context, Icons.badge_outlined, '${plan.usersLabel} Xodim'),
-                _featureChip(context, Icons.sms_outlined, '${plan.smsLabel} SMS'),
+                _featureChip(
+                  context,
+                  AppIcons.partners,
+                  '${plan.customersLabel} Hamkor',
+                ),
+                _featureChip(
+                  context,
+                  AppIcons.project,
+                  '${plan.projectsLabel} Loyiha',
+                ),
+                _featureChip(
+                  context,
+                  AppIcons.worker,
+                  '${plan.usersLabel} Xodim',
+                ),
+                _featureChip(context, AppIcons.message, '${plan.smsLabel} SMS'),
               ],
             ),
             const SizedBox(height: AppSpacing.lg),
@@ -216,12 +254,16 @@ class _PlansPageState extends State<PlansPage> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.info_outline_rounded, size: 14, color: colors.error),
+                      Icon(AppIcons.info, size: 14, color: colors.error),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           warning,
-                          style: TextStyle(color: colors.error, fontSize: 12, height: 1.3),
+                          style: TextStyle(
+                            color: colors.error,
+                            fontSize: 12,
+                            height: 1.3,
+                          ),
                         ),
                       ),
                     ],
@@ -231,7 +273,9 @@ class _PlansPageState extends State<PlansPage> {
             ],
             AppButton.primary(
               label: isCurrent ? 'Joriy tarif' : 'Tanlash',
-              onPressed: plan.canSubscribe && !isCurrent ? () => _selectPlan(context, plan) : null,
+              onPressed: plan.canSubscribe && !isCurrent
+                  ? () => _selectPlan(context, plan)
+                  : null,
             ),
           ],
         ),
@@ -290,7 +334,8 @@ class _PlansPageState extends State<PlansPage> {
         paymentProvider: provider,
         returnUrl: '',
       ),
-      checkStatus: (orderNumber) => getIt<SubscriptionRepository>().checkOrderStatus(orderNumber),
+      checkStatus: (orderNumber) =>
+          getIt<SubscriptionRepository>().checkOrderStatus(orderNumber),
     );
     if (!context.mounted) return;
     if (success) {

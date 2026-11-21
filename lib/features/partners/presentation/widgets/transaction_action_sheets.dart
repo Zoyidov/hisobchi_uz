@@ -6,6 +6,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/sheets/app_bottom_sheet.dart';
 import '../../../../core/widgets/typography/money_text.dart';
 import '../../data/partner_models.dart';
+import '../../../../core/icons/app_icons.dart';
 
 enum TransactionAction { edit, cancel, delete }
 
@@ -43,17 +44,14 @@ Future<TransactionAction?> showTransactionActionSheet(
           if (canCancel && !wallet.isCancelled)
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: Icon(
-                Icons.cancel_outlined,
-                color: context.colors.warning,
-              ),
+              leading: Icon(AppIcons.cancel, color: context.colors.warning),
               title: const Text('Bekor qilish'),
               onTap: () => Navigator.of(context).pop(TransactionAction.cancel),
             ),
           if (isOwner)
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.delete_outline, color: context.colors.error),
+              leading: Icon(AppIcons.delete, color: context.colors.error),
               title: Text(
                 'O\'chirish',
                 style: TextStyle(color: context.colors.error),
@@ -172,7 +170,7 @@ class _CancelTransactionSheetContentState
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Icon(
-                      Icons.warning_amber_rounded,
+                      AppIcons.warning,
                       color: colors.error,
                       size: 26,
                     ),
@@ -211,7 +209,7 @@ class _CancelTransactionSheetContentState
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        Icons.close_rounded,
+                        AppIcons.close,
                         size: 16,
                         color: colors.textSecondary,
                       ),
@@ -451,7 +449,7 @@ class _CancelTransactionSheetContentState
                               context,
                             ).pop(_controller.text.trim())
                           : null,
-                      icon: const Icon(Icons.cancel_outlined, size: 18),
+                      icon: const Icon(AppIcons.cancel, size: 18),
                       label: const Text(
                         'Bekor qilish',
                         style: TextStyle(
@@ -506,11 +504,7 @@ Future<bool?> showDeleteTransactionDialog(
                     width: 3,
                   ),
                 ),
-                child: Icon(
-                  Icons.delete_forever_rounded,
-                  color: colors.error,
-                  size: 32,
-                ),
+                child: Icon(AppIcons.delete, color: colors.error, size: 32),
               ),
               const SizedBox(height: 16),
 
@@ -626,11 +620,7 @@ Future<bool?> showDeleteTransactionDialog(
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.info_outline_rounded,
-                      size: 16,
-                      color: colors.warning,
-                    ),
+                    Icon(AppIcons.info, size: 16, color: colors.warning),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -663,7 +653,7 @@ Future<bool?> showDeleteTransactionDialog(
                     elevation: 0,
                   ),
                   onPressed: () => Navigator.of(context).pop(true),
-                  icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                  icon: const Icon(AppIcons.delete, size: 18),
                   label: const Text(
                     'Ha, o\'chirilsin',
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),

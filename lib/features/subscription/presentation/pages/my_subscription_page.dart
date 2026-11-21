@@ -13,6 +13,7 @@ import '../../../../core/widgets/states/app_error_state.dart';
 import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/subscription_models.dart';
 import '../../data/subscription_repository.dart';
+import '../../../../core/icons/app_icons.dart';
 
 /// Mening obunam (MOBILE_APP_TZ.md 13.2).
 class MySubscriptionPage extends StatefulWidget {
@@ -61,7 +62,13 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
   }
 
   Widget _buildBody(BuildContext context) {
-    if (_error != null) return AppErrorState(title: 'Yuklab bo\'lmadi', description: _error, onRetry: _load);
+    if (_error != null) {
+      return AppErrorState(
+        title: 'Yuklab bo\'lmadi',
+        description: _error,
+        onRetry: _load,
+      );
+    }
     final info = _info;
     if (info == null) return const AppSkeletonList();
     if (!info.hasSubscription) {
@@ -103,9 +110,8 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
                           const SizedBox(height: 2),
                           Text(
                             info.planDisplayName ?? '',
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.w700),
                           ),
                         ],
                       ),
@@ -122,7 +128,11 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.calendar_today_rounded, size: 16, color: colors.textSecondary),
+                      Icon(
+                        AppIcons.calendar,
+                        size: 16,
+                        color: colors.textSecondary,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -138,15 +148,24 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
                       ),
                       if (info.daysUntilDue != null)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: (info.daysUntilDue! <= 5 ? colors.error : colors.primary).withValues(alpha: 0.12),
+                            color:
+                                (info.daysUntilDue! <= 5
+                                        ? colors.error
+                                        : colors.primary)
+                                    .withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             '${info.daysUntilDue} kun qoldi',
                             style: TextStyle(
-                              color: info.daysUntilDue! <= 5 ? colors.error : colors.primary,
+                              color: info.daysUntilDue! <= 5
+                                  ? colors.error
+                                  : colors.primary,
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
                             ),
@@ -157,7 +176,9 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
                 ),
                 if (info.daysUntilDue != null) ...[
                   const SizedBox(height: AppSpacing.sm),
-                  AppProgressBar(value: 1 - (info.daysUntilDue!.clamp(0, 30) / 30)),
+                  AppProgressBar(
+                    value: 1 - (info.daysUntilDue!.clamp(0, 30) / 30),
+                  ),
                 ],
               ],
             ),
@@ -165,22 +186,42 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
           const SizedBox(height: AppSpacing.lg),
           Text(
             'Limitlar va foydalanish',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: AppSpacing.sm),
-          _usageTile(context, 'Hamkorlar', Icons.people_outline_rounded, info.usage.customers),
-          _usageTile(context, 'Loyihalar', Icons.work_outline_rounded, info.usage.projects),
-          _usageTile(context, 'Xodimlar', Icons.badge_outlined, info.usage.users),
-          _usageTile(context, 'SMS xabarnomalar', Icons.sms_outlined, info.usage.sms),
+          _usageTile(
+            context,
+            'Hamkorlar',
+            AppIcons.partners,
+            info.usage.customers,
+          ),
+          _usageTile(
+            context,
+            'Loyihalar',
+            AppIcons.project,
+            info.usage.projects,
+          ),
+          _usageTile(context, 'Xodimlar', AppIcons.worker, info.usage.users),
+          _usageTile(
+            context,
+            'SMS xabarnomalar',
+            AppIcons.message,
+            info.usage.sms,
+          ),
           const SizedBox(height: 80),
         ],
       ),
     );
   }
 
-  Widget _usageTile(BuildContext context, String label, IconData icon, UsageLimit limit) {
+  Widget _usageTile(
+    BuildContext context,
+    String label,
+    IconData icon,
+    UsageLimit limit,
+  ) {
     final colors = context.colors;
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -204,12 +245,14 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
                   child: Text(
                     label,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 Text(
-                  limit.isUnlimited ? 'Cheksiz' : '${limit.current} / ${limit.max}',
+                  limit.isUnlimited
+                      ? 'Cheksiz'
+                      : '${limit.current} / ${limit.max}',
                   style: TextStyle(
                     color: colors.textSecondary,
                     fontWeight: FontWeight.w600,

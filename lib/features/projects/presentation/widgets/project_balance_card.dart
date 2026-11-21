@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters/money_formatter.dart';
 import '../../data/project_models.dart';
+import '../../../../core/icons/app_icons.dart';
 
 class ProjectBalanceCard extends StatefulWidget {
   const ProjectBalanceCard({super.key, required this.account});
@@ -394,7 +395,7 @@ class _ProjectBalanceCardState extends State<ProjectBalanceCard> {
                   'Kirim',
                   account.income,
                   colors.success,
-                  Icons.south_west_rounded,
+                  AppIcons.income,
                   currency,
                 ),
               ),
@@ -410,7 +411,7 @@ class _ProjectBalanceCardState extends State<ProjectBalanceCard> {
                   'Chiqim',
                   account.cost,
                   colors.error,
-                  Icons.north_east_rounded,
+                  AppIcons.expense,
                   currency,
                 ),
               ),

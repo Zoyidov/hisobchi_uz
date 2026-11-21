@@ -7,6 +7,7 @@ import '../buttons/app_button.dart';
 import '../states/app_empty_state.dart';
 import '../states/app_error_state.dart';
 import '../states/app_skeleton.dart';
+import '../../icons/app_icons.dart';
 
 /// Umumiy infinite-scroll ro'yxat — Loading/Empty/Error/Success 4 holati bilan
 /// (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 143, MOBILE_APP_TZ.md 4.7, 7-bandlar).
@@ -20,7 +21,7 @@ class AppPagedListView<T> extends StatelessWidget {
     required this.onRetry,
     this.emptyTitle = 'Ma\'lumot topilmadi',
     this.emptyDescription,
-    this.emptyIcon = Icons.inbox_outlined,
+    this.emptyIcon = AppIcons.empty,
     this.emptyAction,
     this.onEmptyAction,
     this.padding = const EdgeInsets.all(AppSpacing.md),
