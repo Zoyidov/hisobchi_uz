@@ -14,6 +14,7 @@ import 'package:hisobchi_uz/features/documents/data/documents_repository.dart';
 import 'package:hisobchi_uz/features/projects/data/project_models.dart';
 import 'package:hisobchi_uz/features/projects/data/projects_repository.dart';
 import 'package:hisobchi_uz/features/projects/presentation/widgets/project_contracts_tab.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 class _Documents implements DocumentsRepository {
   @override
@@ -63,6 +64,9 @@ void main() {
       addTearDown(getIt.reset);
       await tester.pumpWidget(
         MaterialApp(
+          locale: const Locale('uz'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           theme: ThemeData(extensions: const [AppColorsExtension.light]),
           home: const Scaffold(body: ProjectContractsTab(projectId: 2)),
         ),

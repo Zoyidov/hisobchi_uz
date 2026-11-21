@@ -9,6 +9,8 @@ import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/partner_operation_models.dart';
 import '../../data/reports_repository.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class PartnerDebtDetailPage extends StatefulWidget {
   final String type;
@@ -140,7 +142,7 @@ class _PartnerDebtDetailPageState extends State<PartnerDebtDetailPage> {
 
     if (_error != null && _items.isEmpty) {
       return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
+        title: context.l10n.errorLoadShort,
         description: _error,
         onRetry: () => _loadPage(1),
       );
@@ -152,9 +154,9 @@ class _PartnerDebtDetailPageState extends State<PartnerDebtDetailPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(AppIcons.empty, size: 48, color: colors.textTertiary),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm),
             Text(
-              'Tranzaksiyalar mavjud emas',
+              context.l10n.reportNoTransactions,
               style: TextStyle(
                 color: colors.textSecondary,
                 fontSize: 15,
@@ -192,13 +194,13 @@ class _PartnerDebtDetailPageState extends State<PartnerDebtDetailPage> {
           final op = _items[index];
           final isIncoming = op.isIncoming;
           final amountColor = isIncoming
-              ? const Color(0xFF16A34A)
-              : const Color(0xFFDC2626);
+              ? context.colors.success
+              : context.colors.error;
 
           return Container(
             decoration: BoxDecoration(
               color: colors.surface,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadius.lg),
               border: Border.all(color: colors.border.withValues(alpha: 0.6)),
               boxShadow: [
                 BoxShadow(
@@ -225,7 +227,7 @@ class _PartnerDebtDetailPageState extends State<PartnerDebtDetailPage> {
                       size: 20,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -255,7 +257,7 @@ class _PartnerDebtDetailPageState extends State<PartnerDebtDetailPage> {
                         if (op.dueDate != null && op.dueDate!.isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Text(
-                            'Muddat: ${op.dueDate}',
+                            context.l10n.reportDueDate(op.dueDate!),
                             style: TextStyle(
                               fontSize: 11,
                               color: colors.textSecondary,
@@ -265,7 +267,7 @@ class _PartnerDebtDetailPageState extends State<PartnerDebtDetailPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.xs),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [

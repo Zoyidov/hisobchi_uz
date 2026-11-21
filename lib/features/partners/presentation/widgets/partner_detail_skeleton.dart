@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/cards/app_card.dart';
 import '../../../../core/widgets/states/app_skeleton.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 
 /// Mirrors the detail page rather than displaying generic full-width blocks.
 class PartnerDetailSkeleton extends StatelessWidget {
@@ -31,7 +33,7 @@ class PartnerDetailSkeleton extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: context.colors.surfaceSecondary,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
             ),
             child: Row(
               children: [
@@ -54,7 +56,7 @@ class PartnerDetailSkeleton extends StatelessWidget {
         AppCard(
           hasShadow: false,
           padding: const EdgeInsets.all(14),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.card),
           child: Column(
             children: [
               const Row(
@@ -71,7 +73,7 @@ class PartnerDetailSkeleton extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(width: 12),
+                  SizedBox(width: AppSpacing.sm),
                   Flexible(child: AppSkeletonBox(width: 125, height: 24)),
                 ],
               ),
@@ -83,12 +85,12 @@ class PartnerDetailSkeleton extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: context.colors.surfaceSecondary.withValues(alpha: .6),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
                 child: const Row(
                   children: [
                     Expanded(child: _FlowSkeleton()),
-                    SizedBox(width: 24),
+                    SizedBox(width: AppSpacing.xl),
                     Expanded(child: _FlowSkeleton()),
                   ],
                 ),
@@ -111,7 +113,7 @@ class PartnerDetailSkeleton extends StatelessWidget {
                       AppSkeletonBox(
                         width: 40,
                         height: 40,
-                        borderRadius: BorderRadius.circular(13),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
                       ),
                       const SizedBox(height: 5),
                       const AppSkeletonBox(width: 42, height: 10),
@@ -121,9 +123,9 @@ class PartnerDetailSkeleton extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.sm),
         const _FilterSkeleton(),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.sm),
         for (var i = 0; i < 5; i++)
           const Padding(
             padding: EdgeInsets.only(bottom: 8),
@@ -144,7 +146,7 @@ class PartnerDetailSkeleton extends StatelessWidget {
                   padding: EdgeInsets.only(right: i == 0 ? 8 : 0),
                   child: AppSkeletonBox(
                     height: 44,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppRadius.medium),
                   ),
                 ),
               ),
@@ -162,7 +164,7 @@ class TransactionListSkeleton extends StatelessWidget {
   Widget build(BuildContext context) => ListView.separated(
     padding: const EdgeInsets.all(16),
     itemCount: 6,
-    separatorBuilder: (_, _) => const SizedBox(height: 8),
+    separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.xs),
     itemBuilder: (_, _) => const _TransactionSkeleton(),
   );
 }
@@ -174,14 +176,14 @@ class _TransactionSkeleton extends StatelessWidget {
   Widget build(BuildContext context) => AppCard(
     hasShadow: false,
     padding: const EdgeInsets.all(10),
-    borderRadius: BorderRadius.circular(18),
+    borderRadius: BorderRadius.circular(AppRadius.xl),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppSkeletonBox(
           width: 32,
           height: 32,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         const SizedBox(width: 10),
         const Expanded(
@@ -233,7 +235,7 @@ class _FilterSkeleton extends StatelessWidget {
             padding: const EdgeInsets.only(right: 6),
             child: AppSkeletonBox(
               height: 32,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadius.small),
             ),
           ),
         ),
@@ -241,7 +243,7 @@ class _FilterSkeleton extends StatelessWidget {
       AppSkeletonBox(
         width: 36,
         height: 36,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
       ),
     ],
   );

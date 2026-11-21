@@ -9,13 +9,16 @@ import '../../../../core/widgets/states/app_error_state.dart';
 import '../../../documents/data/document_models.dart';
 import '../../../documents/data/documents_repository.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 Future<SimpleDocument?> showPositionSelectionSheet(
   BuildContext context, {
   int? selectedId,
 }) => showAppBottomSheet<SimpleDocument>(
   context,
-  title: 'Lavozimni tanlang',
+  title: context.l10n.docSelectPosition,
   heightFactor: .7,
   child: _PositionSelection(selectedId: selectedId),
 );
@@ -66,7 +69,9 @@ class _PositionSelectionState extends State<_PositionSelection> {
       useSafeArea: true,
       backgroundColor: context.colors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppRadius.large),
+        ),
       ),
       builder: (_) => _PositionForm(initialName: _query),
     );
@@ -89,19 +94,19 @@ class _PositionSelectionState extends State<_PositionSelection> {
               Expanded(
                 child: TextField(
                   onChanged: (value) => setState(() => _query = value.trim()),
-                  decoration: const InputDecoration(
-                    hintText: 'Lavozimni qidirish',
+                  decoration: InputDecoration(
+                    hintText: context.l10n.positionSearch,
                     prefixIcon: Icon(AppIcons.search),
                   ),
                 ),
               ),
               const SizedBox(width: 10),
               IconButton.filled(
-                tooltip: 'Yangi lavozim yaratish',
+                tooltip: context.l10n.positionCreateNew,
                 style: IconButton.styleFrom(
                   minimumSize: const Size(48, 48),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppRadius.medium),
                   ),
                 ),
                 onPressed: _creating ? null : _create,
@@ -127,19 +132,19 @@ class _PositionSelectionState extends State<_PositionSelection> {
                           size: 36,
                           color: context.colors.textTertiary,
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.sm),
                         Text(
                           _query.isEmpty
-                              ? 'Lavozimlar hali mavjud emas'
-                              : 'Lavozim topilmadi',
+                              ? context.l10n.positionNoneYet
+                              : context.l10n.docPositionNotFound,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.sm),
                         TextButton.icon(
                           onPressed: _creating ? null : _create,
                           icon: const Icon(AppIcons.add),
-                          label: const Text('Yangi lavozim yaratish'),
+                          label: Text(context.l10n.positionCreateNew),
                         ),
                       ],
                     ),
@@ -200,7 +205,7 @@ class _PositionFormState extends State<_PositionForm> {
   Future<void> _save() async {
     if (_saving) return;
     if (_name.text.trim().isEmpty) {
-      setState(() => _error = 'Lavozim nomini kiriting');
+      setState(() => _error = context.l10n.positionEnterName);
       return;
     }
     setState(() {
@@ -247,28 +252,28 @@ class _PositionFormState extends State<_PositionForm> {
               children: [
                 Expanded(
                   child: Text(
-                    'Yangi lavozim',
+                    context.l10n.positionNew,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Yopish',
+                  tooltip: context.l10n.commonClose,
                   onPressed: _saving ? null : () => Navigator.of(context).pop(),
                   icon: const Icon(AppIcons.close),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             TextField(
               controller: _name,
               autofocus: true,
               enabled: !_saving,
               textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
-                labelText: 'Lavozim nomi',
-                hintText: 'Masalan, elektrik',
+                labelText: context.l10n.positionName,
+                hintText: context.l10n.positionNameHint,
                 errorText: _error,
               ),
             ),
@@ -278,16 +283,16 @@ class _PositionFormState extends State<_PositionForm> {
               enabled: !_saving,
               minLines: 2,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Tavsif (ixtiyoriy)',
+              decoration: InputDecoration(
+                labelText: context.l10n.commonDescriptionOptional,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.lg),
             FilledButton.icon(
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppRadius.medium),
                 ),
               ),
               onPressed: _saving ? null : _save,
@@ -298,7 +303,11 @@ class _PositionFormState extends State<_PositionForm> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(AppIcons.check, size: 20),
-              label: Text(_saving ? 'Saqlanmoqda…' : 'Yaratish va tanlash'),
+              label: Text(
+                _saving
+                    ? context.l10n.commonSaving
+                    : context.l10n.commonCreateAndSelect,
+              ),
             ),
           ],
         ),

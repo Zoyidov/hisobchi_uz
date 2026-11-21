@@ -1,197 +1,1444 @@
 {
   "@@locale": "uz",
-
   "appName": "Hisup",
-
   "commonSave": "Saqlash",
   "commonCancel": "Bekor qilish",
   "commonDelete": "O'chirish",
   "commonEdit": "Tahrirlash",
-  "commonApply": "Qo'llash",
-  "commonClear": "Tozalash",
   "commonRetry": "Qayta urinish",
   "commonSearch": "Qidirish...",
   "commonFilter": "Filtr",
   "commonSort": "Saralash",
-  "commonSeeAll": "Barchasi",
   "commonClose": "Yopish",
   "commonContinue": "Davom etish",
-  "commonSkip": "O'tkazib yuborish",
-  "commonYes": "Ha",
-  "commonNo": "Yo'q",
-  "commonConfirm": "Tasdiqlash",
-  "commonLoading": "Yuklanmoqda...",
-  "commonComingSoon": "Tez orada",
   "commonRestore": "Tiklash",
-  "commonShare": "Ulashish",
-  "commonDownload": "Yuklab olish",
   "commonCall": "Qo'ng'iroq",
-  "commonSms": "SMS",
   "commonReport": "Hisobot",
-  "commonExcel": "Excel'ga eksport",
-  "commonSettings": "Sozlamalar",
   "commonBack": "Orqaga",
-  "commonDone": "Tayyor",
   "commonAll": "Barchasi",
   "commonSaved": "Saqlandi",
-
   "errorSessionExpired": "Sessiya tugadi, qaytadan kiring",
   "errorOtherDevice": "Hisobingizga boshqa qurilmadan kirildi",
   "errorNoPermission": "Bu amalni bajarish uchun ruxsatingiz yo'q.",
   "errorNoInternet": "Internet aloqasi yo'q",
   "errorServer": "Serverda xatolik. Keyinroq urinib ko'ring",
   "errorUnknown": "Kutilmagan xatolik yuz berdi",
-
   "authPhoneTitle": "Telefon raqamingiz",
-  "authPhoneAgreement": "Foydalanish shartlariga roziman",
   "authTermsLink": "Foydalanish shartlari",
-  "authOtpTitle": "SMS orqali yuborilgan 4 xonali kodni kiriting",
-  "authOtpResend": "Qayta yuborish",
-  "authOtpResendIn": "Qayta yuborish {seconds}",
-  "@authOtpResendIn": {"placeholders": {"seconds": {"type": "String"}}},
-  "authOtpInvalid": "OTP noto'g'ri",
-  "authOtpExpired": "OTP muddati tugagan",
-  "authRegisterTitle": "Ro'yxatdan o'tish",
-  "authNameLabel": "Ism",
+  "authOtpResend": "Kodni qayta yuborish",
   "authPasswordLabel": "Parol",
-  "authPasswordConfirmLabel": "Parolni takrorlang",
+  "authPasswordConfirmLabel": "Parolni tasdiqlang",
   "authRegisterButton": "Ro'yxatdan o'tish",
-  "authLoginTitle": "Kirish",
   "authLoginButton": "Kirish",
   "authForgotPassword": "Parolni unutdingizmi?",
-  "authResetPasswordTitle": "Yangi parol",
   "authNewPasswordLabel": "Yangi parol",
-  "authPincodeTitle": "Ilovani himoyalang",
-  "authPincodeSubtitle": "4 xonali PIN yarating",
-  "authPincodeRepeat": "PIN kodni takrorlang",
-  "authPincodeMismatch": "PIN kodlar mos emas",
-  "authPincodeSkip": "Keyinroq",
-  "authPincodeEnter": "PIN kodni kiriting",
-  "authPincodeForgot": "Parol bilan kirish",
-  "authAccountSelectionTitle": "Qaysi hisobda ishlaysiz?",
-  "authOwnAccount": "O'z hisobim",
-  "authStaffOf": "Xodim sifatida",
-  "authWorkingAs": "{name} hisobida ishlayapsiz",
-  "@authWorkingAs": {"placeholders": {"name": {"type": "String"}}},
+  "authPincodeRepeat": "PIN-kodni takrorlang",
+  "authPincodeMismatch": "PIN kodlar mos emas. Qaytadan kiriting",
+  "authPincodeSkip": "Hozircha o‘tkazib yuborish",
+  "authPincodeEnter": "PIN-kodingizni kiriting",
+  "authPincodeForgot": "PIN-kodni unutdingizmi?",
+  "authAccountSelectionTitle": "Qaysi hisobda ishlaysiz? 👋",
   "authSwitchAccount": "Almashtirish",
   "authLogout": "Chiqish",
   "authLogoutConfirm": "Hisobingizdan chiqishni xohlaysizmi?",
   "authDeleteAccount": "Hisobni o'chirish",
-  "authDeleteAccountWarning": "Barcha hamkorlar, tranzaksiyalar, loyihalar va hisobotlar o'chiriladi. Bu amalni qaytarib bo'lmaydi.",
-  "authBlockedTitle": "Kirish huquqi cheklangan",
-  "authSupport": "Qo'llab-quvvatlash",
+  "authBlockedTitle": "Kirish cheklangan",
   "authBiometricsReason": "Ilovaga kirish uchun tasdiqlang",
-
-  "dashboardGreeting": "Assalomu alaykum, {name}",
-  "@dashboardGreeting": {"placeholders": {"name": {"type": "String"}}},
-  "dashboardPartnersSection": "Hamkorlar",
-  "dashboardOverdue": "Muddati o'tgan",
-  "dashboardDueToday": "Bugun",
-  "dashboardDue3Days": "3 kun ichida",
-  "dashboardInstallmentsSection": "Bo'lib to'lash",
-  "dashboardProjectsSection": "Loyihalar",
-  "dashboardInProgress": "Jarayonda",
-  "dashboardFrozen": "Muzlatilgan",
   "dashboardCompleted": "Tugallangan",
-  "dashboardAddIncome": "Kirim",
-  "dashboardAddExpense": "Chiqim",
   "dashboardAddPartner": "Hamkor",
-  "dashboardTutorials": "Qo'llanmalar",
-  "dashboardSubscriptionGrace": "Obunangiz muddati tugash arafasida",
-  "dashboardSubscriptionReadOnly": "Faqat ko'rish rejimi",
-  "dashboardSubscriptionArchived": "Obuna talab qilinadi",
-  "dashboardUpdateSubscription": "Yangilash",
-  "dashboardViewPlans": "Tariflar",
-
-  "partnersTitle": "Hamkorlar",
-  "partnersSearchHint": "Ism, telefon bo'yicha qidirish",
-  "partnersFilterTitle": "Filtr",
-  "partnersSortTitle": "Saralash",
-  "partnersStatusAll": "Barchasi",
-  "partnersStatusCreditor": "Xaqdorlar",
+  "partnersStatusCreditor": "Haqdorlar",
   "partnersStatusDebtor": "Qarzdorlar",
   "partnersStatusOverdue": "Muddati o'tgan qarzdorlar",
-  "partnersAdd": "Hamkor qo'shish",
+  "partnersAdd": "Hamkor qo‘shish",
   "partnersEdit": "Hamkorni tahrirlash",
   "partnersNameField": "Ism",
   "partnersPhoneField": "Telefon",
   "partnersAdditionalPhoneField": "Qo'shimcha telefon",
   "partnersMainCurrency": "Asosiy valyuta",
   "partnersEmptyTitle": "Hamkorlar topilmadi",
-  "partnersEmptyDescription": "Hozircha bu bo'limda ma'lumot yo'q.",
-  "partnersDeletedLabel": "O'chirilgan",
-  "partnersCreditor": "Xaqdor",
+  "partnersCreditor": "Haqdor",
   "partnersDebtor": "Qarzdor",
-  "partnersClosed": "Hisob-kitob yopiq",
-  "partnersInstallmentRemaining": "Bo'lib to'lash",
-  "partnersConfirmDelete": "Hamkorni o'chirmoqchimisiz?",
   "partnersSortLastActivity": "Oxirgi faollik",
   "partnersSortDebtorUzs": "Qarzdor UZS",
   "partnersSortDebtorUsd": "Qarzdor USD",
   "partnersSortCreditorUzs": "Xaqdor UZS",
   "partnersSortCreditorUsd": "Xaqdor USD",
-
   "partnerDetailTransactionsTab": "Tranzaksiyalar",
-  "partnerDetailInstallmentsTab": "Bo'lib to'lash",
   "partnerDetailSmsTab": "SMS tarixi",
-  "partnerDetailIncome": "Kirim",
-  "partnerDetailExpense": "Chiqim",
-  "partnerDetailBalance": "Balans",
   "partnerDetailSmsSettings": "SMS sozlamalari",
   "partnerDetailEmptyTransactions": "Hozircha tranzaksiya yo'q",
-
-  "walletIncomeTitle": "Kirim",
-  "walletExpenseTitle": "Chiqim",
   "walletAmountLabel": "Summa",
-  "walletDescriptionLabel": "Izoh",
   "walletReturnDateLabel": "Qaytarish sanasi",
   "walletWeek1": "1 hafta",
   "walletWeek2": "2 hafta",
   "walletMonth1": "1 oy",
   "walletPickDate": "Sana tanlash",
-  "walletAttachFile": "Fayl biriktirish",
   "walletSmsWillBeSent": "Hamkorga SMS xabar yuboriladi",
-  "walletSmsLimitReached": "SMS limiti tugagan — xabar yuborilmaydi",
   "walletSaveIncome": "Kirimni saqlash",
   "walletSaveExpense": "Chiqimni saqlash",
   "walletCancelTransaction": "Tranzaksiyani bekor qilish",
   "walletCancelReasonLabel": "Bekor qilish sababi",
-  "walletCancelReasonHint": "Kamida 3 belgi",
-  "walletCancelledLabel": "Bekor qilingan",
-  "walletCancelConfirm": "Bu amalni keyin qaytarib bo'lmaydi.",
-
   "profileTitle": "Profil",
   "profilePersonalInfo": "Shaxsiy ma'lumotlar",
   "profileSubscription": "Obuna va tariflar",
   "profileSmsPackages": "SMS paketlari",
   "profileStaff": "Xodimlar",
   "profileDocuments": "Ma'lumotnomalar",
-  "profileActivityLog": "Faollik jurnali",
   "profileNotifications": "Bildirishnomalar",
-  "profileCurrencyRates": "Valyuta kurslari",
-  "profileGuides": "Qo'llanmalar",
   "profileSettings": "Sozlamalar",
-  "profileHelp": "Yordam va aloqa",
-  "profileTerms": "Foydalanish shartlari",
-  "profilePrivacy": "Maxfiylik siyosati",
-  "profileAppVersion": "Ilova versiyasi",
-
-  "settingsLanguage": "Til",
   "settingsTheme": "Mavzu",
   "settingsThemeLight": "Yorug'",
   "settingsThemeDark": "Qorong'i",
   "settingsThemeSystem": "Tizim",
-  "settingsPincode": "Pincode",
-  "settingsBiometrics": "Biometrika",
-
-  "navHome": "Bosh sahifa",
+  "navHome": "Asosiy",
   "navPartners": "Hamkorlar",
   "navProjects": "Loyihalar",
   "navReports": "Hisobotlar",
   "navProfile": "Profil",
-
   "emptyGenericTitle": "Ma'lumot topilmadi",
-  "emptyGenericDescription": "Hozircha bu bo'limda ma'lumot yo'q.",
   "errorGenericTitle": "Ma'lumotni yuklab bo'lmadi",
-  "errorGenericDescription": "Internetni tekshiring yoki qayta urinib ko'ring."
+  "errorGenericDescription": "Internetni tekshiring yoki qayta urinib ko'ring.",
+  "connectivityOffline": "Internet yo‘q — oxirgi ma’lumotlar ko‘rsatilmoqda",
+  "connectivityRestored": "Internet aloqasi tiklandi",
+  "dashboardOverdueLabel": "Muddati o‘tgan",
+  "docWorkTypeNotFound": "Ish turi topilmadi",
+  "docWorkTypeAdd": "Ish turi qo‘shish",
+  "docWorkTypeEdit": "Ish turini tahrirlash",
+  "docWorkTypeDeleteConfirm": "Ish turi o‘chirilsinmi?",
+  "docPositionNotFound": "Lavozim topilmadi",
+  "docPositionAdd": "Lavozim qo‘shish",
+  "docPositionEdit": "Lavozimni tahrirlash",
+  "docPositionDeleteConfirm": "Lavozim o‘chirilsinmi?",
+  "installmentStepDetails": "Ma’lumotlar",
+  "walletExpenseAmount": "Chiqim summasi",
+  "walletIncomeAmount": "Kirim summasi",
+  "staffStepPhone": "Telefon",
+  "errorValidation": "Kiritilgan ma'lumotlarda xatolik bor",
+  "errorTooManyRequests": "Juda ko'p urinish. Biroz kutib qayta urining.",
+  "errorWithDetails": "Xatolik: {details}",
+  "@errorWithDetails": {
+    "placeholders": {
+      "details": {
+        "type": "Object"
+      }
+    }
+  },
+  "errorRequestCancelled": "So'rov bekor qilindi",
+  "errorGeneric": "Xatolik yuz berdi",
+  "dateToday": "Bugun",
+  "dateYesterday": "Kecha",
+  "dateDaysAgo": "{count} kun oldin",
+  "@dateDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "validationRequired": "Bu maydon to'ldirilishi shart",
+  "validationPhoneRequired": "Telefon raqami kiritilishi shart",
+  "validationPhoneInvalid": "Telefon raqami 9 ta raqamdan iborat bo'lishi kerak",
+  "validationMinLength": "Kamida {min} ta belgi kiritilishi kerak",
+  "@validationMinLength": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "validationPasswordMinLength": "Parol kamida 6 belgidan iborat bo'lishi kerak",
+  "validationPasswordsMismatch": "Parollar mos kelmadi",
+  "validationAmountRequired": "Summa kiritilishi shart",
+  "validationAmountPositive": "Summa 0 dan katta bo'lishi kerak",
+  "balanceNet": "Sof balans",
+  "commonIncome": "Kirim",
+  "commonExpense": "Chiqim",
+  "balanceInstallmentRemaining": "Bo'lib to'lash qoldig'i",
+  "subscriptionBannerGrace": "Obunangiz muddati tugash arafasida",
+  "subscriptionBannerRenew": "Yangilash",
+  "subscriptionBannerReadOnly": "Faqat ko'rish rejimi",
+  "subscriptionBannerPlans": "Tariflar",
+  "subscriptionBannerRequired": "Obuna talab qilinadi",
+  "fileCameraGalleryError": "Kamera yoki galereyani ochib bo‘lmadi. Qurilma ruxsatlarini tekshiring.",
+  "fileOpenError": "Faylni ochib bo‘lmadi. Qayta urinib ko‘ring.",
+  "fileAttach": "Fayl biriktirish",
+  "fileCamera": "Kamera",
+  "fileGallery": "Galereya",
+  "fileFile": "Fayl",
+  "fileTooLarge": "Fayl hajmi 5 MB dan katta bo'lmasligi kerak",
+  "fileImage": "Rasm",
+  "fileRemoveImage": "Rasmni olib tashlash",
+  "fileRetryUpload": "{name} · Qayta urinish",
+  "@fileRetryUpload": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "fileAttachedFiles": "Biriktirilgan fayllar ({count})",
+  "@fileAttachedFiles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "fileOpenImage": "Rasmni ochish",
+  "fileOpenFile": "Faylni ochish",
+  "fileNumbered": "Fayl #{id}",
+  "@fileNumbered": {
+    "placeholders": {
+      "id": {
+        "type": "Object"
+      }
+    }
+  },
+  "fileImageLoadRetry": "Rasm yuklanmadi. Qayta urinish",
+  "commonConfirmContinue": "Ha, davom etish",
+  "commonSelectedCount": "{count} ta tanlandi",
+  "@commonSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "commonSelect": "Tanlash",
+  "activityActionCancelled": "bekor qildi",
+  "activityActionDeleted": "o'chirdi",
+  "activityModelInstallmentPlan": "bo'lib to'lash rejasini",
+  "activityLogTitle": "Faollik jurnali",
+  "activityLogFilterByAction": "Amal bo'yicha filtr",
+  "activityLogEmpty": "Faoliyat topilmadi",
+  "notificationsTitle": "Bildirishnomalar",
+  "notificationsEmpty": "Bildirishnoma yo'q",
+  "authAccountsLoadError": "Hisob ma'lumotlarini yuklab bo'lmadi. Qayta urinib ko'ring.",
+  "authAccountSelectionBadge": "HISOBNI TANLASH 🏢",
+  "authAccountSelectionSubtitle": "Xodim sifatida ish joyingizni tanlang yoki o‘zingizning biznes hisobingizga kiring.",
+  "authAccountsLoading": "Hisob ma'lumotlari yuklanmoqda...",
+  "commonReload": "Qayta yuklash",
+  "authAccountOpening": "Hisob ochilmoqda...",
+  "authOpenOwnBusiness": "O'z biznes hisobimni ochish",
+  "authOwnerBadge": "ASOSIY • EGASI",
+  "authOwnerDescription": "Shaxsiy biznesingiz va to'liq hisobdorlik",
+  "authStaffAccountsHeader": "XODIM SIFATIDA BIRIKTIRILGAN HISOBDORLIKLAR",
+  "authStaffAccountDescription": "Biriktirilgan korxona hisoboti",
+  "authAccountsIsolated": "Har bir hisob xavfsiz ajratilgan holda yuritiladi",
+  "forceUpdateBadge": "YANGI TALQIN MAVJUD • UPDATE",
+  "forceUpdateTitle": "Ilovani yangilash zarur",
+  "forceUpdateDescription": "Hisup yangi moliyaviy imkoniyatlar, takomillashtirilgan xavfsizlik va yuqori tezlikka ega bo'ldi. Davom ettirish uchun ilovani yangilang.",
+  "forceUpdateFastTitle": "Tezkor ishlash",
+  "forceUpdateFastDescription": "Ma'lumotlar almashinuvi sezilarli darajada optimallashdi",
+  "forceUpdateSecurityTitle": "Xavfsizlik protokollari",
+  "forceUpdateSecurityDescription": "Bank darajasidagi yangilangan shifrlash tizimi",
+  "forceUpdateButton": "Ilovani yangilash",
+  "authSecureFooter": "256-bit shifrlangan • Ma'lumotlar to'liq xavfsiz",
+  "authSmsSending": "SMS kod yuborilmoqda...",
+  "authPleaseWait": "Iltimos, biroz kuting",
+  "authCodeNotSent": "Kod yuborilmadi",
+  "errorUnknownRetry": "Noma'lum xatolik yuz berdi. Qayta urinib ko'ring.",
+  "authLoginHeading": "Hisobga kirish 👋",
+  "authLoginSubtitle": "Davom etish uchun maxfiy parolingizni kiriting.",
+  "commonChange": "O'zgartirish",
+  "authPasswordHint": "Parolni kiriting",
+  "authSecureFooterAll": "256-bit shifrlangan • Barcha ma'lumotlar xavfsiz",
+  "authOtpBadge": "XAVFSIZLIK QADAMI",
+  "authOtpHeading": "Tasdiqlash kodi 🔐",
+  "authOtpSubtitle": "Quyidagi telefon raqamiga yuborilgan 4 xonali SMS kodni kiriting:",
+  "authOtpVerifying": "Kod tekshirilmoqda...",
+  "authOtpResendInPrefix": "Kodni qayta yuborish: ",
+  "authOtpDoNotShare": "SMS kod hech kimga berilmasin",
+  "authPhoneHeading": "Keling, boshlaymiz! 👋",
+  "authPhoneSubtitle": "Hisobingizga kirish yoki yangi biznesingizni ulash uchun telefon raqamingizni kiriting.",
+  "authPhoneLabel": "Telefon raqami",
+  "authPhoneValid": "To'g'ri format",
+  "authAgreementPrefix": "Men ",
+  "authTermsBody": "Hisup platformasidan foydalanish orqali siz barcha moliyaviy amaliyotlar shaffofligi, xavfsizlik talablari hamda xizmat ko'rsatish qoidalariga rozilik bildirasiz.",
+  "authAgreementAnd": " va ",
+  "authPrivacyLink": "Maxfiylik siyosati",
+  "authPrivacyBody": "Sizning shaxsiy ma'lumotlaringiz va moliyaviy hisobotlaringiz 256-bitli SSL xavfsizlik protokollari bilan qat'iy himoyalangan bo'lib, uchinchi shaxslarga berilmaydi.",
+  "authAgreementSuffix": "ga to'liq roziman",
+  "commonGotIt": "Tushundim",
+  "authHello": "Salom, {name}!",
+  "@authHello": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "authWelcome": "Xush kelibsiz!",
+  "authPinWrongAttempts": "Noto'g'ri PIN. Qolgan urinishlar: {attempts}",
+  "@authPinWrongAttempts": {
+    "placeholders": {
+      "attempts": {
+        "type": "Object"
+      }
+    }
+  },
+  "authSecureEntry": "Xavfsiz kirish",
+  "authPincodeCreate": "Yangi PIN-kod yarating",
+  "authRegisterBadge": "YANGI PROFIL",
+  "authRegisterHeading": "Ro'yxatdan o'tish ✨",
+  "authRegisterSubtitle": "Hisup biznes tizimida shaxsiy profilingizni shakllantiring.",
+  "authFullNameLabel": "To'liq ismingiz",
+  "authFullNameHint": "Masalan: Alisher Usmonov",
+  "authPasswordMinHint": "Kamida 6 ta belgi",
+  "authPasswordRepeatHint": "Parolni qayta kiriting",
+  "authResetBadge": "PAROLNI TIKLASH",
+  "authResetHeading": "Yangi parol o'rnatish 🔑",
+  "authResetSubtitle": "Hisobingiz xavfsizligi uchun yangi ishonchli parol kiriting.",
+  "authSaveAndLogin": "Saqlash va kirish",
+  "splashTagline": "Biznes va moliya boshqaruvi",
+  "splashSecure": "Xavfsiz va himoyalangan tizim",
+  "dueQarzExpired": "Muddati o'tgan qarzlar",
+  "dueQarzToday": "Bugun muddati",
+  "dueIn3Days": "3 kun ichida",
+  "dueInstallmentExpired": "Muddati o'tgan (bo'lib to'lash)",
+  "dueInstallmentToday": "Bugun (bo'lib to'lash)",
+  "dueInstallment3Days": "3 kun ichida (bo'lib to'lash)",
+  "dueEmpty": "Bu bo'limda ma'lumot yo'q",
+  "dashboardAddProject": "Loyiha",
+  "greetingMorning": "Xayrli tong,",
+  "greetingDay": "Xayrli kun,",
+  "greetingEvening": "Xayrli kech,",
+  "greetingNight": "Xayrli tun,",
+  "dashboardOpenProfile": "Profilni ochish",
+  "hisupLogoLabel": "Hisup logosi",
+  "dashboardTitle": "Boshqaruv paneli",
+  "notificationsUnreadCount": "{count} ta o‘qilmagan bildirishnoma",
+  "@notificationsUnreadCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dashboardHeroTitle": "Hisob-kitoblar nazoratda",
+  "dashboardOverduePayments": "{count} ta muddati o‘tgan to‘lov",
+  "@dashboardOverduePayments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dashboardHeroSubtitle": "Loyiha va to‘lovlarni bir joyda boshqaring",
+  "dashboardTodayDebts": "Bugungi qarzlar",
+  "dashboardPartnersDebt": "Hamkorlar qarzi",
+  "commonInstallment": "Bo‘lib to‘lash",
+  "dueToday": "Bugun",
+  "dashboardPaymentsControl": "To‘lovlar nazorati",
+  "projectStatusInProgress": "Jarayonda",
+  "projectStatusFrozen": "Muzlatilgan",
+  "projectStatusCompleted": "Yakunlangan",
+  "dashboardProjectsCount": "{count} ta loyiha",
+  "@dashboardProjectsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dashboardProjectsEmpty": "Birinchi loyihangizni qo‘shib, ishlarni shu yerda kuzating.",
+  "tutorialOpenError": "Qo‘llanmani ochib bo‘lmadi. Keyinroq qayta urinib ko‘ring.",
+  "tutorialsCount": "Qo‘llanmalar ({count})",
+  "@tutorialsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "currencySelectTitle": "Valyutani tanlang",
+  "docCostTypes": "Xarajat turlari",
+  "commonAdd": "Qo'shish",
+  "docCostTypeNotFound": "Xarajat turi topilmadi",
+  "docCostTypeAdd": "Xarajat turi qo'shish",
+  "docWorkerAssigned": "Ishchi biriktiriladi",
+  "docSystem": "Tizim",
+  "commonDeleted": "O'chirilgan",
+  "docCostTypeDeleteConfirm": "Xarajat turi o'chirilsinmi?",
+  "commonIrreversible": "Bu amalni keyin qaytarib bo'lmaydi.",
+  "docCostTypeEdit": "Xarajat turini tahrirlash",
+  "commonName": "Nomi",
+  "commonDescriptionOptional": "Tavsif (ixtiyoriy)",
+  "docCurrencyRates": "Valyuta kurslari",
+  "docRatesLoadError": "Kurslarni yuklab bo'lmadi",
+  "docRatesEmpty": "Kurslar topilmadi",
+  "docConverter": "Konvertor",
+  "docReferenceBooks": "Ma'lumotnomalar",
+  "docWorkTypes": "Ish turlari",
+  "docWorkType": "Ish turi",
+  "docPositions": "Lavozimlar",
+  "docPosition": "Lavozim",
+  "docWorkers": "Ishchilar",
+  "docWorkerNotFound": "Ishchi topilmadi",
+  "docWorkerAdd": "Ishchi qo'shish",
+  "docWorkerDeleteConfirm": "Ishchi o'chirilsinmi?",
+  "docWorkerEdit": "Ishchini tahrirlash",
+  "docSelectPosition": "Lavozimni tanlang",
+  "commonNotSelected": "Tanlanmagan",
+  "installmentClosesPartFully": "{number}-qismni to'liq yopadi",
+  "@installmentClosesPartFully": {
+    "placeholders": {
+      "number": {
+        "type": "Object"
+      }
+    }
+  },
+  "installmentClosesPartPartially": "{number}-qismni qisman yopadi",
+  "@installmentClosesPartPartially": {
+    "placeholders": {
+      "number": {
+        "type": "Object"
+      }
+    }
+  },
+  "installmentValidationTotalPositive": "Jami summa 0 dan katta bo'lishi kerak.",
+  "installmentValidationAdvanceLess": "Avans summasi jami summadan kichik bo'lishi kerak.",
+  "installmentValidationMinPartsWithAdvance": "Avans bilan kamida 1 ta qism bo'lishi kerak.",
+  "installmentValidationMinPartsNoAdvance": "Avanssiz kamida 2 ta qism bo'lishi kerak.",
+  "installmentValidationStartDatePast": "Boshlanish sanasi bugundan kichik bo'lishi mumkin emas.",
+  "installmentValidationPartPositive": "Har bir qism summasi 0 dan katta bo‘lishi kerak.",
+  "installmentValidationEnterMinPartsWithAdvance": "Avans bilan kamida 1 ta qism kiritilishi kerak.",
+  "installmentValidationEnterMinParts": "Kamida 2 ta qism kiritilishi kerak.",
+  "installmentValidationPartsSum": "Qismlar yig'indisi jami summaga teng bo'lishi kerak.",
+  "installmentValidationPaymentDatePast": "To'lov sanasi bugundan kichik bo'lishi mumkin emas.",
+  "fileWaitForUploads": "Fayllar yuklanishini kuting.",
+  "installmentCancelPlan": "Rejani bekor qilish",
+  "commonPaid": "To'langan",
+  "commonRemaining": "Qolgan",
+  "installmentSchedule": "To'lov grafigi",
+  "installmentStagesCount": "{count} ta bosqich",
+  "@installmentStagesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "installmentReceivePayment": "To'lov qabul qilish",
+  "installmentPaymentHistory": "To'lovlar tarixi",
+  "installmentCancelPayment": "To'lovni bekor qilish",
+  "errorLoadShort": "Yuklab bo'lmadi",
+  "installmentNoPayments": "To'lovlar yo'q",
+  "installmentReceivedBy": "{name} qabul qildi",
+  "@installmentReceivedBy": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "commonCancelled": "Bekor qilingan",
+  "installmentRemainingColon": "Qolgan:",
+  "installmentNextPart": "Keyingi qism",
+  "installmentAllRemaining": "Barcha qolgan qarz",
+  "commonNote": "Izoh",
+  "installmentCashHint": "Naqd",
+  "commonDate": "Sana",
+  "installmentThisPayment": "Ushbu to'lov:",
+  "installmentAcceptPayment": "To'lovni qabul qilish",
+  "installmentPaymentExceeds": "To'lov summasi qolgan qarzdan oshib ketmasligi kerak.",
+  "installmentPlanCreated": "Reja yaratildi",
+  "installmentTitle": "Muddatli to‘lov",
+  "installmentStepOf3": "{step}-bosqich, jami 3 bosqich",
+  "@installmentStepOf3": {
+    "placeholders": {
+      "step": {
+        "type": "Object"
+      }
+    }
+  },
+  "installmentStepSchedule": "Grafik turi",
+  "installmentStepDistribution": "Taqsimot",
+  "installmentEnterAmount": "Summani kiriting",
+  "installmentStep1Title": "1-bosqich • Asosiy ma’lumotlar",
+  "installmentClient": "Mijoz",
+  "installmentAmountAndCurrency": "Miqdor va valyuta",
+  "installmentCurrencyType": "Valyuta turi",
+  "currencyUzs": "O‘zbek so‘mi",
+  "currencyUsd": "AQSH dollari",
+  "commonNoteOptional": "Izoh (ixtiyoriy)",
+  "installmentNoteHint": "Tafsilotlarni yozishingiz mumkin...",
+  "installmentDocumentsOptional": "Hujjatlar (ixtiyoriy)",
+  "installmentStep2Title": "2-bosqich • Grafik turi",
+  "installmentEqualSchedule": "Teng bo‘lib to‘lash",
+  "installmentFreeSchedule": "Erkin grafik",
+  "installmentEqualDescription": "Boshlanish sanasi va qismlar sonini belgilang. Tizim har bir qism uchun teng summani avtomatik hisoblaydi.",
+  "installmentFreeDescription": "Har bir qism uchun summa va sanani alohida belgilang. To‘liq moslashuvchanlik va nazorat.",
+  "installmentStep3Equal": "3-bosqich • Teng bo‘lib to‘lash",
+  "installmentStep3Free": "3-bosqich • Erkin grafik",
+  "installmentDistributionCalc": "Taqsimot hisob-kitobi",
+  "installmentPaymentTable": "To‘lov jadvali",
+  "installmentReviewPlan": "Rejani tekshiring",
+  "installmentTotalLine": "Jami: {amount} {currency}\n",
+  "@installmentTotalLine": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "installmentPerPartFormula": "{amount} {currency} ÷ {count} qism",
+  "@installmentPerPartFormula": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      },
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "installmentAdvance": "Boshlang‘ich to‘lov",
+  "installmentSetAdvance": "Avans miqdorini belgilash",
+  "installmentFirstPartDate": "Birinchi qism sanasi",
+  "installmentFirstPaymentDate": "Birinchi to‘lov sanasi",
+  "installmentRemainingParts": "Qolgan qismlar",
+  "installmentPartsCount": "Qismlar soni",
+  "commonCountShort": "{count} ta",
+  "@commonCountShort": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "installmentFullyDistributed": "To‘liq taqsimlandi",
+  "installmentAmountExceeded": "Summa oshib ketdi",
+  "installmentDistributionLeft": "Taqsimot qoldi",
+  "installmentPlannedTotal": "Jami {amount} {currency} rejalashtirildi.",
+  "@installmentPlannedTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "installmentReduceBy": "{amount} {currency} ga kamaytiring.",
+  "@installmentReduceBy": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "installmentRemainingDistribute": "Qolgan: {amount} {currency}. Barcha summani taqsimlang.",
+  "@installmentRemainingDistribute": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "installmentAddPart": "Yangi qism qo‘shish",
+  "installmentStatusActive": "Faol",
+  "installmentStatusClosed": "Yopilgan",
+  "installmentPartsCountShort": "{count} qism",
+  "@installmentPartsCountShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "installmentAdvanceAmount": "Avans summasi",
+  "installmentPartAmount": "{number}-qism summasi",
+  "@installmentPartAmount": {
+    "placeholders": {
+      "number": {
+        "type": "Object"
+      }
+    }
+  },
+  "installmentPaymentDate": "To‘lov sanasi",
+  "installmentRemovePart": "Qismni olib tashlash",
+  "installmentNoPlans": "Bo'lib to'lash rejasi yo'q",
+  "installmentNoPlansDescription": "Katta summani qismlarga bo'lib to'lash uchun reja yarating.",
+  "installmentCreatePlan": "Reja yaratish",
+  "installmentCreatePlanPlus": "+ Reja yaratish",
+  "commonExcelShort": "Excel",
+  "partnerSmsSettingShort": "SMS sozlama",
+  "partnerAccountUzs": "O‘zbek so‘mi hisobi",
+  "partnerAccountUsd": "AQSH dollari hisobi",
+  "commonFilterByDate": "Sana bo‘yicha filtr",
+  "commonDeletedToast": "O'chirildi",
+  "partnerNew": "Yangi hamkor",
+  "partnerUpdateData": "Ma’lumotlarni yangilash",
+  "partnerEnterData": "Hamkor ma’lumotlarini kiriting",
+  "partnerNameHint": "Hamkorning ismi yoki tashkilot nomi",
+  "commonOptional": "Ixtiyoriy",
+  "commonSaveChanges": "O‘zgarishlarni saqlash",
+  "partnersAddButton": "Hamkorni qo‘shish",
+  "fileWaitThenSave": "Fayl yuklanishini kuting, keyin saqlang.",
+  "partnerLimitReached": "Limit tugagan",
+  "commonViewPlans": "Tariflarni ko'rish",
+  "partnerSmsSettingsLoadError": "Sozlamalarni yuklab bo'lmadi",
+  "partnerSmsService": "SMS xizmati",
+  "partnerSmsOnIncome": "Kirim qilinganda SMS",
+  "partnerSmsOnExpense": "Chiqim qilinganda SMS",
+  "partnerSmsRemindBefore": "Muddatdan oldin eslatish",
+  "commonDaysCount": "{count} kun",
+  "@commonDaysCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "partnerSmsRemindOnDue": "Muddat kunida eslatish",
+  "partnerSmsAfterDue": "Muddatdan keyin",
+  "partnerSmsSendTime": "SMS yuborish vaqti",
+  "partnersClientsTitle": "Mijozlar",
+  "partnersClientsSubtitle": "Mijozlaringiz va hisob-kitoblar",
+  "partnersAddClient": "Yangi mijoz qo‘shish",
+  "partnersSearchNamePhone": "Ism yoki telefon",
+  "partnersExportExcel": "Excel hisobotni yuklab olish",
+  "partnersSortTooltip": "Saralash: {sort}",
+  "@partnersSortTooltip": {
+    "placeholders": {
+      "sort": {
+        "type": "Object"
+      }
+    }
+  },
+  "partnersClientsEmpty": "Mijozlar topilmadi",
+  "partnersEmptyFiltered": "Qidiruvni yoki tanlangan filtrni o‘zgartirib ko‘ring.",
+  "partnersEmptyStart": "Hamkor qo‘shib, hisob-kitoblarni yuritishni boshlang.",
+  "partnersSortDebtorUzsDot": "Qarzdor · UZS",
+  "partnersSortDebtorUsdDot": "Qarzdor · USD",
+  "partnersSortCreditorUzsDot": "Haqdor · UZS",
+  "partnersSortCreditorUsdDot": "Haqdor · USD",
+  "walletEditExpense": "Chiqimni tahrirlash",
+  "walletAdditionalInfo": "Qo‘shimcha ma’lumot",
+  "walletNoteHint": "To‘lov haqida qisqacha",
+  "walletRemoveDate": "Sanani olib tashlash",
+  "commonSaving": "Saqlanmoqda…",
+  "exportPreparing": "Fayl tayyorlanmoqda...",
+  "exportPleaseWait": "Iltimos, kuting",
+  "exportShareError": "Faylni ulashishda xatolik yuz berdi",
+  "exportDownloadError": "Yuklab olishda xatolik yuz berdi",
+  "partnersClosedShort": "Yopiq",
+  "partnerInstallmentPrefix": "Bo'lib to'lash: ",
+  "partnersClientActions": "Mijoz amallari",
+  "commonCallAction": "Qo‘ng‘iroq qilish",
+  "commonWriteSms": "SMS yozish",
+  "commonOpenDetails": "Tafsilotlarni ochish",
+  "commonPhoneAppError": "Telefon ilovasini ochib bo‘lmadi",
+  "partnersClientsLoading": "Mijozlar yuklanmoqda",
+  "partnersSelect": "Hamkorni tanlang",
+  "partnersSearchByNamePhone": "Ism yoki telefon orqali qidirish",
+  "partnersSearchChange": "Ism yoki telefonni o‘zgartirib qidiring.",
+  "partnersLoading": "Hamkorlar yuklanmoqda",
+  "partnerSmsHistoryEmpty": "SMS tarixi bo'sh",
+  "walletReasonClientRejected": "Mijoz to'lovni rad etdi",
+  "walletReasonWrongAmount": "Summa noto'g'ri ko'rsatilgan",
+  "walletReasonDuplicate": "Takroriy (dublikat) yozuv",
+  "walletCancelRecalc": "Ushbu amal hamkor balansini qayta hisoblaydi",
+  "walletQuickReason": "Tezkor sababni tanlang:",
+  "walletReasonOrNote": "Izoh yoki aniq sabab:",
+  "walletCancelReasonHintLong": "Bekor qilish sababini yozing (kamida 3 belgi)...",
+  "walletReasonMin3": "Kamida 3 ta belgi talab qilinadi",
+  "walletReasonMoreChars": "Yana {count} ta belgi kiriting",
+  "@walletReasonMoreChars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletReasonEnough": "✓ Sabab yetarli",
+  "walletDeleteTransaction": "Tranzaksiyani o'chirish",
+  "walletDeleteConfirm": "Rostdan ham ushbu tranzaksiyani butunlay o'chirib tashlamoqchimisiz?",
+  "walletDeleteWarning": "Bu amal hisob-kitob balansini o'zgartiradi va uni ortga qaytarib bo'lmaydi.",
+  "walletDeleteYes": "Ha, o'chirilsin",
+  "walletDeleteNo": "Yo'q, bekor qilish",
+  "dateFilterTitle": "Sana bo'yicha saralash",
+  "dateFilterSubtitle": "Tranzaksiyalar vaqt oralig'ini tanlang",
+  "dateFilterAll": "Barcha vaqt (filterni tozalash)",
+  "dateFilterAllSubtitle": "Cheklovlarsiz barcha tranzaksiyalar",
+  "dateFilterThisMonth": "Bu oy",
+  "dateFilterLast7": "Oxirgi 7 kun",
+  "dateFilterLastMonth": "O'tgan oy",
+  "dateFilterLast30": "Oxirgi 30 kun",
+  "dateFilterCustom": "Ixtiyoriy sana oralig'i...",
+  "dateFilterCustomSubtitle": "Kalendardan kerakli oraliqni tanlash",
+  "receiptShareTitle": "🧾 ELEKTRON TO'LOV KVITANSIYASI — Hisup",
+  "receiptShareAmount": "Summa: {sign}{amount}",
+  "@receiptShareAmount": {
+    "placeholders": {
+      "sign": {
+        "type": "Object"
+      },
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "receiptCommission": "Komissiya: 0 {currency} (0%)",
+  "@receiptCommission": {
+    "placeholders": {
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "receiptSharePartner": "Hamkor: {name}",
+  "@receiptSharePartner": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "receiptSharePhone": "Telefon: {phone}",
+  "@receiptSharePhone": {
+    "placeholders": {
+      "phone": {
+        "type": "Object"
+      }
+    }
+  },
+  "receiptShareDateTime": "Sana va vaqt: {date}",
+  "@receiptShareDateTime": {
+    "placeholders": {
+      "date": {
+        "type": "Object"
+      }
+    }
+  },
+  "receiptShareCashier": "Kassir / Mas'ul xodim: {name}",
+  "@receiptShareCashier": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "receiptSharePurpose": "To'lov maqsadi: {text}",
+  "@receiptSharePurpose": {
+    "placeholders": {
+      "text": {
+        "type": "Object"
+      }
+    }
+  },
+  "receiptShareReturnDate": "Qaytarish muddati: {date}",
+  "@receiptShareReturnDate": {
+    "placeholders": {
+      "date": {
+        "type": "Object"
+      }
+    }
+  },
+  "receiptShareCancelReason": "Bekor qilish sababi: {text}",
+  "@receiptShareCancelReason": {
+    "placeholders": {
+      "text": {
+        "type": "Object"
+      }
+    }
+  },
+  "receiptShareFooter": "Hisup rasmiy bank standarti to'lov hujjati",
+  "receiptShareError": "Chekni ulashib bo‘lmadi. Qayta urinib ko‘ring.",
+  "receiptCopied": "Chek ma'lumotlari to'liq nusxalandi",
+  "receiptTitle": "To'lov cheki",
+  "receiptBadge": "ELEKTRON KVITANSIYA",
+  "receiptCancelled": "To'lov bekor qilingan",
+  "receiptPaidOut": "To'lov muvaffaqiyatli o'tkazildi",
+  "receiptReceived": "Mablag' muvaffaqiyatli qabul qilindi",
+  "receiptRecipient": "Qabul qiluvchi (Hamkor)",
+  "receiptOperationType": "Operatsiya turi",
+  "receiptExpenseType": "Chiqim (To'lov)",
+  "receiptIncomeType": "Kirim (Tushum)",
+  "receiptDateTime": "Sana va vaqt",
+  "receiptTransactionId": "Tranzaksiya ID (RRN)",
+  "receiptIdCopied": "ID nusxalandi",
+  "receiptAccountCurrency": "Hisob valyutasi",
+  "currencyUsdFull": "AQSH Dollari (USD)",
+  "currencyUzsFull": "O'zbek so'mi (UZS)",
+  "receiptCashier": "Kassir / Mas'ul xodim",
+  "receiptReturnDate": "Qaytarish muddati",
+  "receiptPurpose": "To'lov maqsadi (Izoh)",
+  "receiptCancelledPayment": "Bekor qilingan to'lov",
+  "receiptConfirmed": "Muvaffaqiyatli tasdiqlangan",
+  "receiptRegistered": "Hisup moliyaviy hisobot tizimida qayd etilgan",
+  "receiptShare": "Chekni ulashish",
+  "walletReturnShort": "Qaytarish: {date}",
+  "@walletReturnShort": {
+    "placeholders": {
+      "date": {
+        "type": "Object"
+      }
+    }
+  },
+  "walletEnteredBy": "{name} kiritdi",
+  "@walletEnteredBy": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "profileSaveName": "Ismni saqlash",
+  "profileChangePassword": "Parolni o'zgartirish",
+  "profileChangePhone": "Telefonni o'zgartirish",
+  "profileOldPassword": "Eski parol",
+  "profileNewPhoneTitle": "Yangi telefon raqam",
+  "profileNewPhone": "Yangi telefon",
+  "profilePhoneUpdated": "Telefon raqam yangilandi",
+  "profileVerificationCode": "Tasdiqlash kodi",
+  "profileOpenOwnAccount": "O'z hisobimni ochish",
+  "profileSecurityPin": "Xavfsizlik va PIN-kod",
+  "profileSecurityPinSubtitle": "PIN-kodni yoqish yoki o'chirish",
+  "profileOpenOwnAccountConfirm": "Sizga FREE tarif bilan o'z biznes hisobingiz ochiladi. Davom etasizmi?",
+  "profileOpenOwnAccountYes": "Ha, ochish",
+  "profileOwnAccountOpened": "Hisobingiz ochildi",
+  "authLogoutYes": "Ha, chiqish",
+  "profileRoleOwner": "Egasi",
+  "profileRoleStaff": "Xodim",
+  "profileVersion": "Versiya {version}",
+  "@profileVersion": {
+    "placeholders": {
+      "version": {
+        "type": "Object"
+      }
+    }
+  },
+  "settingsPinEnabled": "PIN-kod muvaffaqiyatli yoqildi",
+  "settingsPinDisabled": "PIN-kod o'chirildi",
+  "settingsPinUpdated": "PIN-kod muvaffaqiyatli yangilandi",
+  "settingsPinDisableTitle": "PIN-kodni o'chirish",
+  "settingsPinDisableBody": "Ilovaga kirishda PIN-kod va biometriya so'ralmaydi. Hisobingiz xavfsizligi kamayishi mumkin.\n\nRostdan ham o'chirmoqchimisiz?",
+  "settingsPinDisableYes": "Ha, o'chirilsin",
+  "settingsPinProtect": "PIN-kod bilan himoyalash",
+  "settingsPinOnSubtitle": "Ilovaga kirishda PIN-kod va biometriya so'raladi",
+  "settingsPinOffSubtitle": "Ilovaga kirishda PIN-kod so'ralmaydi",
+  "settingsPinChange": "PIN-kodni o'zgartirish",
+  "settingsPinChangeSubtitle": "Yangi 4 xonali kod o'rnatish",
+  "settingsDangerZone": "XAVFLI HUDUD",
+  "authDeleteAccountConfirmBody": "Barcha hamkorlar, tranzaksiyalar, loyihalar va hisobotlar butunlay o'chiriladi. Bu amalni qaytarib bo'lmaydi. Rostdan ham hisobingizni o'chirmoqchimisiz?",
+  "commonYesDelete": "Ha, o'chirish",
+  "authAccountDeleted": "Hisobingiz muvaffaqiyatli o'chirildi",
+  "subscriptionLoadError": "Tarif ma’lumotlarini yuklab bo‘lmadi",
+  "subscriptionCurrentBadge": "JORIY TARIF",
+  "subscriptionTitle": "Obuna",
+  "subscriptionNone": "Obuna mavjud emas",
+  "subscriptionOverdue": "To‘lov muddati o‘tgan",
+  "subscriptionDaysLeft": "{count} kun qoldi",
+  "@subscriptionDaysLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "subscriptionValidUntil": "Amal qilish muddati: {date}",
+  "@subscriptionValidUntil": {
+    "placeholders": {
+      "date": {
+        "type": "Object"
+      }
+    }
+  },
+  "subscriptionLimitsUsage": "Limitlar va foydalanish",
+  "staffMinOnePermission": "Kamida 1 ta ruxsat tanlanishi kerak",
+  "staffAdd": "Xodim qo'shish",
+  "staffAdded": "Xodim qo'shildi",
+  "staffStepSms": "SMS Kod",
+  "staffPhone": "Xodim telefoni",
+  "staffPermissions": "Ruxsatlar",
+  "staffUpdatePermissions": "Ruxsatlarni yangilash",
+  "staffUpdatePermissionsWarning": "Ruxsat o'zgartirilganda xodimning barcha tokenlari o'chiriladi va u qayta login qilishi kerak bo'ladi.",
+  "staffEmpty": "Xodimlar yo'q",
+  "staffPermissionsCount": "{count} ta ruxsat",
+  "@staffPermissionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "staffDeleteConfirm": "Xodim o'chirilsinmi?",
+  "commonSelectAll": "Barchasini tanlash",
+  "staffPermissionsLoading": "Ruxsatlar ro'yxati yuklanmoqda...",
+  "commonUnlimited": "Cheksiz",
+  "billingMonthly": "Oylik",
+  "billingSemiAnnual": "6 oylik",
+  "billingAnnual": "Yillik",
+  "subscriptionNoActive": "Faol obuna topilmadi",
+  "subscriptionCurrentPlan": "Joriy tarif",
+  "subscriptionNoExpiry": "Muddati belgilanmagan",
+  "subscriptionSmsNotifications": "SMS xabarnomalar",
+  "subscriptionYourCurrentPlan": "Joriy tarifingiz",
+  "planFeaturePartners": "{value} Hamkor",
+  "@planFeaturePartners": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "planFeatureProjects": "{value} Loyiha",
+  "@planFeatureProjects": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "planFeatureStaff": "{value} Xodim",
+  "@planFeatureStaff": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "planFeatureSms": "{value} SMS",
+  "@planFeatureSms": {
+    "placeholders": {
+      "value": {
+        "type": "Object"
+      }
+    }
+  },
+  "billingMonthlySubscription": "Oylik obuna",
+  "billingSemiAnnualSubscription": "6 oylik obuna",
+  "billingAnnualSubscription": "Yillik obuna",
+  "planNamed": "{name} tarifi",
+  "@planNamed": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "subscriptionActivated": "Obuna faollashtirildi",
+  "smsPackagesDescription": "Mijozlaringizga hisob-kitoblar, qarz va to'lovlar haqida SMS orqali tezkor eslatmalar yuboring.",
+  "smsPackageSubtitle": "{count} ta SMS xabarnoma to'plami",
+  "@smsPackageSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "smsPackageAdded": "SMS paketi muvaffaqiyatli qo'shildi",
+  "smsMostPopular": "ENG OMMABOP PAKET",
+  "smsPerPrice": "1 ta SMS ≈ {price} so'm",
+  "@smsPerPrice": {
+    "placeholders": {
+      "price": {
+        "type": "Object"
+      }
+    }
+  },
+  "commonBuy": "Sotib olish",
+  "paymentCreatingOrder": "Buyurtma shakllantirilmoqda",
+  "paymentConnecting": "To'lov tizimiga xavfsiz ulanish o'rnatilmoqda...",
+  "paymentVerifying": "To'lov tekshirilmoqda",
+  "paymentConfirmInApp": "To'lov ilovasida to'lovni tasdiqlang. Tekshiruv avtomatik davom etmoqda...",
+  "paymentCancel": "To'lovni bekor qilish",
+  "paymentWaiting": "To'lov kutilmoqda",
+  "paymentCheckHint": "Agar to'lov ilovasi orqali to'lovni amalga oshirgan bo'lsangiz, \"Tekshirish\" tugmasini bosing",
+  "paymentCheck": "Tekshirish",
+  "paymentSuccess": "Muvaffaqiyatli to'landi!",
+  "paymentSuccessSubtitle": "To'lov qabul qilindi va xizmatlar yangilandi",
+  "paymentFailed": "To'lov amalga oshmadi",
+  "paymentFailedDefault": "To'lov bekor qilindi yoki xatolik yuz berdi",
+  "paymentMethod": "To'lov usuli",
+  "paymentMethodSubtitle": "O'zingizga qulay to'lov tizimini tanlang",
+  "commonTotal": "Jami",
+  "paymentClickSubtitle": "Click hamyon va bank kartalari",
+  "paymentSecure": "To'lov xavfsizligi kafolatlangan (256-bit SSL)",
+  "paymentFast": "Tezkor",
+  "projectChangeStatus": "Loyiha holatini o‘zgartirish",
+  "projectTabCosts": "Xarajatlar",
+  "projectTabIncomes": "Daromadlar",
+  "projectTabContracts": "Shartnomalar",
+  "projectFilesCount": "Loyiha fayllari ({count})",
+  "@projectFilesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectFiles": "Loyiha fayllari",
+  "projectStatusUpdated": "Loyiha holati yangilandi",
+  "projectEdit": "Loyihani tahrirlash",
+  "projectAdd": "Loyiha qo‘shish",
+  "projectNew": "Yangi loyiha",
+  "projectUpdateData": "Loyiha ma’lumotlarini yangilang",
+  "projectAndClientData": "Loyiha va buyurtmachi ma’lumotlari",
+  "projectNameRequired": "Loyiha nomi *",
+  "projectNameHint": "Masalan, yangi ofis qurilishi",
+  "projectClientRequired": "Buyurtmachi *",
+  "projectClientHint": "Ism yoki tashkilot nomi",
+  "commonPhoneRequired": "Telefon *",
+  "projectAddressOptional": "Manzil (ixtiyoriy)",
+  "projectAddressHint": "Shahar, ko‘cha yoki loyiha manzili",
+  "projectFilesAndImages": "Fayllar va rasmlar",
+  "fileUploading": "Fayl yuklanmoqda…",
+  "projectCreate": "Loyihani yaratish",
+  "projectSearchHint": "Loyiha nomi bo'yicha qidirish",
+  "projectsEmpty": "Loyihalar topilmadi",
+  "costTypeSelect": "Xarajat turini tanlang",
+  "costTypeSearch": "Xarajat turini qidirish",
+  "costTypeCreateNew": "Yangi xarajat turi yaratish",
+  "costTypeNoneYet": "Xarajat turlari hali mavjud emas",
+  "costTypeEnterName": "Xarajat turi nomini kiriting",
+  "costTypeNew": "Yangi xarajat turi",
+  "costTypeName": "Xarajat turi nomi",
+  "costTypeNameHint": "Masalan, asbob-uskunalar",
+  "costTypeLinkWorker": "Ishchiga bog‘lash",
+  "costTypeLinkWorkerHint": "Yoqilsa, xarajat kiritishda ishchi tanlanadi",
+  "commonCreateAndSelect": "Yaratish va tanlash",
+  "positionSearch": "Lavozimni qidirish",
+  "positionCreateNew": "Yangi lavozim yaratish",
+  "positionNoneYet": "Lavozimlar hali mavjud emas",
+  "positionEnterName": "Lavozim nomini kiriting",
+  "positionNew": "Yangi lavozim",
+  "positionName": "Lavozim nomi",
+  "positionNameHint": "Masalan, elektrik",
+  "contractsEmpty": "Shartnomalar yo'q",
+  "contractAdd": "Shartnoma qo'shish",
+  "workTypeSelect": "Ish turini tanlang",
+  "commonDescriptionRequired": "Tavsif *",
+  "contractDescriptionHint": "Bajariladigan ishni qisqacha yozing",
+  "contractDescriptionRequired": "Tavsif majburiy. Bajariladigan ishni yozing.",
+  "contractEnterWorkTypeAmount": "Ish turi va summani kiriting",
+  "costsEmpty": "Xarajatlar yo‘q",
+  "costWorker": "Ishchi: {name}",
+  "@costWorker": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      }
+    }
+  },
+  "costAdd": "Xarajat qo'shish",
+  "costType": "Xarajat turi",
+  "costWorkerLabel": "Ishchi",
+  "costEnterTypeAmount": "Xarajat turi va summani kiriting",
+  "costSelectWorker": "Ishchini tanlang",
+  "entryCostDetails": "Xarajat tafsilotlari",
+  "entryIncomeDetails": "Daromad tafsilotlari",
+  "entryProjectCost": "Loyiha xarajati",
+  "entryProjectIncome": "Loyiha daromadi",
+  "entryOperation": "Operatsiya",
+  "entryNoNote": "Izoh kiritilmagan",
+  "incomesEmpty": "Daromadlar yo‘q",
+  "incomeAdd": "Daromad qo'shish",
+  "projectStatusTitle": "Loyiha holati",
+  "projectCurrentStatus": "Joriy holat: {status}",
+  "@projectCurrentStatus": {
+    "placeholders": {
+      "status": {
+        "type": "Object"
+      }
+    }
+  },
+  "commonUpdating": "Yangilanmoqda…",
+  "projectSaveStatus": "Holatni saqlash",
+  "projectStatusInProgressHint": "Loyiha bo‘yicha ishlar davom etmoqda",
+  "projectStatusFrozenHint": "Ishlar vaqtincha to‘xtatilgan",
+  "projectStatusCompletedHint": "Loyiha bo‘yicha ishlar yakunlangan",
+  "projectStatusCurrent": "Joriy",
+  "projectAssignStaff": "Loyihaga xodim biriktirish",
+  "projectUnassignedWorkers": "Ushbu loyihaga biriktirilmagan ishchilar",
+  "workerSearchHint": "Ism, telefon yoki lavozim",
+  "workerCreateNew": "Yangi ishchi yaratish",
+  "workerNoneFree": "Biriktirish uchun bo‘sh ishchi yo‘q. Yangi ishchi yaratish uchun + tugmasini bosing.",
+  "workersNotFound": "Ishchilar topilmadi",
+  "workerAssigning": "Biriktirilmoqda…",
+  "workerSelectStaff": "Xodimlarni tanlang",
+  "workerAssignCount": "{count} ta xodimni biriktirish",
+  "@workerAssignCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "workerAssign": "Ishchi biriktirish",
+  "workersNoneAssigned": "Ishchilar biriktirilmagan",
+  "workTypeSearch": "Ish turini qidirish",
+  "workTypeCreateNew": "Yangi ish turi yaratish",
+  "workTypeNoneYet": "Ish turlari hali mavjud emas",
+  "workTypeEnterName": "Ish turi nomini kiriting",
+  "workTypeNew": "Yangi ish turi",
+  "workTypeName": "Ish turi nomi",
+  "workTypeNameHint": "Masalan, elektr montaj",
+  "workerSelect": "Ishchini tanlang",
+  "workerNoneYet": "Ishchilar hali mavjud emas",
+  "workerEnterName": "Ishchi ismini kiriting",
+  "errorAlreadyRegistered": "Bu ma’lumot allaqachon ro‘yxatdan o‘tgan",
+  "errorFillField": "Bu maydonni to‘ldiring",
+  "errorInvalidData": "Kiritilgan ma’lumot noto‘g‘ri",
+  "workerNew": "Yangi ishchi",
+  "commonNameRequired": "Ism *",
+  "workerNameHint": "Ishchining ismi",
+  "commonAdditionalPhoneOptional": "Qo‘shimcha telefon (ixtiyoriy)",
+  "positionRequired": "Lavozim *",
+  "commonAdditionalInfoHint": "Qo‘shimcha ma’lumot",
+  "reportInstallmentTitle": "Muddatli to‘lov hisoboti",
+  "reportInstallmentNoData": "Bo‘lib to‘lash ma’lumoti yo‘q",
+  "reportSections": "Hisobot bo‘limlari",
+  "reportCollectionEfficiency": "Undirish samaradorligi",
+  "reportCollectionEfficiencySubtitle": "To‘lov samaradorligi va undirilgan summalar",
+  "reportExpectedPayments": "Kutilayotgan to‘lovlar",
+  "reportExpectedPaymentsSubtitle": "30/60/90 kunlik prognoz",
+  "reportMonthlyDynamics": "Oylik dinamika",
+  "reportMonthlyDynamicsSubtitle": "Oylar bo‘yicha to‘lov grafigi",
+  "reportProblemClients": "Muammoli mijozlar",
+  "reportProblemClientsSubtitle": "Kechiktirilgan va xavfli mijozlar ro‘yxati",
+  "reportByClients": "Mijozlar bo‘yicha",
+  "reportByClientsSubtitle": "Mijoz bo‘yicha muddatli to‘lov hisoboti",
+  "reportActivePlans": "Faol rejalar",
+  "reportGiven": "Berilgan",
+  "reportCollected": "Undirilgan",
+  "reportOverdueRate": "Kechikish darajasi: {rate}%",
+  "@reportOverdueRate": {
+    "placeholders": {
+      "rate": {
+        "type": "Object"
+      }
+    }
+  },
+  "reportPaymentStatuses": "To‘lov holatlari",
+  "reportPaymentsCount": "{count} ta to‘lov",
+  "@reportPaymentsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportPartiallyPaid": "Qisman to‘langan",
+  "reportPending": "Kutilmoqda",
+  "reportDays30": "30 kun",
+  "reportDays60": "60 kun",
+  "reportDays90": "90 kun",
+  "reportExpectedAmount": "Kutilayotgan summa",
+  "reportPayments": "To‘lovlar",
+  "reportPrevYear": "Oldingi yil",
+  "reportNextYear": "Keyingi yil",
+  "reportTotalPayments": "Jami to‘lovlar",
+  "reportNoData": "Ma’lumot yo‘q",
+  "reportNoProblemClients": "Muammoli mijozlar yo‘q",
+  "reportRiskHigh": "Yuqori xavf",
+  "reportRiskMedium": "O‘rta xavf",
+  "reportRiskLow": "Past xavf",
+  "reportOverdueSummary": "{count} ta kechikkan to‘lov · O‘rtacha {days} kun",
+  "@reportOverdueSummary": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      },
+      "days": {
+        "type": "Object"
+      }
+    }
+  },
+  "reportRiskScore": "Xavf balli: {score}",
+  "@reportRiskScore": {
+    "placeholders": {
+      "score": {
+        "type": "Object"
+      }
+    }
+  },
+  "reportActivePlansCount": "{count} ta faol reja",
+  "@reportActivePlansCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportLastPayment": "Oxirgi to‘lov: {date}",
+  "@reportLastPayment": {
+    "placeholders": {
+      "date": {
+        "type": "Object"
+      }
+    }
+  },
+  "commonLoadMore": "Yana yuklash",
+  "reportNoTransactions": "Tranzaksiyalar mavjud emas",
+  "reportDueDate": "Muddat: {date}",
+  "@reportDueDate": {
+    "placeholders": {
+      "date": {
+        "type": "Object"
+      }
+    }
+  },
+  "reportPartnerTitle": "Hamkor hisoboti",
+  "reportExcel": "Excel hisobot",
+  "reportTabSettlements": "Hisob kitob",
+  "reportTabInstallment": "Muddatli to'lov",
+  "reportAccountUzs": "UZS Hisob",
+  "reportAccountUsd": "USD Hisob",
+  "reportIncomesList": "Kirimlar ro'yxati",
+  "reportExpensesList": "Chiqimlar ro'yxati",
+  "reportOperationsEmpty": "Operatsiyalar topilmadi",
+  "receiptShareAmountPlain": "Summa: {amount}",
+  "@receiptShareAmountPlain": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "reportPaidAmount": "To‘langan: {amount}",
+  "@reportPaidAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      }
+    }
+  },
+  "reportPartnersTitle": "Hamkorlar hisoboti",
+  "reportActions": "Hisobot amallari",
+  "reportOperations": "Operatsiyalar",
+  "reportTypes": "Hisobot turlari",
+  "reportDebtTerms": "Qarz muddatlari hisoboti",
+  "reportDebtTermsSubtitle": "Muddati o‘tgan, bugun va kelgusi qarzlar",
+  "reportStaff": "Xodimlar hisoboti",
+  "reportStaffSubtitle": "Xodimlar bo‘yicha barcha hisobotlar",
+  "reportPeriod": "Muddat hisoboti",
+  "reportPeriodSubtitle": "Davr bo‘yicha kirim va chiqim",
+  "reportInstallmentShortSubtitle": "Rejalar, undirish, oylik dinamika va muammoli mijozlar",
+  "reportSelectPeriod": "Hisobot davrini tanlang",
+  "dateThisWeek": "Bu hafta",
+  "reportTotalIncome": "Jami kirim",
+  "reportTotalExpense": "Jami chiqim",
+  "reportStaffLoadError": "Xodimlar hisobotini yuklab bo‘lmadi",
+  "reportNoOperationsPeriod": "Bu davrda operatsiyalar yo‘q",
+  "reportStaffCount": "Xodimlar · {count}",
+  "@reportStaffCount": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      }
+    }
+  },
+  "reportYourDebt": "Sizning qarzingiz",
+  "reportClientsDebt": "Mijozlar qarzi",
+  "reportBalanceRest": "Qoldiq",
+  "projectSelect": "Loyihani tanlang",
+  "reportFinance": "Moliya hisoboti",
+  "projectNotSelected": "Loyiha tanlanmagan",
+  "projectSelectForFinance": "Moliya hisobotini ko‘rish uchun loyihani tanlang",
+  "reportByCategories": "Kategoriyalar bo‘yicha",
+  "reportNoExpenses": "Xarajatlar mavjud emas",
+  "projectSearch": "Loyihani qidirish",
+  "reportPartnersHomeSubtitle": "Umumiy balans, davr bo'yicha, qarz muddatlari, xodimlar",
+  "reportInstallmentHomeSubtitle": "Umumiy tahlil, kutilayotgan to‘lovlar va undirish dinamikasi",
+  "reportProjectsTitle": "Loyihalar hisoboti",
+  "reportProjectsSubtitle": "Loyiha balansi, xarajatlar va daromadlar tahlili",
+  "reportClientDebt": "Mijoz qarzi",
+  "reportClientCredit": "Mijoz haqqi",
+  "reportAccountClosed": "Hisob yopilgan",
+  "reportCurrentBalance": "Joriy balans",
+  "reportOperationsCount": "{count} ta operatsiya",
+  "@reportOperationsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportBalanceDynamics": "Balans dinamikasi",
+  "reportNoDataYet": "Hozircha ma’lumot yo‘q",
+  "reportLastOperations": "Oxirgi operatsiyalar ({currency})",
+  "@reportLastOperations": {
+    "placeholders": {
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "reportDebtsList": "Qarzlar ro'yxati",
+  "reportUpcoming": "Yaqinlashmoqda",
+  "reportIn3DaysParen": "(3 kun)",
+  "reportMonthlyStats": "Oylik statistika",
+  "reportLastMonths": "So'nggi {count} oy ({currency})",
+  "@reportLastMonths": {
+    "placeholders": {
+      "count": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "reportOverallStats": "Umumiy statistika",
+  "reportCancelledShort": "Bekor",
+  "reportOverdueAmount": "Muddati o'tgan: {amount} {currency}",
+  "@reportOverdueAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "reportInstallmentPlans": "Muddatli to‘lov rejalari",
+  "reportNoPlans": "Rejalar mavjud emas",
+  "reportDate": "Sana: {date}",
+  "@reportDate": {
+    "placeholders": {
+      "date": {
+        "type": "Object"
+      }
+    }
+  },
+  "reportTotalAmount": "Jami summa",
+  "reportParts": "Qismlar",
+  "reportPaidWithCurrency": "To'langan: {amount} {currency}",
+  "@reportPaidWithCurrency": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "reportRemainingWithCurrency": "Qolgan: {amount} {currency}",
+  "@reportRemainingWithCurrency": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "reportPartsSchedule": "To'lov qismlari grafigi",
+  "reportMonthlyPaymentDynamics": "Oylik to'lov dinamikasi",
+  "reportPlanCollected": "Reja: {planned} | Yig'ildi: {collected}",
+  "@reportPlanCollected": {
+    "placeholders": {
+      "planned": {
+        "type": "Object"
+      },
+      "collected": {
+        "type": "Object"
+      }
+    }
+  },
+  "receiptShareNumber": "Chek raqami: № {number}",
+  "@receiptShareNumber": {
+    "placeholders": {
+      "number": {
+        "type": "Object"
+      }
+    }
+  },
+  "receiptShareStatus": "Holati: {status}",
+  "@receiptShareStatus": {
+    "placeholders": {
+      "status": {
+        "type": "Object"
+      }
+    }
+  },
+  "receiptShareStatusCancelled": "BEKOR QILINGAN",
+  "receiptShareStatusSuccess": "MUVAFFAQIYATLI O‘TKAZILDI",
+  "receiptShareOperation": "Operatsiya: {type}",
+  "@receiptShareOperation": {
+    "placeholders": {
+      "type": {
+        "type": "Object"
+      }
+    }
+  },
+  "receiptIncomeTypeShare": "Kirim (Mablag‘ tushumi)",
+  "installmentAdvanceLine": "Boshlang‘ich to‘lov: {amount} {currency}",
+  "@installmentAdvanceLine": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "installmentRemainingPrefix": "Qolgan:",
+  "installmentPerPartResult": "= {amount} {currency}/qism",
+  "@installmentPerPartResult": {
+    "placeholders": {
+      "amount": {
+        "type": "Object"
+      },
+      "currency": {
+        "type": "Object"
+      }
+    }
+  },
+  "walletReasonEnteredByMistake": "Xatolik bilan kiritildi",
+  "activityActionCreated": "yaratdi",
+  "activityActionUpdated": "tahrirladi",
+  "activityActionRestored": "tikladi",
+  "activityModelWallet": "tranzaksiyani",
+  "activityModelPartner": "hamkorni",
+  "activityModelProject": "loyihani",
+  "activitySummary": "{name} {object} {action}",
+  "@activitySummary": {
+    "placeholders": {
+      "name": {
+        "type": "Object"
+      },
+      "object": {
+        "type": "Object"
+      },
+      "action": {
+        "type": "Object"
+      }
+    }
+  },
+  "monthsShort": "Yan,Fev,Mar,Apr,May,Iyun,Iyul,Avg,Sen,Okt,Noy,Dek",
+  "receiptShareSubject": "To‘lov cheki № {number}",
+  "@receiptShareSubject": {
+    "placeholders": {
+      "number": {
+        "type": "Object"
+      }
+    }
+  },
+  "installmentAdvanceBadge": "AVANS",
+  "authStaffBadge": "XODIM",
+  "authLoginBadge": "AUTENTIFIKATSIYA",
+  "settingsGeneral": "UMUMIY",
+  "settingsSecurity": "XAVFSIZLIK",
+  "settingsLanguage": "Til"
 }

@@ -21,32 +21,28 @@ class AppAvatar extends StatelessWidget {
   final double size;
 
   String get _initials {
-    final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    final parts = name
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((p) => p.isNotEmpty)
+        .toList();
     if (parts.isEmpty) return '?';
     if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
     return (parts[0].substring(0, 1) + parts[1].substring(0, 1)).toUpperCase();
   }
 
-  static const List<List<Color>> _gradientPairs = [
-    [Color(0xFF3B82F6), Color(0xFF1D4ED8)], // Blue
-    [Color(0xFF10B981), Color(0xFF047857)], // Emerald
-    [Color(0xFF8B5CF6), Color(0xFF6D28D9)], // Purple
-    [Color(0xFFF59E0B), Color(0xFFD97706)], // Amber
-    [Color(0xFF06B6D4), Color(0xFF0E7490)], // Cyan
-    [Color(0xFFEC4899), Color(0xFFBE185D)], // Pink
-    [Color(0xFF6366F1), Color(0xFF4338CA)], // Indigo
-  ];
-
-  List<Color> _getGradient(String input) {
-    if (input.isEmpty) return _gradientPairs[0];
-    final hash = input.codeUnits.fold(0, (prev, elem) => prev + elem);
-    return _gradientPairs[hash % _gradientPairs.length];
+  /// Ism bo'yicha barqaror kategoriya rangi — bir hamkor har doim bir xil
+  /// rangda ko'rinadi (brend palitrasidan, light/dark'ga moslashadi).
+  static List<Color> _gradientFor(String input, AppColorsExtension colors) {
+    final hash = input.codeUnits.fold<int>(0, (prev, unit) => prev + unit);
+    final base = colors.categoricalAt(hash);
+    return [base, Color.lerp(base, Colors.black, 0.22)!];
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final gradient = _getGradient(name);
+    final gradient = _gradientFor(name, colors);
 
     final fallback = Container(
       width: size,
@@ -59,7 +55,10 @@ class AppAvatar extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         shape: BoxShape.circle,
-        border: Border.all(color: colors.surface.withValues(alpha: 0.8), width: 1.5),
+        border: Border.all(
+          color: colors.surface.withValues(alpha: 0.8),
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
             color: gradient[0].withValues(alpha: 0.25),
@@ -71,7 +70,7 @@ class AppAvatar extends StatelessWidget {
       child: Text(
         _initials,
         style: TextStyle(
-          color: Colors.white,
+          color: colors.onPrimary,
           fontWeight: FontWeight.w700,
           fontSize: size * 0.38,
           letterSpacing: 0.5,
@@ -86,7 +85,10 @@ class AppAvatar extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: colors.border.withValues(alpha: 0.6), width: 1.5),
+        border: Border.all(
+          color: colors.border.withValues(alpha: 0.6),
+          width: 1.5,
+        ),
       ),
       child: ClipOval(
         child: CachedNetworkImage(

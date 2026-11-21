@@ -108,6 +108,7 @@ abstract final class AppIcons {
   static const brokenImage = SolarIconsOutline.fileCorrupted;
   static const empty = SolarIconsOutline.inbox;
   static const offline = SolarIconsOutline.cloudCross;
+  static const online = SolarIconsOutline.cloudCheck;
   static const play = SolarIconsOutline.play;
   static const playCircle = SolarIconsOutline.playCircle;
   static const pause = SolarIconsOutline.pause;

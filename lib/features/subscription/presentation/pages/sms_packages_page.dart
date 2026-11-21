@@ -12,6 +12,8 @@ import '../../data/subscription_repository.dart';
 import '../widgets/payment_flow_sheet.dart';
 import '../widgets/payment_provider_sheet.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// SMS paketlari (MOBILE_APP_TZ.md 13.5).
 class SmsPackagesPage extends StatefulWidget {
@@ -47,7 +49,10 @@ class _SmsPackagesPageState extends State<SmsPackagesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('SMS paketlari'), elevation: 0),
+      appBar: AppBar(
+        title: Text(context.l10n.profileSmsPackages),
+        elevation: 0,
+      ),
       body: _buildBody(context),
     );
   }
@@ -55,7 +60,7 @@ class _SmsPackagesPageState extends State<SmsPackagesPage> {
   Widget _buildBody(BuildContext context) {
     if (_error != null) {
       return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
+        title: context.l10n.errorLoadShort,
         description: _error,
         onRetry: _load,
       );
@@ -98,7 +103,7 @@ class _SmsPackagesPageState extends State<SmsPackagesPage> {
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: colors.primaryContainer.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
       ),
       child: Row(
@@ -109,7 +114,7 @@ class _SmsPackagesPageState extends State<SmsPackagesPage> {
             height: 40,
             decoration: BoxDecoration(
               color: colors.primary.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Icon(
               AppIcons.messageUnread,
@@ -117,22 +122,22 @@ class _SmsPackagesPageState extends State<SmsPackagesPage> {
               size: 22,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'SMS xabarnomalar',
+                  context.l10n.subscriptionSmsNotifications,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: colors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xxs),
                 Text(
-                  'Mijozlaringizga hisob-kitoblar, qarz va to\'lovlar haqida SMS orqali tezkor eslatmalar yuboring.',
+                  context.l10n.smsPackagesDescription,
                   style: TextStyle(
                     fontSize: 12.5,
                     height: 1.4,
@@ -150,13 +155,15 @@ class _SmsPackagesPageState extends State<SmsPackagesPage> {
   Future<void> _purchase(BuildContext context, SmsPackage package) async {
     final title = package.displayName.isNotEmpty
         ? package.displayName
-        : 'SMS ${package.countLabel}';
+        : 'SMS ${package.countLabel(context.l10n)}';
 
     final provider = await showPaymentProviderSheet(
       context,
       itemTitle: title,
       formattedPrice: package.formattedPrice,
-      itemSubtitle: '${package.countLabel} ta SMS xabarnoma to\'plami',
+      itemSubtitle: context.l10n.smsPackageSubtitle(
+        package.countLabel(context.l10n),
+      ),
     );
     if (provider == null || !context.mounted) return;
 
@@ -172,7 +179,7 @@ class _SmsPackagesPageState extends State<SmsPackagesPage> {
     );
     if (!context.mounted) return;
     if (success) {
-      AppSnackbar.success(context, 'SMS paketi muvaffaqiyatli qo\'shildi');
+      AppSnackbar.success(context, context.l10n.smsPackageAdded);
       _load();
     }
   }
@@ -197,12 +204,12 @@ class _SmsPackageCard extends StatelessWidget {
 
     final title = package.displayName.isNotEmpty
         ? package.displayName
-        : 'SMS ${package.countLabel}';
+        : 'SMS ${package.countLabel(context.l10n)}';
 
     return Container(
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         border: Border.all(
           color: _isPopular
               ? colors.primary
@@ -220,7 +227,7 @@ class _SmsPackageCard extends StatelessWidget {
             : colors.cardShadow,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -239,13 +246,17 @@ class _SmsPackageCard extends StatelessWidget {
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(AppIcons.magic, size: 14, color: Colors.white),
+                  children: [
+                    Icon(
+                      AppIcons.magic,
+                      size: 14,
+                      color: context.colors.onPrimary,
+                    ),
                     SizedBox(width: 6),
                     Text(
-                      'ENG OMMABOP PAKET',
+                      context.l10n.smsMostPopular,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: context.colors.onPrimary,
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.6,
@@ -270,7 +281,7 @@ class _SmsPackageCard extends StatelessWidget {
                           color: _isPopular
                               ? colors.primary.withValues(alpha: 0.12)
                               : colors.surfaceSecondary,
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(AppRadius.medium),
                         ),
                         child: Icon(
                           AppIcons.message,
@@ -294,7 +305,7 @@ class _SmsPackageCard extends StatelessWidget {
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: AppSpacing.xs),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 8,
@@ -304,10 +315,14 @@ class _SmsPackageCard extends StatelessWidget {
                                     color: colors.primary.withValues(
                                       alpha: 0.1,
                                     ),
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: BorderRadius.circular(
+                                      AppRadius.sm,
+                                    ),
                                   ),
                                   child: Text(
-                                    '${package.countLabel} ta',
+                                    context.l10n.commonCountShort(
+                                      package.countLabel(context.l10n),
+                                    ),
                                     style: TextStyle(
                                       fontSize: 11.5,
                                       fontWeight: FontWeight.w700,
@@ -319,7 +334,7 @@ class _SmsPackageCard extends StatelessWidget {
                             ),
                             if (package.description != null &&
                                 package.description!.isNotEmpty) ...[
-                              const SizedBox(height: 4),
+                              const SizedBox(height: AppSpacing.xxs),
                               Text(
                                 package.description!,
                                 style: TextStyle(
@@ -362,7 +377,7 @@ class _SmsPackageCard extends StatelessWidget {
                             if (perSmsPrice != null) ...[
                               const SizedBox(height: 2),
                               Text(
-                                '1 ta SMS ≈ $perSmsPrice so\'m',
+                                context.l10n.smsPerPrice(perSmsPrice),
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
@@ -374,13 +389,13 @@ class _SmsPackageCard extends StatelessWidget {
                         ),
                       ),
                       AppButton.primary(
-                        label: 'Sotib olish',
+                        label: context.l10n.commonBuy,
                         size: AppButtonSize.medium,
                         expand: false,
-                        icon: const Icon(
+                        icon: Icon(
                           AppIcons.forward,
                           size: 16,
-                          color: Colors.white,
+                          color: context.colors.onPrimary,
                         ),
                         onPressed: onPurchase,
                       ),

@@ -14,6 +14,17 @@ abstract final class RoutePaths {
   static const accountSelection = '/auth/account-selection';
   static const forceUpdate = '/system/force-update';
 
+  /// Sessiyasiz ochiladigan kirish/ro'yxatdan o'tish sahifalari. 401 yoki
+  /// logout'dan keyin foydalanuvchi faqat shularda qola oladi.
+  static bool isPublicAuth(String location) => const {
+        phone,
+        otp,
+        login,
+        register,
+        forgotPassword,
+        resetPassword,
+      }.contains(location);
+
   // Shell / tabs
   static const dashboard = '/dashboard';
   static const partners = '/partners';

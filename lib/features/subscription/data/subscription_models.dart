@@ -1,15 +1,24 @@
 import 'dart:convert';
+import '../../../core/localization/app_localization_extension.dart';
 
 /// Limit progress (MOBILE_APP_TZ.md 13.2). `-1` — cheksiz.
 class UsageLimit {
-  const UsageLimit({required this.current, required this.max, required this.extra});
+  const UsageLimit({
+    required this.current,
+    required this.max,
+    required this.extra,
+  });
   final int current;
   final int max;
   final Map<String, dynamic> extra;
 
   bool get isUnlimited => max == -1;
-  double get percentage => isUnlimited || max == 0 ? 0 : (current / max).clamp(0, 1).toDouble();
-  bool get canAdd => extra['can_add'] as bool? ?? extra['can_send'] as bool? ?? (isUnlimited || current < max);
+  double get percentage =>
+      isUnlimited || max == 0 ? 0 : (current / max).clamp(0, 1).toDouble();
+  bool get canAdd =>
+      extra['can_add'] as bool? ??
+      extra['can_send'] as bool? ??
+      (isUnlimited || current < max);
 
   factory UsageLimit.fromJson(Map<String, dynamic> json) {
     int parseInt(dynamic val) {
@@ -31,20 +40,39 @@ class UsageLimit {
 }
 
 class SubscriptionUsage {
-  const SubscriptionUsage({required this.customers, required this.projects, required this.users, required this.sms});
+  const SubscriptionUsage({
+    required this.customers,
+    required this.projects,
+    required this.users,
+    required this.sms,
+  });
   final UsageLimit customers;
   final UsageLimit projects;
   final UsageLimit users;
   final UsageLimit sms;
 
-  factory SubscriptionUsage.fromJson(Map<String, dynamic> json) => SubscriptionUsage(
-        customers: UsageLimit.fromJson(json['customers'] as Map<String, dynamic>? ?? const {}),
-        projects: UsageLimit.fromJson(json['projects'] as Map<String, dynamic>? ?? const {}),
-        users: UsageLimit.fromJson(json['users'] as Map<String, dynamic>? ?? const {}),
-        sms: UsageLimit.fromJson(json['sms'] as Map<String, dynamic>? ?? const {}),
+  factory SubscriptionUsage.fromJson(Map<String, dynamic> json) =>
+      SubscriptionUsage(
+        customers: UsageLimit.fromJson(
+          json['customers'] as Map<String, dynamic>? ?? const {},
+        ),
+        projects: UsageLimit.fromJson(
+          json['projects'] as Map<String, dynamic>? ?? const {},
+        ),
+        users: UsageLimit.fromJson(
+          json['users'] as Map<String, dynamic>? ?? const {},
+        ),
+        sms: UsageLimit.fromJson(
+          json['sms'] as Map<String, dynamic>? ?? const {},
+        ),
       );
 
-  static const empty = SubscriptionUsage(customers: UsageLimit.empty, projects: UsageLimit.empty, users: UsageLimit.empty, sms: UsageLimit.empty);
+  static const empty = SubscriptionUsage(
+    customers: UsageLimit.empty,
+    projects: UsageLimit.empty,
+    users: UsageLimit.empty,
+    sms: UsageLimit.empty,
+  );
 }
 
 /// Joriy obuna (MOBILE_APP_TZ.md 13.2).
@@ -77,7 +105,10 @@ class SubscriptionInfo {
 
   factory SubscriptionInfo.fromJson(Map<String, dynamic> json) {
     if (json['has_subscription'] != true || json['subscription'] == null) {
-      return const SubscriptionInfo(hasSubscription: false, usage: SubscriptionUsage.empty);
+      return const SubscriptionInfo(
+        hasSubscription: false,
+        usage: SubscriptionUsage.empty,
+      );
     }
     final sub = json['subscription'] as Map<String, dynamic>;
     final plan = sub['plan'] as Map<String, dynamic>? ?? const {};
@@ -102,7 +133,9 @@ class SubscriptionInfo {
       periodEnd: period['end'] as String?,
       daysUntilDue: parseDaysUntilDue(sub['days_until_due']),
       isOverdue: sub['is_overdue'] as bool? ?? false,
-      usage: SubscriptionUsage.fromJson(sub['usage'] as Map<String, dynamic>? ?? const {}),
+      usage: SubscriptionUsage.fromJson(
+        sub['usage'] as Map<String, dynamic>? ?? const {},
+      ),
     );
   }
 }
@@ -197,10 +230,14 @@ class PricingPlan {
   bool get isUnlimitedUsers => maxUsers == -1;
   bool get isUnlimitedSms => smsPerMonth == -1;
 
-  String get customersLabel => isUnlimitedCustomers ? 'Cheksiz' : '$maxCustomers';
-  String get projectsLabel => isUnlimitedProjects ? 'Cheksiz' : '$maxProjects';
-  String get usersLabel => isUnlimitedUsers ? 'Cheksiz' : '$maxUsers';
-  String get smsLabel => isUnlimitedSms ? 'Cheksiz' : '$smsPerMonth';
+  String customersLabel(AppLocalizations l10n) =>
+      isUnlimitedCustomers ? l10n.commonUnlimited : '$maxCustomers';
+  String projectsLabel(AppLocalizations l10n) =>
+      isUnlimitedProjects ? l10n.commonUnlimited : '$maxProjects';
+  String usersLabel(AppLocalizations l10n) =>
+      isUnlimitedUsers ? l10n.commonUnlimited : '$maxUsers';
+  String smsLabel(AppLocalizations l10n) =>
+      isUnlimitedSms ? l10n.commonUnlimited : '$smsPerMonth';
 
   factory PricingPlan.fromJson(Map<String, dynamic> json) {
     int parseInt(dynamic val, int defaultValue) {
@@ -256,15 +293,24 @@ class PricingPlan {
     return PricingPlan(
       id: parseInt(json['id'], 0),
       name: json['name'] as String? ?? '',
-      displayName: json['display_name'] as String? ?? json['name'] as String? ?? '',
+      displayName:
+          json['display_name'] as String? ?? json['name'] as String? ?? '',
       description: json['description'] as String?,
-      monthly: json['monthly_price'] != null && json['monthly_price'] is Map<String, dynamic>
+      monthly:
+          json['monthly_price'] != null &&
+              json['monthly_price'] is Map<String, dynamic>
           ? PriceOption.fromJson(json['monthly_price'] as Map<String, dynamic>)
           : null,
-      semiAnnual: json['semi_annual_price'] != null && json['semi_annual_price'] is Map<String, dynamic>
-          ? PriceOption.fromJson(json['semi_annual_price'] as Map<String, dynamic>)
+      semiAnnual:
+          json['semi_annual_price'] != null &&
+              json['semi_annual_price'] is Map<String, dynamic>
+          ? PriceOption.fromJson(
+              json['semi_annual_price'] as Map<String, dynamic>,
+            )
           : null,
-      annual: json['annual_price'] != null && json['annual_price'] is Map<String, dynamic>
+      annual:
+          json['annual_price'] != null &&
+              json['annual_price'] is Map<String, dynamic>
           ? PriceOption.fromJson(json['annual_price'] as Map<String, dynamic>)
           : null,
       maxCustomers: parseInt(json['max_customers'], 0),
@@ -283,20 +329,25 @@ enum BillingCycle { monthly, semiAnnual, annual }
 
 extension BillingCycleX on BillingCycle {
   String get apiValue => switch (this) {
-        BillingCycle.monthly => 'MONTHLY',
-        BillingCycle.semiAnnual => 'SEMI_ANNUAL',
-        BillingCycle.annual => 'ANNUAL',
-      };
+    BillingCycle.monthly => 'MONTHLY',
+    BillingCycle.semiAnnual => 'SEMI_ANNUAL',
+    BillingCycle.annual => 'ANNUAL',
+  };
 
-  String get label => switch (this) {
-        BillingCycle.monthly => 'Oylik',
-        BillingCycle.semiAnnual => '6 oylik',
-        BillingCycle.annual => 'Yillik',
-      };
+  String label(AppLocalizations l10n) => switch (this) {
+    BillingCycle.monthly => l10n.billingMonthly,
+    BillingCycle.semiAnnual => l10n.billingSemiAnnual,
+    BillingCycle.annual => l10n.billingAnnual,
+  };
 }
 
 class PurchaseOrder {
-  const PurchaseOrder({required this.orderId, required this.orderNumber, required this.amount, required this.paymentUrl});
+  const PurchaseOrder({
+    required this.orderId,
+    required this.orderNumber,
+    required this.amount,
+    required this.paymentUrl,
+  });
   final int orderId;
   final String orderNumber;
   final num amount;
@@ -331,10 +382,10 @@ enum OrderStatus { paid, pending, failed }
 
 extension OrderStatusX on OrderStatus {
   static OrderStatus fromApi(String? value) => switch (value) {
-        'PAID' => OrderStatus.paid,
-        'FAILED' => OrderStatus.failed,
-        _ => OrderStatus.pending,
-      };
+    'PAID' => OrderStatus.paid,
+    'FAILED' => OrderStatus.failed,
+    _ => OrderStatus.pending,
+  };
 }
 
 /// SMS paketi (MOBILE_APP_TZ.md 13.5).
@@ -359,7 +410,8 @@ class SmsPackage {
 
   /// `-1` cheksiz bo'lsa
   bool get isUnlimited => smsCount == -1;
-  String get countLabel => isUnlimited ? 'Cheksiz' : '$smsCount';
+  String countLabel(AppLocalizations l10n) =>
+      isUnlimited ? l10n.commonUnlimited : '$smsCount';
 
   factory SmsPackage.fromJson(Map<String, dynamic> json) {
     int parseInt(dynamic val, int defaultValue) {
@@ -380,10 +432,12 @@ class SmsPackage {
     return SmsPackage(
       id: parseInt(json['id'], 0),
       name: json['name'] as String?,
-      displayName: json['display_name'] as String? ?? json['name'] as String? ?? '',
+      displayName:
+          json['display_name'] as String? ?? json['name'] as String? ?? '',
       description: json['description'] as String?,
       price: parseNum(json['price'], 0),
-      formattedPrice: json['formatted_price'] as String? ?? '${json['price'] ?? 0} UZS',
+      formattedPrice:
+          json['formatted_price'] as String? ?? '${json['price'] ?? 0} UZS',
       smsCount: parseInt(json['sms_count'], 0),
     );
   }

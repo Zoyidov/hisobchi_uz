@@ -17,6 +17,7 @@ import '../../../../core/widgets/feedback/app_snackbar.dart';
 import '../auth_navigation.dart';
 import '../cubit/login_cubit.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Parol bilan kirish — Senior Level FinTech Login ekrani.
 class LoginPage extends StatelessWidget {
@@ -188,7 +189,9 @@ class _LoginViewState extends State<_LoginView>
                                     children: [
                                       InkWell(
                                         onTap: () => context.pop(),
-                                        borderRadius: BorderRadius.circular(14),
+                                        borderRadius: BorderRadius.circular(
+                                          AppRadius.medium,
+                                        ),
                                         child: Container(
                                           width: 44,
                                           height: 44,
@@ -228,7 +231,7 @@ class _LoginViewState extends State<_LoginView>
                                           ),
                                         ),
                                         child: Text(
-                                          'AUTENTIFIKATSIYA',
+                                          context.l10n.authLoginBadge,
                                           style: TextStyle(
                                             color: colors.primary,
                                             fontSize: 10.5,
@@ -253,7 +256,7 @@ class _LoginViewState extends State<_LoginView>
 
                                   // Headings
                                   Text(
-                                    'Hisobga kirish 👋',
+                                    context.l10n.authLoginHeading,
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineLarge
@@ -263,9 +266,9 @@ class _LoginViewState extends State<_LoginView>
                                           letterSpacing: -0.5,
                                         ),
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: AppSpacing.xs),
                                   Text(
-                                    'Davom etish uchun maxfiy parolingizni kiriting.',
+                                    context.l10n.authLoginSubtitle,
                                     style: TextStyle(
                                       color: colors.textSecondary,
                                       fontSize: 14.5,
@@ -285,7 +288,9 @@ class _LoginViewState extends State<_LoginView>
                                       color: colors.surfaceSecondary.withValues(
                                         alpha: isDark ? 0.6 : 0.8,
                                       ),
-                                      borderRadius: BorderRadius.circular(16),
+                                      borderRadius: BorderRadius.circular(
+                                        AppRadius.lg,
+                                      ),
                                       border: Border.all(
                                         color: colors.borderSubtle,
                                         width: 1,
@@ -310,14 +315,14 @@ class _LoginViewState extends State<_LoginView>
                                             color: colors.primary,
                                           ),
                                         ),
-                                        const SizedBox(width: 12),
+                                        const SizedBox(width: AppSpacing.sm),
                                         Expanded(
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                'Telefon raqamingiz',
+                                                context.l10n.authPhoneTitle,
                                                 style: TextStyle(
                                                   color: colors.textTertiary,
                                                   fontSize: 11,
@@ -350,7 +355,7 @@ class _LoginViewState extends State<_LoginView>
                                               vertical: 4,
                                             ),
                                             child: Text(
-                                              'O\'zgartirish',
+                                              context.l10n.commonChange,
                                               style: TextStyle(
                                                 color: colors.primary,
                                                 fontSize: 12.5,
@@ -376,7 +381,7 @@ class _LoginViewState extends State<_LoginView>
                                           bottom: 8,
                                         ),
                                         child: Text(
-                                          'Parol',
+                                          context.l10n.authPasswordLabel,
                                           style: TextStyle(
                                             fontSize: 13,
                                             fontWeight: FontWeight.w600,
@@ -435,7 +440,9 @@ class _LoginViewState extends State<_LoginView>
                                                   ? colors.primary
                                                   : colors.textTertiary,
                                             ),
-                                            const SizedBox(width: 12),
+                                            const SizedBox(
+                                              width: AppSpacing.sm,
+                                            ),
                                             Expanded(
                                               child: TextField(
                                                 controller: _passwordController,
@@ -470,7 +477,9 @@ class _LoginViewState extends State<_LoginView>
                                                       const EdgeInsets.symmetric(
                                                         vertical: 16,
                                                       ),
-                                                  hintText: 'Parolni kiriting',
+                                                  hintText: context
+                                                      .l10n
+                                                      .authPasswordHint,
                                                   hintStyle: TextStyle(
                                                     fontSize: 15,
                                                     fontWeight: FontWeight.w400,
@@ -517,14 +526,16 @@ class _LoginViewState extends State<_LoginView>
                                         RoutePaths.forgotPassword,
                                         extra: {'phone': widget.phone},
                                       ),
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(
+                                        AppRadius.sm,
+                                      ),
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 6,
                                           vertical: 6,
                                         ),
                                         child: Text(
-                                          'Parolni unutdingizmi?',
+                                          context.l10n.authForgotPassword,
                                           style: TextStyle(
                                             color: colors.primary,
                                             fontSize: 13,
@@ -563,7 +574,9 @@ class _LoginViewState extends State<_LoginView>
                                             : colors.disabled.withValues(
                                                 alpha: 0.6,
                                               ),
-                                        borderRadius: BorderRadius.circular(16),
+                                        borderRadius: BorderRadius.circular(
+                                          AppRadius.lg,
+                                        ),
                                         boxShadow: canSubmit
                                             ? [
                                                 BoxShadow(
@@ -600,14 +613,16 @@ class _LoginViewState extends State<_LoginView>
                                                 milliseconds: 200,
                                               ),
                                               child: isLoading
-                                                  ? const SizedBox(
+                                                  ? SizedBox(
                                                       width: 22,
                                                       height: 22,
                                                       child: CircularProgressIndicator(
                                                         strokeWidth: 2.4,
                                                         valueColor:
                                                             AlwaysStoppedAnimation(
-                                                              Colors.white,
+                                                              context
+                                                                  .colors
+                                                                  .onPrimary,
                                                             ),
                                                       ),
                                                     )
@@ -617,14 +632,20 @@ class _LoginViewState extends State<_LoginView>
                                                               .center,
                                                       children: [
                                                         Text(
-                                                          'Kirish',
+                                                          context
+                                                              .l10n
+                                                              .authLoginButton,
                                                           style: TextStyle(
                                                             fontSize: 16,
                                                             fontWeight:
                                                                 FontWeight.w700,
                                                             color: canSubmit
-                                                                ? Colors.white
-                                                                : Colors.white
+                                                                ? context
+                                                                      .colors
+                                                                      .onPrimary
+                                                                : context
+                                                                      .colors
+                                                                      .onPrimary
                                                                       .withValues(
                                                                         alpha:
                                                                             0.6,
@@ -639,8 +660,12 @@ class _LoginViewState extends State<_LoginView>
                                                           AppIcons.forward,
                                                           size: 19,
                                                           color: canSubmit
-                                                              ? Colors.white
-                                                              : Colors.white
+                                                              ? context
+                                                                    .colors
+                                                                    .onPrimary
+                                                              : context
+                                                                    .colors
+                                                                    .onPrimary
                                                                     .withValues(
                                                                       alpha:
                                                                           0.6,
@@ -682,7 +707,7 @@ class _LoginViewState extends State<_LoginView>
                                           ),
                                           const SizedBox(width: 6),
                                           Text(
-                                            '256-bit shifrlangan • Barcha ma\'lumotlar xavfsiz',
+                                            context.l10n.authSecureFooterAll,
                                             style: TextStyle(
                                               fontSize: 11.5,
                                               fontWeight: FontWeight.w500,

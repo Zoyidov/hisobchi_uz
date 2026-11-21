@@ -18,6 +18,8 @@ import '../cubit/staff_list_cubit.dart';
 import 'staff_create_page.dart';
 import 'staff_edit_page.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Xodimlar ro'yxati — faqat owner (MOBILE_APP_TZ.md 15.2).
 class StaffListPage extends StatelessWidget {
@@ -39,7 +41,7 @@ class _View extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Xodimlar'),
+        title: Text(context.l10n.profileStaff),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: AppSpacing.sm),
@@ -51,13 +53,13 @@ class _View extends StatelessWidget {
                 ),
                 minimumSize: const Size(0, 36),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppRadius.medium),
                 ),
               ),
               onPressed: () => _openCreate(context),
               icon: const Icon(AppIcons.add, size: 15),
-              label: const Text(
-                'Qo\'shish',
+              label: Text(
+                context.l10n.commonAdd,
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
               ),
             ),
@@ -75,8 +77,8 @@ class _View extends StatelessWidget {
             StaffListLoaded(:final items) =>
               items.isEmpty
                   ? AppEmptyState(
-                      title: 'Xodimlar yo\'q',
-                      actionLabel: 'Xodim qo\'shish',
+                      title: context.l10n.staffEmpty,
+                      actionLabel: context.l10n.staffAdd,
                       onAction: () => _openCreate(context),
                     )
                   : RefreshIndicator(
@@ -102,7 +104,7 @@ class _View extends StatelessWidget {
         heroTag: 'staff_create_fab',
         onPressed: () => _openCreate(context),
         icon: AppIcons.partnerAdd,
-        label: 'Xodim qo\'shish',
+        label: context.l10n.staffAdd,
       ),
     );
   }
@@ -151,13 +153,13 @@ class _StaffTile extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
             ),
             alignment: Alignment.center,
             child: Text(
               initials,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: context.colors.onPrimary,
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
               ),
@@ -183,7 +185,7 @@ class _StaffTile extends StatelessWidget {
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xxs),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 6,
@@ -191,10 +193,12 @@ class _StaffTile extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: colors.surfaceSecondary,
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(AppRadius.xs),
                   ),
                   child: Text(
-                    '${staff.permissions.length} ta ruxsat',
+                    context.l10n.staffPermissionsCount(
+                      staff.permissions.length,
+                    ),
                     style: TextStyle(
                       color: colors.textTertiary,
                       fontSize: 11,
@@ -221,8 +225,8 @@ class _StaffTile extends StatelessWidget {
             onPressed: () async {
               final confirmed = await showAppConfirmationSheet(
                 context,
-                title: 'Xodim o\'chirilsinmi?',
-                description: 'Bu amalni keyin qaytarib bo\'lmaydi.',
+                title: context.l10n.staffDeleteConfirm,
+                description: context.l10n.commonIrreversible,
               );
               if (confirmed && context.mounted) {
                 final error = await context.read<StaffListCubit>().delete(

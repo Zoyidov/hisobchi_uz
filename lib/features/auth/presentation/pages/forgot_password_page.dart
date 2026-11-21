@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +11,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/formatters/phone_formatter.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Parolni tiklash — Senior Level FinTech OTP jo'natish ekrani.
 class ForgotPasswordPage extends StatefulWidget {
@@ -145,13 +145,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                     alignment: Alignment.centerLeft,
                     child: InkWell(
                       onTap: () => context.pop(),
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(AppRadius.medium),
                       child: Container(
                         width: 44,
                         height: 44,
                         decoration: BoxDecoration(
                           color: colors.surfaceSecondary.withValues(alpha: 0.8),
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(AppRadius.medium),
                           border: Border.all(color: colors.borderSubtle),
                         ),
                         child: Icon(
@@ -198,7 +198,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            '256-bit shifrlangan • Ma\'lumotlar to\'liq xavfsiz',
+                            context.l10n.authSecureFooter,
                             style: TextStyle(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w500,
@@ -251,13 +251,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
         ),
         const SizedBox(height: AppSpacing.xl),
         Text(
-          'SMS kod yuborilmoqda...',
+          context.l10n.authSmsSending,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w800,
             fontSize: 20,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.xs),
         Text(
           PhoneFormatter.toDisplay(widget.phone),
           style: TextStyle(
@@ -266,9 +266,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
             fontSize: 15,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppSpacing.xxs),
         Text(
-          'Iltimos, biroz kuting',
+          context.l10n.authPleaseWait,
           style: TextStyle(color: colors.textSecondary, fontSize: 13),
         ),
       ],
@@ -282,7 +282,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(AppRadius.large),
         border: Border.all(color: colors.border),
         boxShadow: colors.cardShadow,
       ),
@@ -298,17 +298,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
             ),
             child: Icon(AppIcons.error, color: colors.error, size: 30),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Text(
-            'Kod yuborilmadi',
+            context.l10n.authCodeNotSent,
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.xs),
           Text(
-            _error ?? 'Noma\'lum xatolik yuz berdi. Qayta urinib ko\'ring.',
+            _error ?? context.l10n.errorUnknownRetry,
             style: TextStyle(
               color: colors.textSecondary,
               fontSize: 14,
@@ -316,8 +316,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 24),
-          AppButton.primary(label: 'Qayta urinish', onPressed: _send),
+          const SizedBox(height: AppSpacing.xl),
+          AppButton.primary(label: context.l10n.commonRetry, onPressed: _send),
         ],
       ),
     );

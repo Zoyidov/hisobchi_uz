@@ -15,6 +15,8 @@ import '../../data/notifications_repository.dart';
 import '../cubit/notification_badge_cubit.dart';
 import '../cubit/notifications_cubit.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Bildirishnomalar ro'yxati + deep-link navigatsiya (MOBILE_APP_TZ.md 14.2-14.3).
 class NotificationsPage extends StatelessWidget {
@@ -81,7 +83,7 @@ class _ViewState extends State<_View> {
   Widget build(BuildContext context) {
     final cubit = context.watch<NotificationsCubit>();
     return Scaffold(
-      appBar: AppBar(title: const Text('Bildirishnomalar')),
+      appBar: AppBar(title: Text(context.l10n.notificationsTitle)),
       body: BlocBuilder<NotificationsCubit, NotificationsState>(
         builder: (context, state) {
           if (state.isLoading) return const AppSkeletonList();
@@ -92,8 +94,8 @@ class _ViewState extends State<_View> {
             );
           }
           if (state.isEmpty) {
-            return const AppEmptyState(
-              title: 'Bildirishnoma yo\'q',
+            return AppEmptyState(
+              title: context.l10n.notificationsEmpty,
               icon: AppIcons.notification,
             );
           }
@@ -119,14 +121,14 @@ class _ViewState extends State<_View> {
                   color: n.isRead
                       ? colors.surface
                       : colors.primary.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
                     onTap: () => _handleTap(context, n),
                     child: Container(
                       padding: const EdgeInsets.all(AppSpacing.md),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(AppRadius.lg),
                         border: Border.all(color: colors.border),
                       ),
                       child: Row(
@@ -155,7 +157,7 @@ class _ViewState extends State<_View> {
                                             : FontWeight.w700,
                                       ),
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: AppSpacing.xxs),
                                 Text(
                                   n.body,
                                   style: TextStyle(color: colors.textSecondary),

@@ -101,7 +101,7 @@ class AppGroupedTile extends StatelessWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: effectiveIconColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(11),
+                borderRadius: BorderRadius.circular(AppRadius.small),
               ),
               child: Icon(icon, size: 19, color: effectiveIconColor),
             ),
@@ -143,7 +143,7 @@ class AppGroupedTile extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: AppSpacing.xxs),
               ],
               if (showChevron && onTap != null)
                 Icon(

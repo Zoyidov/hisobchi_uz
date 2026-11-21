@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 
+import '../../localization/app_localization_extension.dart';
+
 /// Sana formatlari — javobda `dd.mm.yyyy`, yaratishda `yyyy-mm-dd`, filtrda
 /// `dd.mm.yyyy` (MOBILE_APP_TZ.md 4.8, E_HISOB_FLUTTER_UI_UX_TZ.md 15-bo'lim).
 abstract final class AppDateFormatter {
@@ -32,18 +34,16 @@ abstract final class AppDateFormatter {
   /// Filtr so'rovlari uchun: `01.09.2026`.
   static String toApiFilterDate(DateTime date) => _display.format(date);
 
-  /// "Bugun" / "Kecha" / "3 kun oldin" / `07.09.2026`.
-  static String relative(DateTime date, {required bool isRussian}) {
+  /// "Bugun" / "Kecha" / "3 kun oldin" / `07.09.2026` — joriy tilda.
+  static String relative(DateTime date, AppLocalizations l10n) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final target = DateTime(date.year, date.month, date.day);
     final diff = today.difference(target).inDays;
 
-    if (diff == 0) return isRussian ? 'Сегодня' : 'Bugun';
-    if (diff == 1) return isRussian ? 'Вчера' : 'Kecha';
-    if (diff > 1 && diff < 7) {
-      return isRussian ? '$diff дн. назад' : '$diff kun oldin';
-    }
+    if (diff == 0) return l10n.dateToday;
+    if (diff == 1) return l10n.dateYesterday;
+    if (diff > 1 && diff < 7) return l10n.dateDaysAgo(diff);
     return display(date);
   }
 

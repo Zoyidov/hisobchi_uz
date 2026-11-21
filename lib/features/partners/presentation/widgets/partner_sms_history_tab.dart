@@ -11,6 +11,8 @@ import '../../data/partners_repository.dart';
 import '../../data/sms_models.dart';
 import '../cubit/partner_sms_cubit.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Tab 3: SMS tarixi (MOBILE_APP_TZ.md 8.9).
 class PartnerSmsHistoryTab extends StatefulWidget {
@@ -43,7 +45,7 @@ class _PartnerSmsHistoryTabState extends State<PartnerSmsHistoryTab>
             onRefresh: cubit.refresh,
             onRetry: cubit.loadFirst,
             emptyIcon: AppIcons.message,
-            emptyTitle: 'SMS tarixi bo\'sh',
+            emptyTitle: context.l10n.partnerSmsHistoryEmpty,
             itemBuilder: (context, sms, index) => AppCard(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +70,7 @@ class _PartnerSmsHistoryTabState extends State<PartnerSmsHistoryTab>
                               fontSize: 12,
                             ),
                           ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.xxs),
                         Text(
                           sms.message,
                           maxLines: 3,

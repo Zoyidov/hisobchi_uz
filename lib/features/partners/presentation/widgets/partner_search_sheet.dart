@@ -13,11 +13,14 @@ import '../../data/partner_models.dart';
 import '../../data/partners_repository.dart';
 import '../cubit/partner_selection_cubit.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 Future<Partner?> showPartnerSearchSheet(BuildContext context) =>
     showAppBottomSheet<Partner>(
       context,
-      title: 'Hamkorni tanlang',
+      title: context.l10n.partnersSelect,
       heightFactor: 0.85,
       child: BlocProvider(
         create: (_) =>
@@ -40,8 +43,8 @@ class _PartnerSearchList extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: TextField(
               onChanged: cubit.search,
-              decoration: const InputDecoration(
-                hintText: 'Ism yoki telefon orqali qidirish',
+              decoration: InputDecoration(
+                hintText: context.l10n.partnersSearchByNamePhone,
                 prefixIcon: Icon(AppIcons.search),
               ),
             ),
@@ -73,9 +76,8 @@ class _PartnerSearchList extends StatelessWidget {
                         horizontal: 16,
                         vertical: 8,
                       ),
-                      emptyTitle: 'Hamkorlar topilmadi',
-                      emptyDescription:
-                          'Ism yoki telefonni o‘zgartirib qidiring.',
+                      emptyTitle: context.l10n.partnersEmptyTitle,
+                      emptyDescription: context.l10n.partnersSearchChange,
                       emptyIcon: AppIcons.search,
                       itemBuilder: (context, partner, index) => ListTile(
                         key: ValueKey(partner.id),
@@ -111,11 +113,11 @@ class _PartnerSearchLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Semantics(
-    label: 'Hamkorlar yuklanmoqda',
+    label: context.l10n.partnersLoading,
     child: const Column(
       children: [
         _PartnerSearchSkeletonRow(),
-        SizedBox(height: 8),
+        SizedBox(height: AppSpacing.xs),
         _PartnerSearchSkeletonRow(),
       ],
     ),
@@ -133,9 +135,9 @@ class _PartnerSearchSkeletonRow extends StatelessWidget {
         AppSkeletonBox(
           width: 40,
           height: 40,
-          borderRadius: BorderRadius.all(Radius.circular(20)),
+          borderRadius: BorderRadius.all(Radius.circular(AppRadius.card)),
         ),
-        SizedBox(width: 16),
+        SizedBox(width: AppSpacing.md),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,7 +146,7 @@ class _PartnerSearchSkeletonRow extends StatelessWidget {
                 widthFactor: .6,
                 child: AppSkeletonBox(height: 15),
               ),
-              SizedBox(height: 8),
+              SizedBox(height: AppSpacing.xs),
               FractionallySizedBox(
                 widthFactor: .8,
                 child: AppSkeletonBox(height: 12),
@@ -152,7 +154,7 @@ class _PartnerSearchSkeletonRow extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(width: 20),
+        SizedBox(width: AppSpacing.lg),
         AppSkeletonBox(width: 14, height: 18),
       ],
     ),

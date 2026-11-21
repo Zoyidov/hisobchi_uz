@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hisobchi_uz/core/theme/app_colors.dart';
 import 'package:hisobchi_uz/features/partners/presentation/widgets/partner_detail_skeleton.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 void main() {
   testWidgets('detail shimmer fits small screens and both themes', (
@@ -15,6 +16,9 @@ void main() {
       for (final dark in [false, true]) {
         await tester.pumpWidget(
           MaterialApp(
+            locale: const Locale('uz'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             theme: ThemeData(
               brightness: dark ? Brightness.dark : Brightness.light,
               extensions: [

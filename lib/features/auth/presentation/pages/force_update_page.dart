@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -8,6 +7,7 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Majburiy yangilash — Senior Level FinTech Force Update ekrani.
 class ForceUpdatePage extends StatelessWidget {
@@ -102,7 +102,9 @@ class ForceUpdatePage extends StatelessWidget {
                                   colors.primary.withValues(alpha: 0.85),
                                 ],
                               ),
-                              borderRadius: BorderRadius.circular(26),
+                              borderRadius: BorderRadius.circular(
+                                AppRadius.large,
+                              ),
                               boxShadow: [
                                 BoxShadow(
                                   color: colors.primary.withValues(
@@ -113,10 +115,10 @@ class ForceUpdatePage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            child: const Icon(
+                            child: Icon(
                               AppIcons.launch,
                               size: 40,
-                              color: Colors.white,
+                              color: context.colors.onPrimary,
                             ),
                           ),
                         ],
@@ -142,7 +144,7 @@ class ForceUpdatePage extends StatelessWidget {
                           ),
                         ),
                         child: Text(
-                          'YANGI TALQIN MAVJUD • UPDATE',
+                          context.l10n.forceUpdateBadge,
                           style: TextStyle(
                             color: colors.primary,
                             fontSize: 11,
@@ -157,7 +159,7 @@ class ForceUpdatePage extends StatelessWidget {
 
                     // Title
                     Text(
-                      'Ilovani yangilash zarur',
+                      context.l10n.forceUpdateTitle,
                       style: Theme.of(context).textTheme.headlineMedium
                           ?.copyWith(
                             fontWeight: FontWeight.w800,
@@ -171,7 +173,7 @@ class ForceUpdatePage extends StatelessWidget {
 
                     // Subtitle
                     Text(
-                      'Hisup yangi moliyaviy imkoniyatlar, takomillashtirilgan xavfsizlik va yuqori tezlikka ega bo\'ldi. Davom ettirish uchun ilovani yangilang.',
+                      context.l10n.forceUpdateDescription,
                       style: TextStyle(
                         color: colors.textSecondary,
                         fontSize: 14.5,
@@ -189,7 +191,7 @@ class ForceUpdatePage extends StatelessWidget {
                         color: isDark
                             ? colors.surfaceSecondary
                             : colors.surface,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(AppRadius.card),
                         border: Border.all(color: colors.border),
                         boxShadow: colors.cardShadow,
                       ),
@@ -198,9 +200,8 @@ class ForceUpdatePage extends StatelessWidget {
                           _buildFeatureRow(
                             context: context,
                             icon: AppIcons.speed,
-                            title: 'Tezkor ishlash',
-                            subtitle:
-                                'Ma\'lumotlar almashinuvi sezilarli darajada optimallashdi',
+                            title: context.l10n.forceUpdateFastTitle,
+                            subtitle: context.l10n.forceUpdateFastDescription,
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10),
@@ -209,9 +210,9 @@ class ForceUpdatePage extends StatelessWidget {
                           _buildFeatureRow(
                             context: context,
                             icon: AppIcons.shield,
-                            title: 'Xavfsizlik protokollari',
+                            title: context.l10n.forceUpdateSecurityTitle,
                             subtitle:
-                                'Bank darajasidagi yangilangan shifrlash tizimi',
+                                context.l10n.forceUpdateSecurityDescription,
                           ),
                         ],
                       ),
@@ -233,7 +234,7 @@ class ForceUpdatePage extends StatelessWidget {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(AppRadius.lg),
                           boxShadow: [
                             BoxShadow(
                               color: colors.primary.withValues(alpha: 0.38),
@@ -245,7 +246,7 @@ class ForceUpdatePage extends StatelessWidget {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(AppRadius.lg),
                             onTap: () {
                               HapticFeedback.mediumImpact();
                               launchUrl(
@@ -257,21 +258,21 @@ class ForceUpdatePage extends StatelessWidget {
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
+                              children: [
                                 Text(
-                                  'Ilovani yangilash',
+                                  context.l10n.forceUpdateButton,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
-                                    color: Colors.white,
+                                    color: context.colors.onPrimary,
                                     letterSpacing: 0.2,
                                   ),
                                 ),
-                                SizedBox(width: 8),
+                                SizedBox(width: AppSpacing.xs),
                                 Icon(
                                   AppIcons.externalLink,
                                   size: 19,
-                                  color: Colors.white,
+                                  color: context.colors.onPrimary,
                                 ),
                               ],
                             ),
@@ -306,11 +307,11 @@ class ForceUpdatePage extends StatelessWidget {
           height: 38,
           decoration: BoxDecoration(
             color: colors.primaryContainer,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppRadius.small),
           ),
           child: Icon(icon, size: 20, color: colors.primary),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

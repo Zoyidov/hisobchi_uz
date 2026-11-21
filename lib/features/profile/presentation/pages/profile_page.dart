@@ -24,6 +24,7 @@ import '../../../../core/constants/app_permission.dart';
 import 'settings_page.dart';
 import '../widgets/profile_subscription_card.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Profil bosh sahifasi — guruhlangan menyu bo'limlari
 /// (MOBILE_APP_TZ.md 17-bo'lim, E_HISOB_FLUTTER_UI_UX_TZ.md 61,
@@ -50,7 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
         phoneDigits != '912719555';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profil')),
+      appBar: AppBar(title: Text(context.l10n.profileTitle)),
       body: RefreshIndicator(
         onRefresh: () async {
           await Future.wait([
@@ -91,7 +92,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   AppGroupedTile(
                     icon: AppIcons.shop,
-                    label: 'O\'z hisobimni ochish',
+                    label: context.l10n.profileOpenOwnAccount,
                     iconColor: colors.primary,
                     onTap: () => _activateOwnAccount(context),
                   ),
@@ -103,14 +104,14 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 AppGroupedTile(
                   icon: AppIcons.user,
-                  label: 'Shaxsiy ma\'lumotlar',
+                  label: context.l10n.profilePersonalInfo,
                   iconColor: colors.primary,
                   onTap: () => context.push(RoutePaths.profileEdit),
                 ),
                 AppGroupedTile(
                   icon: AppIcons.lock,
-                  label: 'Xavfsizlik va PIN-kod',
-                  subtitle: 'PIN-kodni yoqish yoki o\'chirish',
+                  label: context.l10n.profileSecurityPin,
+                  subtitle: context.l10n.profileSecurityPinSubtitle,
                   iconColor: colors.accentViolet,
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
@@ -120,8 +121,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 AppGroupedTile(
                   icon: AppIcons.settings,
-                  label: 'Sozlamalar',
-                  iconColor: const Color(0xFF64748B),
+                  label: context.l10n.profileSettings,
+                  iconColor: colors.textSecondary,
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
                       builder: (_) => const SettingsPage(),
@@ -135,14 +136,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   AppGroupedTile(
                     icon: AppIcons.premium,
-                    label: 'Obuna va tariflar',
+                    label: context.l10n.profileSubscription,
                     iconColor: colors.warning,
                     onTap: () => context.push(RoutePaths.profileSubscription),
                   ),
                   AppGroupedTile(
                     icon: AppIcons.message,
-                    label: 'SMS paketlari',
-                    iconColor: const Color(0xFF06B6D4),
+                    label: context.l10n.profileSmsPackages,
+                    iconColor: colors.accentCyan,
                     onTap: () => context.push(RoutePaths.profileSms),
                   ),
                 ],
@@ -154,33 +155,33 @@ class _ProfilePageState extends State<ProfilePage> {
                     permission: AppPermission.partnersView,
                     child: AppGroupedTile(
                       icon: AppIcons.partners,
-                      label: 'Xodimlar',
+                      label: context.l10n.profileStaff,
                       iconColor: colors.success,
                       onTap: () => context.push(RoutePaths.profileStaff),
                     ),
                   ),
                 AppGroupedTile(
                   icon: AppIcons.folder,
-                  label: 'Ma\'lumotnomalar',
-                  iconColor: const Color(0xFFF97316),
+                  label: context.l10n.docReferenceBooks,
+                  iconColor: colors.accentOrange,
                   onTap: () => context.push(RoutePaths.profileDocuments),
                 ),
                 AppGroupedTile(
                   icon: AppIcons.history,
-                  label: 'Faollik jurnali',
-                  iconColor: const Color(0xFF8B5CF6),
+                  label: context.l10n.activityLogTitle,
+                  iconColor: colors.accentViolet,
                   onTap: () => context.push(RoutePaths.profileActivity),
                 ),
                 AppGroupedTile(
                   icon: AppIcons.notification,
-                  label: 'Bildirishnomalar',
-                  iconColor: const Color(0xFFE11D48),
+                  label: context.l10n.notificationsTitle,
+                  iconColor: colors.accentPink,
                   onTap: () => context.push(RoutePaths.profileNotifications),
                 ),
                 AppGroupedTile(
                   icon: AppIcons.exchange,
-                  label: 'Valyuta kurslari',
-                  iconColor: const Color(0xFF0284C7),
+                  label: context.l10n.docCurrencyRates,
+                  iconColor: colors.info,
                   onTap: () => context.push(RoutePaths.profileCurrency),
                 ),
               ],
@@ -190,7 +191,7 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 AppGroupedTile(
                   icon: AppIcons.logout,
-                  label: 'Chiqish',
+                  label: context.l10n.authLogout,
                   destructive: true,
                   showChevron: false,
                   onTap: () => _logout(context),
@@ -207,10 +208,9 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _activateOwnAccount(BuildContext context) async {
     final confirmed = await showAppConfirmationSheet(
       context,
-      title: 'O\'z hisobimni ochish',
-      description:
-          'Sizga FREE tarif bilan o\'z biznes hisobingiz ochiladi. Davom etasizmi?',
-      confirmLabel: 'Ha, ochish',
+      title: context.l10n.profileOpenOwnAccount,
+      description: context.l10n.profileOpenOwnAccountConfirm,
+      confirmLabel: context.l10n.profileOpenOwnAccountYes,
       destructive: false,
     );
     if (!confirmed || !context.mounted) return;
@@ -218,7 +218,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (!context.mounted) return;
     result.when(
       success: (_) {
-        AppSnackbar.success(context, 'Hisobingiz ochildi');
+        AppSnackbar.success(context, context.l10n.profileOwnAccountOpened);
         context.read<UserCubit>().loadMe();
       },
       failure: (f) => AppSnackbar.error(context, f.message),
@@ -228,9 +228,9 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _logout(BuildContext context) async {
     final confirmed = await showAppConfirmationSheet(
       context,
-      title: 'Chiqish',
-      description: 'Hisobingizdan chiqishni xohlaysizmi?',
-      confirmLabel: 'Ha, chiqish',
+      title: context.l10n.authLogout,
+      description: context.l10n.authLogoutConfirm,
+      confirmLabel: context.l10n.authLogoutYes,
       destructive: false,
     );
     if (!confirmed || !context.mounted) return;
@@ -294,10 +294,12 @@ class _Header extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: colors.primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
                         ),
                         child: Text(
-                          user!.isOwner ? 'Egasi' : 'Xodim',
+                          user!.isOwner
+                              ? context.l10n.profileRoleOwner
+                              : context.l10n.profileRoleStaff,
                           style: TextStyle(
                             color: colors.primary,
                             fontSize: 11,
@@ -332,7 +334,7 @@ class _Header extends StatelessWidget {
                           borderRadius: AppRadius.pillRadius,
                         ),
                         child: Text(
-                          '${ownerContext.ownerName ?? ''} · Almashtirish',
+                          '${ownerContext.ownerName ?? ''} · ${context.l10n.authSwitchAccount}',
                           style: TextStyle(
                             color: colors.primary,
                             fontSize: 12,
@@ -364,7 +366,7 @@ class _VersionLabel extends StatelessWidget {
           padding: const EdgeInsets.only(top: AppSpacing.md),
           child: Center(
             child: Text(
-              'Versiya $version',
+              context.l10n.profileVersion(version),
               style: TextStyle(
                 color: context.colors.textTertiary,
                 fontSize: 12,

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import '../../../core/localization/app_localization_extension.dart';
 
 /// Full Partner Installment Report Model (wraps GET /reports/installments/partner/$partnerId)
 class PartnerInstallmentReportModel {
@@ -28,19 +28,35 @@ class PartnerInstallmentReportModel {
       partnerName: json['partner_name'] as String? ?? '',
       partnerPhone: json['partner_phone'] as String? ?? '',
       stats: (json['stats'] as List? ?? [])
-          .map((e) => PartnerInstallmentStatModel.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) =>
+                PartnerInstallmentStatModel.fromJson(e as Map<String, dynamic>),
+          )
           .toList(),
       plans: (json['plans'] as List? ?? [])
-          .map((e) => PartnerInstallmentPlanModel.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) =>
+                PartnerInstallmentPlanModel.fromJson(e as Map<String, dynamic>),
+          )
           .toList(),
       payments: (json['payments'] as List? ?? [])
-          .map((e) => PartnerInstallmentPaymentModel.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) => PartnerInstallmentPaymentModel.fromJson(
+              e as Map<String, dynamic>,
+            ),
+          )
           .toList(),
       items: (json['items'] as List? ?? [])
-          .map((e) => PartnerInstallmentItemModel.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) =>
+                PartnerInstallmentItemModel.fromJson(e as Map<String, dynamic>),
+          )
           .toList(),
       monthlyDynamics: (json['monthly_dynamics'] as List? ?? [])
-          .map((e) => PartnerMonthlyDynamicModel.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) =>
+                PartnerMonthlyDynamicModel.fromJson(e as Map<String, dynamic>),
+          )
           .toList(),
     );
   }
@@ -142,23 +158,9 @@ class PartnerInstallmentPlanModel {
   double get totalAmountDouble => double.tryParse(totalAmount) ?? 0;
   double get paidAmountDouble => double.tryParse(paidAmount) ?? 0;
   double get remainingDouble => double.tryParse(totalRemaining) ?? 0;
-  double get progress =>
-      totalAmountDouble > 0 ? (paidAmountDouble / totalAmountDouble).clamp(0.0, 1.0) : 0.0;
-
-  Color get statusColor {
-    switch (status) {
-      case 'active':
-        return const Color(0xFF6366F1);
-      case 'completed':
-        return const Color(0xFF22C55E);
-      case 'cancelled':
-        return const Color(0xFF94A3B8);
-      default:
-        return const Color(0xFF64748B);
-    }
-  }
-
-  Color get statusBgColor => statusColor.withValues(alpha: 0.12);
+  double get progress => totalAmountDouble > 0
+      ? (paidAmountDouble / totalAmountDouble).clamp(0.0, 1.0)
+      : 0.0;
 
   factory PartnerInstallmentPlanModel.fromJson(Map<String, dynamic> json) {
     return PartnerInstallmentPlanModel(
@@ -258,24 +260,6 @@ class PartnerInstallmentItemModel {
   double get progress =>
       amountDouble > 0 ? (paidDouble / amountDouble).clamp(0.0, 1.0) : 0.0;
 
-  Color get statusColor {
-    switch (status) {
-      case 'paid':
-        return const Color(0xFF22C55E);
-      case 'partial':
-        return const Color(0xFF3B82F6);
-      case 'near':
-        return const Color(0xFFF59E0B);
-      case 'overdue':
-        return const Color(0xFFEF4444);
-      case 'pending':
-      default:
-        return const Color(0xFF94A3B8);
-    }
-  }
-
-  Color get statusBgColor => statusColor.withValues(alpha: 0.12);
-
   factory PartnerInstallmentItemModel.fromJson(Map<String, dynamic> json) {
     return PartnerInstallmentItemModel(
       id: (json['id'] as num?)?.toInt() ?? 0,
@@ -313,24 +297,14 @@ class PartnerMonthlyDynamicModel {
       plannedAmount > collectedAmount ? plannedAmount : collectedAmount;
   bool get hasData => plannedAmount > 0 || collectedAmount > 0;
 
-  static const _uzLabels = [
-    '',
-    'Yan',
-    'Fev',
-    'Mar',
-    'Apr',
-    'May',
-    'Iyun',
-    'Iyul',
-    'Avg',
-    'Sen',
-    'Okt',
-    'Noy',
-    'Dek',
-  ];
-
-  String get uzLabel =>
-      month >= 1 && month <= 12 ? _uzLabels[month] : monthLabel;
+  /// Oyning qisqa nomi joriy tilda (`l10n.monthsShort` — vergul bilan
+  /// ajratilgan 12 ta nom).
+  String monthShort(AppLocalizations l10n) {
+    final names = l10n.monthsShort.split(',');
+    return month >= 1 && month <= names.length
+        ? names[month - 1].trim()
+        : monthLabel;
+  }
 
   factory PartnerMonthlyDynamicModel.fromJson(Map<String, dynamic> json) {
     return PartnerMonthlyDynamicModel(

@@ -24,6 +24,8 @@ import '../../data/document_models.dart';
 import '../../data/documents_repository.dart';
 import '../cubit/workers_cubit.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Ishchilar (MOBILE_APP_TZ.md 11-bo'lim).
 class WorkersPage extends StatelessWidget {
@@ -45,7 +47,7 @@ class _View extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ishchilar'),
+        title: Text(context.l10n.docWorkers),
         actions: [
           BlocBuilder<WorkersCubit, WorkersState>(
             builder: (context, state) {
@@ -62,14 +64,14 @@ class _View extends StatelessWidget {
                     ),
                     minimumSize: const Size(0, 36),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(AppRadius.medium),
                     ),
                   ),
                   onPressed: () =>
                       _showWorkerForm(context, positions: positions),
                   icon: const Icon(AppIcons.add, size: 15),
-                  label: const Text(
-                    'Qo\'shish',
+                  label: Text(
+                    context.l10n.commonAdd,
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
                   ),
                 ),
@@ -89,8 +91,8 @@ class _View extends StatelessWidget {
             WorkersLoaded(:final items, :final positions) =>
               items.isEmpty
                   ? AppEmptyState(
-                      title: 'Ishchi topilmadi',
-                      actionLabel: 'Ishchi qo\'shish',
+                      title: context.l10n.docWorkerNotFound,
+                      actionLabel: context.l10n.docWorkerAdd,
                       onAction: () =>
                           _showWorkerForm(context, positions: positions),
                     )
@@ -122,7 +124,7 @@ class _View extends StatelessWidget {
             heroTag: 'workers_create_fab',
             onPressed: () => _showWorkerForm(context, positions: positions),
             icon: AppIcons.partnerAdd,
-            label: 'Ishchi qo\'shish',
+            label: context.l10n.docWorkerAdd,
           );
         },
       ),
@@ -164,10 +166,10 @@ class _Tile extends StatelessWidget {
                     ),
                   ),
                 if (item.isDeleted)
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(top: 4),
                     child: AppStatusChip(
-                      label: 'O\'chirilgan',
+                      label: context.l10n.commonDeleted,
                       tone: AppStatusChipTone.neutral,
                     ),
                   ),
@@ -176,7 +178,7 @@ class _Tile extends StatelessWidget {
           ),
           if (item.isDeleted)
             AppButton.text(
-              label: 'Tiklash',
+              label: context.l10n.commonRestore,
               onPressed: () =>
                   context.read<WorkersCubit>().submitRestore(item.id),
             )
@@ -186,8 +188,8 @@ class _Tile extends StatelessWidget {
               onPressed: () async {
                 final confirmed = await showAppConfirmationSheet(
                   context,
-                  title: 'Ishchi o\'chirilsinmi?',
-                  description: 'Bu amalni keyin qaytarib bo\'lmaydi.',
+                  title: context.l10n.docWorkerDeleteConfirm,
+                  description: context.l10n.commonIrreversible,
                 );
                 if (confirmed && context.mounted) {
                   final error = await context.read<WorkersCubit>().submitDelete(
@@ -223,7 +225,9 @@ void _showWorkerForm(
 
   showAppBottomSheet<void>(
     context,
-    title: editing == null ? 'Ishchi qo\'shish' : 'Ishchini tahrirlash',
+    title: editing == null
+        ? context.l10n.docWorkerAdd
+        : context.l10n.docWorkerEdit,
     heightFactor: 0.85,
     child: StatefulBuilder(
       builder: (context, setState) => SingleChildScrollView(
@@ -231,20 +235,26 @@ void _showWorkerForm(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AppTextField(controller: nameController, label: 'Ism'),
+            AppTextField(
+              controller: nameController,
+              label: context.l10n.partnersNameField,
+            ),
             const SizedBox(height: AppSpacing.md),
-            AppPhoneField(controller: phoneController, label: 'Telefon'),
+            AppPhoneField(
+              controller: phoneController,
+              label: context.l10n.partnersPhoneField,
+            ),
             const SizedBox(height: AppSpacing.md),
             AppPhoneField(
               controller: additionalPhoneController,
-              label: 'Qo\'shimcha telefon',
+              label: context.l10n.partnersAdditionalPhoneField,
             ),
             const SizedBox(height: AppSpacing.md),
             InkWell(
               onTap: () async {
                 final selected = await showAppSelectionSheet<int?>(
                   context,
-                  title: 'Lavozimni tanlang',
+                  title: context.l10n.docSelectPosition,
                   selectedValue: positionId,
                   items: positions
                       .map((p) => AppSelectionItem(value: p.id, label: p.name))
@@ -253,20 +263,22 @@ void _showWorkerForm(
                 if (selected != null) setState(() => positionId = selected);
               },
               child: InputDecorator(
-                decoration: const InputDecoration(labelText: 'Lavozim'),
+                decoration: InputDecoration(
+                  labelText: context.l10n.docPosition,
+                ),
                 child: Text(
                   positions
                           .where((p) => p.id == positionId)
                           .map((p) => p.name)
                           .firstOrNull ??
-                      'Tanlanmagan',
+                      context.l10n.commonNotSelected,
                 ),
               ),
             ),
             const SizedBox(height: AppSpacing.md),
             AppTextField(
               controller: descriptionController,
-              label: 'Tavsif (ixtiyoriy)',
+              label: context.l10n.commonDescriptionOptional,
               maxLines: 2,
               minLines: 1,
             ),
@@ -276,7 +288,7 @@ void _showWorkerForm(
     ),
     stickyAction: Builder(
       builder: (sheetContext) => AppButton.primary(
-        label: 'Saqlash',
+        label: context.l10n.commonSave,
         onPressed: () async {
           final name = nameController.text.trim();
           if (name.isEmpty || !PhoneFormatter.isValid(phoneController.text)) {

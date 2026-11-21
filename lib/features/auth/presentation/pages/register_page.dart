@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,6 +16,7 @@ import '../../../../core/widgets/feedback/app_snackbar.dart';
 import '../auth_navigation.dart';
 import '../cubit/register_cubit.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Ro'yxatdan o'tish — Senior Level FinTech Registration ekrani.
 class RegisterPage extends StatelessWidget {
@@ -226,7 +226,9 @@ class _RegisterViewState extends State<_RegisterView>
                             children: [
                               InkWell(
                                 onTap: () => context.pop(),
-                                borderRadius: BorderRadius.circular(14),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.medium,
+                                ),
                                 child: Container(
                                   width: 44,
                                   height: 44,
@@ -234,7 +236,9 @@ class _RegisterViewState extends State<_RegisterView>
                                     color: colors.surfaceSecondary.withValues(
                                       alpha: 0.8,
                                     ),
-                                    borderRadius: BorderRadius.circular(14),
+                                    borderRadius: BorderRadius.circular(
+                                      AppRadius.medium,
+                                    ),
                                     border: Border.all(
                                       color: colors.borderSubtle,
                                       width: 1,
@@ -264,7 +268,7 @@ class _RegisterViewState extends State<_RegisterView>
                                   ),
                                 ),
                                 child: Text(
-                                  'YANGI PROFIL',
+                                  context.l10n.authRegisterBadge,
                                   style: TextStyle(
                                     color: colors.primary,
                                     fontSize: 10.5,
@@ -291,7 +295,9 @@ class _RegisterViewState extends State<_RegisterView>
                                     color: colors.primary.withValues(
                                       alpha: 0.18,
                                     ),
-                                    borderRadius: BorderRadius.circular(26),
+                                    borderRadius: BorderRadius.circular(
+                                      AppRadius.large,
+                                    ),
                                   ),
                                 ),
                                 Container(
@@ -306,7 +312,9 @@ class _RegisterViewState extends State<_RegisterView>
                                         colors.primary.withValues(alpha: 0.85),
                                       ],
                                     ),
-                                    borderRadius: BorderRadius.circular(22),
+                                    borderRadius: BorderRadius.circular(
+                                      AppRadius.card,
+                                    ),
                                     boxShadow: [
                                       BoxShadow(
                                         color: colors.primary.withValues(
@@ -317,10 +325,10 @@ class _RegisterViewState extends State<_RegisterView>
                                       ),
                                     ],
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     AppIcons.partnerAdd,
                                     size: 32,
-                                    color: Colors.white,
+                                    color: context.colors.onPrimary,
                                   ),
                                 ),
                               ],
@@ -331,7 +339,7 @@ class _RegisterViewState extends State<_RegisterView>
 
                           // Headings
                           Text(
-                            'Ro\'yxatdan o\'tish ✨',
+                            context.l10n.authRegisterHeading,
                             style: Theme.of(context).textTheme.headlineLarge
                                 ?.copyWith(
                                   fontSize: 27,
@@ -339,9 +347,9 @@ class _RegisterViewState extends State<_RegisterView>
                                   letterSpacing: -0.5,
                                 ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: AppSpacing.xs),
                           Text(
-                            'Hisup biznes tizimida shaxsiy profilingizni shakllantiring.',
+                            context.l10n.authRegisterSubtitle,
                             style: TextStyle(
                               color: colors.textSecondary,
                               fontSize: 14.5,
@@ -363,7 +371,9 @@ class _RegisterViewState extends State<_RegisterView>
                                 color: colors.surfaceSecondary.withValues(
                                   alpha: isDark ? 0.6 : 0.8,
                                 ),
-                                borderRadius: BorderRadius.circular(14),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.medium,
+                                ),
                                 border: Border.all(color: colors.borderSubtle),
                               ),
                               child: Row(
@@ -374,7 +384,7 @@ class _RegisterViewState extends State<_RegisterView>
                                     size: 16,
                                     color: colors.success,
                                   ),
-                                  const SizedBox(width: 8),
+                                  const SizedBox(width: AppSpacing.xs),
                                   Text(
                                     PhoneFormatter.toDisplay(widget.phone),
                                     style: TextStyle(
@@ -394,11 +404,11 @@ class _RegisterViewState extends State<_RegisterView>
                           // 1. Full Name Input Field
                           _buildModernInputField(
                             context: context,
-                            label: 'To\'liq ismingiz',
+                            label: context.l10n.authFullNameLabel,
                             controller: _nameController,
                             focusNode: _nameFocusNode,
                             icon: AppIcons.user,
-                            hintText: 'Masalan: Alisher Usmonov',
+                            hintText: context.l10n.authFullNameHint,
                             textCapitalization: TextCapitalization.words,
                             errorText: _fieldErrors['name'],
                           ),
@@ -408,11 +418,11 @@ class _RegisterViewState extends State<_RegisterView>
                           // 2. Password Input Field
                           _buildModernInputField(
                             context: context,
-                            label: 'Yangi parol',
+                            label: context.l10n.authNewPasswordLabel,
                             controller: _passwordController,
                             focusNode: _passwordFocusNode,
                             icon: AppIcons.lock,
-                            hintText: 'Kamida 6 ta belgi',
+                            hintText: context.l10n.authPasswordMinHint,
                             obscureText: _obscurePassword,
                             errorText: _fieldErrors['password'],
                             suffixIcon: IconButton(
@@ -434,11 +444,11 @@ class _RegisterViewState extends State<_RegisterView>
                           // 3. Confirm Password Input Field
                           _buildModernInputField(
                             context: context,
-                            label: 'Parolni tasdiqlang',
+                            label: context.l10n.authPasswordConfirmLabel,
                             controller: _confirmController,
                             focusNode: _confirmFocusNode,
                             icon: AppIcons.restore,
-                            hintText: 'Parolni qayta kiriting',
+                            hintText: context.l10n.authPasswordRepeatHint,
                             obscureText: _obscureConfirm,
                             errorText: _fieldErrors['confirm'],
                             suffixIcon: IconButton(
@@ -472,7 +482,9 @@ class _RegisterViewState extends State<_RegisterView>
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.lg,
+                                ),
                                 boxShadow: [
                                   BoxShadow(
                                     color: colors.primary.withValues(
@@ -486,7 +498,9 @@ class _RegisterViewState extends State<_RegisterView>
                               child: Material(
                                 color: Colors.transparent,
                                 child: InkWell(
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.lg,
+                                  ),
                                   onTap: isLoading ? null : _submit,
                                   child: Center(
                                     child: AnimatedSwitcher(
@@ -494,35 +508,40 @@ class _RegisterViewState extends State<_RegisterView>
                                         milliseconds: 200,
                                       ),
                                       child: isLoading
-                                          ? const SizedBox(
+                                          ? SizedBox(
                                               width: 22,
                                               height: 22,
                                               child: CircularProgressIndicator(
                                                 strokeWidth: 2.4,
                                                 valueColor:
                                                     AlwaysStoppedAnimation(
-                                                      Colors.white,
+                                                      context.colors.onPrimary,
                                                     ),
                                               ),
                                             )
                                           : Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
-                                              children: const [
+                                              children: [
                                                 Text(
-                                                  'Ro\'yxatdan o\'tish',
+                                                  context
+                                                      .l10n
+                                                      .authRegisterButton,
                                                   style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.w700,
-                                                    color: Colors.white,
+                                                    color: context
+                                                        .colors
+                                                        .onPrimary,
                                                     letterSpacing: 0.2,
                                                   ),
                                                 ),
-                                                SizedBox(width: 8),
+                                                SizedBox(width: AppSpacing.xs),
                                                 Icon(
                                                   AppIcons.forward,
                                                   size: 19,
-                                                  color: Colors.white,
+                                                  color:
+                                                      context.colors.onPrimary,
                                                 ),
                                               ],
                                             ),
@@ -559,7 +578,7 @@ class _RegisterViewState extends State<_RegisterView>
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
-                                    '256-bit shifrlangan • Barcha ma\'lumotlar xavfsiz',
+                                    context.l10n.authSecureFooterAll,
                                     style: TextStyle(
                                       fontSize: 11.5,
                                       fontWeight: FontWeight.w500,
@@ -629,7 +648,7 @@ class _RegisterViewState extends State<_RegisterView>
             color: isDark
                 ? colors.surfaceSecondary.withValues(alpha: 0.65)
                 : colors.surface,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
             border: Border.all(
               color: hasError
                   ? colors.error
@@ -660,7 +679,7 @@ class _RegisterViewState extends State<_RegisterView>
                     ? colors.primary
                     : colors.textTertiary,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: TextField(
                   controller: controller,

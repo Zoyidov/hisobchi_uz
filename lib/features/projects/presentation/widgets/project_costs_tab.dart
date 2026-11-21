@@ -24,6 +24,8 @@ import 'project_form_lifetime.dart';
 import 'cost_type_selection_sheet.dart';
 import 'worker_selection_sheet.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Tab C: Xarajatlar (MOBILE_APP_TZ.md 10.4-C).
 class ProjectCostsTab extends StatelessWidget {
@@ -59,7 +61,7 @@ class _View extends StatelessWidget {
               onLoadMore: context.read<ProjectCostsCubit>().loadMore,
               onRefresh: context.read<ProjectCostsCubit>().refresh,
               onRetry: context.read<ProjectCostsCubit>().loadFirst,
-              emptyTitle: 'Xarajatlar yo‘q',
+              emptyTitle: context.l10n.costsEmpty,
               emptyIcon: AppIcons.chartDown,
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.md,
@@ -78,7 +80,7 @@ class _View extends StatelessWidget {
                         height: 40,
                         decoration: BoxDecoration(
                           color: context.colors.error.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.md),
                         ),
                         child: Icon(
                           AppIcons.arrowUp,
@@ -107,7 +109,7 @@ class _View extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.only(top: 2),
                                 child: Text(
-                                  'Ishchi: ${cost.workerName}',
+                                  context.l10n.costWorker(cost.workerName!),
                                   style: TextStyle(
                                     color: context.colors.textSecondary,
                                     fontSize: 12,
@@ -131,7 +133,7 @@ class _View extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.xs),
                       Icon(
                         AppIcons.chevronRight,
                         color: context.colors.textTertiary,
@@ -174,7 +176,7 @@ void _showCostForm(BuildContext context, int projectId) {
 
   showAppBottomSheet<void>(
     context,
-    title: 'Xarajat qo\'shish',
+    title: context.l10n.costAdd,
     heightFactor: 0.85,
     child: ProjectFormLifetime(
       resources: [saving, amountController, descriptionController],
@@ -205,10 +207,10 @@ void _showCostForm(BuildContext context, int projectId) {
                     }
                   },
                   child: InputDecorator(
-                    decoration: const InputDecoration(
-                      labelText: 'Xarajat turi',
+                    decoration: InputDecoration(
+                      labelText: context.l10n.costType,
                     ),
-                    child: Text(costTypeName ?? 'Tanlanmagan'),
+                    child: Text(costTypeName ?? context.l10n.commonNotSelected),
                   ),
                 ),
                 if (isWorkerJoin) ...[
@@ -228,8 +230,10 @@ void _showCostForm(BuildContext context, int projectId) {
                       }
                     },
                     child: InputDecorator(
-                      decoration: const InputDecoration(labelText: 'Ishchi'),
-                      child: Text(workerName ?? 'Tanlanmagan'),
+                      decoration: InputDecoration(
+                        labelText: context.l10n.costWorkerLabel,
+                      ),
+                      child: Text(workerName ?? context.l10n.commonNotSelected),
                     ),
                   ),
                 ],
@@ -250,7 +254,7 @@ void _showCostForm(BuildContext context, int projectId) {
                 const SizedBox(height: AppSpacing.md),
                 AppTextField(
                   controller: descriptionController,
-                  label: 'Izoh (ixtiyoriy)',
+                  label: context.l10n.commonNoteOptional,
                   maxLines: 2,
                   minLines: 1,
                 ),
@@ -270,28 +274,28 @@ void _showCostForm(BuildContext context, int projectId) {
     stickyAction: ValueListenableBuilder<bool>(
       valueListenable: saving,
       builder: (sheetContext, isSaving, _) => AppButton.primary(
-        label: isSaving ? 'Saqlanmoqda…' : 'Saqlash',
+        label: isSaving ? context.l10n.commonSaving : context.l10n.commonSave,
         isLoading: isSaving,
         onPressed: () async {
           if (saving.value) return;
           if (filesUploading) {
-            AppSnackbar.error(
-              sheetContext,
-              'Fayl yuklanishini kuting, keyin saqlang.',
-            );
+            AppSnackbar.error(sheetContext, context.l10n.fileWaitThenSave);
             return;
           }
           if (costTypeId == null || amountController.text.isEmpty) {
-            AppSnackbar.error(sheetContext, 'Xarajat turi va summani kiriting');
+            AppSnackbar.error(sheetContext, context.l10n.costEnterTypeAmount);
             return;
           }
           if (isWorkerJoin && workerId == null) {
-            AppSnackbar.error(sheetContext, 'Ishchini tanlang');
+            AppSnackbar.error(sheetContext, context.l10n.costSelectWorker);
             return;
           }
           final amount = Decimal.tryParse(amountController.text);
           if (amount == null || amount <= Decimal.zero) {
-            AppSnackbar.error(sheetContext, 'Summa 0 dan katta bo‘lishi kerak');
+            AppSnackbar.error(
+              sheetContext,
+              context.l10n.validationAmountPositive,
+            );
             return;
           }
           saving.value = true;

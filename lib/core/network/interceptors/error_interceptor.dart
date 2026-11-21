@@ -4,6 +4,7 @@ import '../../cubits/owner_context_cubit.dart';
 import '../../cubits/subscription_cubit.dart';
 import '../../errors/failure.dart';
 import '../auth_session_controller.dart';
+import '../../localization/app_localization_extension.dart';
 
 /// Markazlashgan Error-Interceptor algoritmi (MOBILE_APP_TZ.md 4.3–4.6):
 /// backendning 5 xil javob formatini yagona [Failure] turiga aylantiradi va
@@ -13,9 +14,9 @@ class ErrorInterceptor extends Interceptor {
     required AuthSessionController authSession,
     required SubscriptionCubit subscriptionCubit,
     required OwnerContextCubit ownerContextCubit,
-  })  : _authSession = authSession,
-        _subscriptionCubit = subscriptionCubit,
-        _ownerContextCubit = ownerContextCubit;
+  }) : _authSession = authSession,
+       _subscriptionCubit = subscriptionCubit,
+       _ownerContextCubit = ownerContextCubit;
 
   final AuthSessionController _authSession;
   final SubscriptionCubit _subscriptionCubit;
@@ -31,7 +32,8 @@ class ErrorInterceptor extends Interceptor {
     // B) HTTP 200 + status:false — biznes-xatolik / rate-limit.
     if (data is Map && data['status'] == false) {
       final message = _extractBusinessMessage(data);
-      final failure = message.contains('Juda ko\'p urinish')
+      // Backend throttle'ni alohida kod bilan emas, matn bilan bildiradi.
+      final failure = (message?.contains('Juda ko\'p urinish') ?? false)
           ? ThrottleFailure(message)
           : BusinessFailure(message);
       handler.reject(
@@ -73,8 +75,8 @@ class ErrorInterceptor extends Interceptor {
         return const AuthFailure();
 
       case 403:
-        final message = _extractPlainMessage(data) ?? const PermissionFailure().message;
-        if (message.contains('akkaunt')) {
+        final message = _extractPlainMessage(data);
+        if (message != null && message.contains('akkaunt')) {
           _ownerContextCubit.reset();
           _authSession.notifyOwnerContextInvalid();
         }
@@ -91,26 +93,30 @@ class ErrorInterceptor extends Interceptor {
           case DioExceptionType.connectionError:
             return const NetworkFailure();
           case DioExceptionType.cancel:
-            return const UnknownFailure('So\'rov bekor qilindi');
+            return UnknownFailure(AppL10n.current.errorRequestCancelled);
           default:
             return const NetworkFailure();
         }
 
       default:
         if (statusCode >= 500) return const ServerFailure();
-        return UnknownFailure(_extractPlainMessage(data) ?? 'Kutilmagan xatolik yuz berdi');
+        return UnknownFailure(_extractPlainMessage(data));
     }
   }
 
-  String _extractBusinessMessage(Map data) {
+  String? _extractBusinessMessage(Map data) {
     final error = data['error'];
-    if (error is Map && error['message'] is String) return error['message'] as String;
+    if (error is Map && error['message'] is String) {
+      return error['message'] as String;
+    }
     if (data['message'] is String) return data['message'] as String;
-    return 'Xatolik yuz berdi';
+    return null;
   }
 
   String? _extractPlainMessage(dynamic data) {
-    if (data is Map && data['message'] is String) return data['message'] as String;
+    if (data is Map && data['message'] is String) {
+      return data['message'] as String;
+    }
     return null;
   }
 

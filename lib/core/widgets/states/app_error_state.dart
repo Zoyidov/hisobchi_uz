@@ -5,6 +5,8 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../buttons/app_button.dart';
 import '../../icons/app_icons.dart';
+import '../../theme/app_radius.dart';
+import '../../localization/app_localization_extension.dart';
 
 /// Icon + message + Retry — 5xx/timeout/no-internet uchun umumiy holat
 /// (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 70, 108, 135, 156).
@@ -38,7 +40,7 @@ class AppErrorState extends StatelessWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: colors.error.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(AppRadius.large),
                 border: Border.all(
                   color: colors.error.withValues(alpha: 0.18),
                   width: 1.5,
@@ -54,8 +56,8 @@ class AppErrorState extends StatelessWidget {
             Text(
               title ??
                   (isNetwork
-                      ? 'Internet aloqasi yo\'q'
-                      : 'Ma\'lumotni yuklab bo\'lmadi'),
+                      ? context.l10n.errorNoInternet
+                      : context.l10n.errorGenericTitle),
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
@@ -65,7 +67,7 @@ class AppErrorState extends StatelessWidget {
             Text(
               description ??
                   failure?.message ??
-                  'Internetni tekshiring yoki qayta urinib ko\'ring.',
+                  context.l10n.errorGenericDescription,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: colors.textSecondary,
                 height: 1.4,
@@ -74,7 +76,7 @@ class AppErrorState extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.xl),
             AppButton.secondary(
-              label: 'Qayta urinish',
+              label: context.l10n.commonRetry,
               onPressed: onRetry,
               expand: false,
               size: AppButtonSize.medium,

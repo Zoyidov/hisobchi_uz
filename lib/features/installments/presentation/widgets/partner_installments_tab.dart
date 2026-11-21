@@ -14,6 +14,7 @@ import '../../data/installments_repository.dart';
 import '../cubit/partner_installments_cubit.dart';
 import 'installment_card.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Hamkor kartochkasidagi "Bo'lib to'lash" tabi (MOBILE_APP_TZ.md 8.5, 9.9).
 class PartnerInstallmentsTab extends StatelessWidget {
@@ -49,11 +50,10 @@ class _View extends StatelessWidget {
           PartnerInstallmentsLoaded(:final plans) =>
             plans.isEmpty
                 ? AppEmptyState(
-                    title: 'Bo\'lib to\'lash rejasi yo\'q',
-                    description:
-                        'Katta summani qismlarga bo\'lib to\'lash uchun reja yarating.',
+                    title: context.l10n.installmentNoPlans,
+                    description: context.l10n.installmentNoPlansDescription,
                     icon: AppIcons.schedule,
-                    actionLabel: 'Reja yaratish',
+                    actionLabel: context.l10n.installmentCreatePlan,
                     onAction: () => _create(context),
                   )
                 : RefreshIndicator(
@@ -63,7 +63,7 @@ class _View extends StatelessWidget {
                       padding: const EdgeInsets.all(AppSpacing.md),
                       children: [
                         AppButton.secondary(
-                          label: '+ Reja yaratish',
+                          label: context.l10n.installmentCreatePlanPlus,
                           expand: true,
                           onPressed: () => _create(context),
                         ),

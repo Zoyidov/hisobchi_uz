@@ -23,6 +23,8 @@ import '../../data/installment_models.dart';
 import '../../data/installments_repository.dart';
 import '../cubit/installment_detail_cubit.dart';
 import 'installment_payment_sheet.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Reja tafsilotlari (MOBILE_APP_TZ.md 9.5).
 class InstallmentDetailPage extends StatelessWidget {
@@ -48,21 +50,22 @@ class _View extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bo\'lib to\'lash'),
+        title: Text(context.l10n.commonInstallment),
         actions: [
           BlocBuilder<InstallmentDetailCubit, InstallmentDetailState>(
             builder: (context, state) {
               if (state is! InstallmentDetailLoaded ||
                   state.plan.status != InstallmentPlanStatus.active ||
-                  context.watch<UserCubit>().currentUserOrNull?.isOwner != true) {
+                  context.watch<UserCubit>().currentUserOrNull?.isOwner !=
+                      true) {
                 return const SizedBox.shrink();
               }
               return PopupMenuButton<String>(
                 onSelected: (value) => _handleMenu(context, value),
-                itemBuilder: (context) => const [
+                itemBuilder: (context) => [
                   PopupMenuItem(
                     value: 'cancel',
-                    child: Text('Bekor qilish'),
+                    child: Text(context.l10n.commonCancel),
                   ),
                 ],
               );
@@ -86,15 +89,12 @@ class _View extends StatelessWidget {
     );
   }
 
-  void _handleMenu(
-    BuildContext context,
-    String action,
-  ) async {
+  void _handleMenu(BuildContext context, String action) async {
     if (action == 'cancel') {
       final confirmed = await showAppConfirmationSheet(
         context,
-        title: 'Rejani bekor qilish',
-        description: 'Bu amalni keyin qaytarib bo\'lmaydi.',
+        title: context.l10n.installmentCancelPlan,
+        description: context.l10n.commonIrreversible,
       );
       if (!confirmed || !context.mounted) return;
       final error = await context.read<InstallmentDetailCubit>().cancelPlan();
@@ -146,7 +146,7 @@ class _Loaded extends StatelessWidget {
                   padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
                     color: colors.surfaceSecondary,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                   child: Row(
                     children: [
@@ -155,7 +155,7 @@ class _Loaded extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'To\'langan',
+                              context.l10n.commonPaid,
                               style: TextStyle(
                                 color: colors.textSecondary,
                                 fontSize: 12,
@@ -182,7 +182,7 @@ class _Loaded extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Qolgan',
+                              context.l10n.commonRemaining,
                               style: TextStyle(
                                 color: colors.textSecondary,
                                 fontSize: 12,
@@ -218,13 +218,13 @@ class _Loaded extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'To\'lov grafigi',
+                context.l10n.installmentSchedule,
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
               Text(
-                '${plan.items.length} ta bosqich',
+                context.l10n.installmentStagesCount(plan.items.length),
                 style: TextStyle(color: colors.textSecondary, fontSize: 13),
               ),
             ],
@@ -240,7 +240,7 @@ class _Loaded extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                   child: AppButton.primary(
-                    label: 'To\'lov qabul qilish',
+                    label: context.l10n.installmentReceivePayment,
                     onPressed: () async {
                       final updated = await showInstallmentPaymentSheet(
                         context,
@@ -255,7 +255,7 @@ class _Loaded extends StatelessWidget {
               ),
             ),
           AppButton.secondary(
-            label: 'To\'lovlar tarixi',
+            label: context.l10n.installmentPaymentHistory,
             onPressed: () => context.push(
               RoutePaths.installmentPaymentHistory(plan.id),
               extra: plan.currencyTypeId,
@@ -317,7 +317,7 @@ class _ScheduleTile extends StatelessWidget {
         color: isOverdue
             ? colors.errorContainer.withValues(alpha: 0.15)
             : colors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(
           color: isOverdue
               ? colors.error.withValues(alpha: 0.3)
@@ -333,7 +333,7 @@ class _ScheduleTile extends StatelessWidget {
               color: isOverdue
                   ? colors.error.withValues(alpha: 0.1)
                   : colors.surfaceSecondary,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadius.small),
             ),
             alignment: Alignment.center,
             child: Text(

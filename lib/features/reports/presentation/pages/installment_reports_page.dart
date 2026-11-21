@@ -18,6 +18,9 @@ import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/installment_report_models.dart';
 import '../../data/reports_repository.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 ReportsRepository get _repository => getIt<ReportsRepository>();
 String _money(Decimal amount, int currency) =>
@@ -30,7 +33,7 @@ class InstallmentReportsPage extends StatelessWidget {
   const InstallmentReportsPage({super.key});
   @override
   Widget build(BuildContext context) => _CurrencyReportPage(
-    title: 'Muddatli to‘lov hisoboti',
+    title: context.l10n.reportInstallmentTitle,
     builder: (currency) => _ReportLoader<InstallmentReportSummary>(
       key: ValueKey(currency),
       load: () => _repository.getInstallmentSummary(currency),
@@ -38,17 +41,17 @@ class InstallmentReportsPage extends StatelessWidget {
         onRefresh: reload,
         children: [
           if (summary.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(bottom: 16),
               child: Text(
-                'Bo‘lib to‘lash ma’lumoti yo‘q',
+                context.l10n.reportInstallmentNoData,
                 textAlign: TextAlign.center,
               ),
             ),
           _SummaryCard(summary: summary, currency: currency),
           const SizedBox(height: 22),
           Text(
-            'Hisobot bo‘limlari',
+            context.l10n.reportSections,
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
@@ -59,39 +62,39 @@ class InstallmentReportsPage extends StatelessWidget {
           _ReportEntry(
             icon: AppIcons.chartUp,
             color: context.colors.success,
-            title: 'Undirish samaradorligi',
-            subtitle: 'To‘lov samaradorligi va undirilgan summalar',
+            title: context.l10n.reportCollectionEfficiency,
+            subtitle: context.l10n.reportCollectionEfficiencySubtitle,
             onTap: () =>
                 _open(context, _RecoveryPage(initialCurrency: currency)),
           ),
           _ReportEntry(
             icon: AppIcons.calendar,
             color: context.colors.accentViolet,
-            title: 'Kutilayotgan to‘lovlar',
-            subtitle: '30/60/90 kunlik prognoz',
+            title: context.l10n.reportExpectedPayments,
+            subtitle: context.l10n.reportExpectedPaymentsSubtitle,
             onTap: () =>
                 _open(context, _ForecastPage(initialCurrency: currency)),
           ),
           _ReportEntry(
             icon: AppIcons.chart,
             color: context.colors.primary,
-            title: 'Oylik dinamika',
-            subtitle: 'Oylar bo‘yicha to‘lov grafigi',
+            title: context.l10n.reportMonthlyDynamics,
+            subtitle: context.l10n.reportMonthlyDynamicsSubtitle,
             onTap: () =>
                 _open(context, _MonthlyPage(initialCurrency: currency)),
           ),
           _ReportEntry(
             icon: AppIcons.warning,
             color: context.colors.error,
-            title: 'Muammoli mijozlar',
-            subtitle: 'Kechiktirilgan va xavfli mijozlar ro‘yxati',
+            title: context.l10n.reportProblemClients,
+            subtitle: context.l10n.reportProblemClientsSubtitle,
             onTap: () => _open(context, _RiskyPage(initialCurrency: currency)),
           ),
           _ReportEntry(
             icon: AppIcons.partners,
             color: context.colors.warning,
-            title: 'Mijozlar bo‘yicha',
-            subtitle: 'Mijoz bo‘yicha muddatli to‘lov hisoboti',
+            title: context.l10n.reportByClients,
+            subtitle: context.l10n.reportByClientsSubtitle,
             onTap: () =>
                 _open(context, _PartnersPage(initialCurrency: currency)),
           ),
@@ -219,44 +222,44 @@ class _SummaryCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _Metric(
-                  label: 'Faol rejalar',
-                  value: '${summary.activeCount} ta',
+                  label: context.l10n.reportActivePlans,
+                  value: context.l10n.commonCountShort(summary.activeCount),
                   icon: AppIcons.playCircle,
                   color: colors.primary,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.xs),
               Expanded(
                 child: _Metric(
-                  label: 'Tugallangan',
-                  value: '${summary.completedCount} ta',
+                  label: context.l10n.dashboardCompleted,
+                  value: context.l10n.commonCountShort(summary.completedCount),
                   icon: AppIcons.success,
                   color: colors.success,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.xs),
               Expanded(
                 child: _Metric(
-                  label: 'Bekor qilingan',
-                  value: '${summary.cancelledCount} ta',
+                  label: context.l10n.commonCancelled,
+                  value: context.l10n.commonCountShort(summary.cancelledCount),
                   icon: AppIcons.cancel,
                   color: colors.textTertiary,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           LayoutBuilder(
             builder: (context, constraints) {
               final given = _AmountTile(
-                label: 'Berilgan',
+                label: context.l10n.reportGiven,
                 amount: summary.totalGiven,
                 currency: currency,
                 color: colors.accentViolet,
                 icon: AppIcons.wallet,
               );
               final paid = _AmountTile(
-                label: 'To‘langan',
+                label: context.l10n.commonPaid,
                 amount: summary.totalPaid,
                 currency: currency,
                 color: colors.success,
@@ -265,22 +268,26 @@ class _SummaryCard extends StatelessWidget {
               if (constraints.maxWidth < 300 ||
                   MediaQuery.textScalerOf(context).scale(14) > 19) {
                 return Column(
-                  children: [given, const SizedBox(height: 8), paid],
+                  children: [
+                    given,
+                    const SizedBox(height: AppSpacing.xs),
+                    paid,
+                  ],
                 );
               }
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(child: given),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.xs),
                   Expanded(child: paid),
                 ],
               );
             },
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.xs),
           _AmountTile(
-            label: 'Qolgan',
+            label: context.l10n.commonRemaining,
             amount: summary.totalRemaining,
             currency: currency,
             color: colors.warning,
@@ -290,7 +297,7 @@ class _SummaryCard extends StatelessWidget {
           if (summary.overdueAmount > Decimal.zero) ...[
             const SizedBox(height: 10),
             _AmountTile(
-              label: 'Muddati o‘tgan',
+              label: context.l10n.dashboardOverdueLabel,
               amount: summary.overdueAmount,
               currency: currency,
               color: colors.error,
@@ -321,7 +328,7 @@ class _Metric extends StatelessWidget {
     padding: const EdgeInsets.all(10),
     decoration: BoxDecoration(
       color: color.withValues(alpha: .07),
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(AppRadius.small),
       border: Border.all(color: color.withValues(alpha: .15)),
     ),
     child: Column(
@@ -367,7 +374,7 @@ class _AmountTile extends StatelessWidget {
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
       color: color.withValues(alpha: .07),
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadius.md),
       border: Border.all(color: color.withValues(alpha: .16)),
     ),
     child: Column(
@@ -430,11 +437,11 @@ class _ReportEntry extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               color: color.withValues(alpha: .1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Icon(icon, color: color, size: 23),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -446,7 +453,7 @@ class _ReportEntry extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xxs),
                 Text(
                   subtitle,
                   style: TextStyle(
@@ -458,7 +465,7 @@ class _ReportEntry extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.xs),
           Icon(
             AppIcons.chevronRight,
             color: context.colors.textTertiary,
@@ -475,7 +482,7 @@ class _RecoveryPage extends StatelessWidget {
   final int initialCurrency;
   @override
   Widget build(BuildContext context) => _CurrencyReportPage(
-    title: 'Undirish samaradorligi',
+    title: context.l10n.reportCollectionEfficiency,
     initialCurrency: initialCurrency,
     builder: (currency) => _ReportLoader<RecoveryReport>(
       key: ValueKey(currency),
@@ -513,7 +520,7 @@ class _RecoveryPage extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'Undirilgan',
+                            context.l10n.reportCollected,
                             style: TextStyle(
                               color: context.colors.textSecondary,
                             ),
@@ -529,48 +536,50 @@ class _RecoveryPage extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 _MoneyRow(
-                  label: 'Berilgan',
+                  label: context.l10n.reportGiven,
                   amount: report.totalGiven ?? Decimal.zero,
                   currency: currency,
                 ),
                 _MoneyRow(
-                  label: 'Undirilgan',
+                  label: context.l10n.reportCollected,
                   amount: report.recoveredAmount,
                   currency: currency,
                   color: context.colors.success,
                 ),
                 _MoneyRow(
-                  label: 'Qolgan',
+                  label: context.l10n.commonRemaining,
                   amount: report.totalRemaining ?? Decimal.zero,
                   currency: currency,
                 ),
                 _MoneyRow(
-                  label: 'Muddati o‘tgan',
+                  label: context.l10n.dashboardOverdueLabel,
                   amount: report.overdueAmount,
                   currency: currency,
                   color: context.colors.error,
                 ),
                 Text(
-                  'Kechikish darajasi: ${report.overdueRate}%',
+                  context.l10n.reportOverdueRate(report.overdueRate),
                   style: TextStyle(color: context.colors.error, fontSize: 12),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          const Text(
-            'To‘lov holatlari',
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            context.l10n.reportPaymentStatuses,
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           for (final status in ['paid', 'partial', 'overdue', 'pending'])
             _ReportEntry(
               icon: AppIcons.receipt,
               color: _statusColor(context, status),
-              title: _statusLabel(status),
-              subtitle: '${report.byItems[status] ?? 0} ta to‘lov',
+              title: _statusLabel(context, status),
+              subtitle: context.l10n.reportPaymentsCount(
+                report.byItems[status] ?? 0,
+              ),
               onTap: () => _open(
                 context,
                 _ItemsPage(currency: currency, status: status),
@@ -582,11 +591,11 @@ class _RecoveryPage extends StatelessWidget {
   );
 }
 
-String _statusLabel(String status) => switch (status) {
-  'paid' => 'To‘langan',
-  'partial' => 'Qisman to‘langan',
-  'overdue' => 'Muddati o‘tgan',
-  _ => 'Kutilmoqda',
+String _statusLabel(BuildContext context, String status) => switch (status) {
+  'paid' => context.l10n.commonPaid,
+  'partial' => context.l10n.reportPartiallyPaid,
+  'overdue' => context.l10n.dashboardOverdueLabel,
+  _ => context.l10n.reportPending,
 };
 Color _statusColor(BuildContext context, String status) => switch (status) {
   'paid' => context.colors.success,
@@ -610,7 +619,7 @@ class _ForecastPageState extends State<_ForecastPage> {
     final from = _range?.start ?? DateUtils.dateOnly(DateTime.now());
     final to = _range?.end ?? from.add(Duration(days: _days));
     return _CurrencyReportPage(
-      title: 'Kutilayotgan to‘lovlar',
+      title: context.l10n.reportExpectedPayments,
       initialCurrency: widget.initialCurrency,
       builder: (currency) => Column(
         children: [
@@ -620,17 +629,17 @@ class _ForecastPageState extends State<_ForecastPage> {
               children: [
                 AppSegmentedControl<int>(
                   value: _range == null ? _days : -1,
-                  segments: const [
-                    AppSegment(value: 30, label: '30 kun'),
-                    AppSegment(value: 60, label: '60 kun'),
-                    AppSegment(value: 90, label: '90 kun'),
+                  segments: [
+                    AppSegment(value: 30, label: context.l10n.reportDays30),
+                    AppSegment(value: 60, label: context.l10n.reportDays60),
+                    AppSegment(value: 90, label: context.l10n.reportDays90),
                   ],
                   onChanged: (days) => setState(() {
                     _days = days;
                     _range = null;
                   }),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.xs),
                 OutlinedButton.icon(
                   icon: const Icon(AppIcons.calendarRange, size: 18),
                   label: Text(
@@ -664,29 +673,33 @@ class _ForecastPageState extends State<_ForecastPage> {
                 onRefresh: reload,
                 children: [
                   _AmountTile(
-                    label: 'Kutilayotgan summa',
+                    label: context.l10n.reportExpectedAmount,
                     amount: report.expectedAmount,
                     currency: currency,
                     color: context.colors.accentViolet,
                     icon: AppIcons.calendar,
                     wide: true,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.md),
                   Row(
                     children: [
                       Expanded(
                         child: _Metric(
-                          label: 'To‘lovlar',
-                          value: '${report.itemsCount} ta',
+                          label: context.l10n.reportPayments,
+                          value: context.l10n.commonCountShort(
+                            report.itemsCount,
+                          ),
                           icon: AppIcons.receipt,
                           color: context.colors.primary,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: _Metric(
-                          label: 'Mijozlar',
-                          value: '${report.partnersCount} ta',
+                          label: context.l10n.partnersClientsTitle,
+                          value: context.l10n.commonCountShort(
+                            report.partnersCount,
+                          ),
                           icon: AppIcons.partners,
                           color: context.colors.success,
                         ),
@@ -714,7 +727,7 @@ class _MonthlyPageState extends State<_MonthlyPage> {
   int _year = DateTime.now().year;
   @override
   Widget build(BuildContext context) => _CurrencyReportPage(
-    title: 'Oylik dinamika',
+    title: context.l10n.reportMonthlyDynamics,
     initialCurrency: widget.initialCurrency,
     builder: (currency) => Column(
       children: [
@@ -724,7 +737,7 @@ class _MonthlyPageState extends State<_MonthlyPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                tooltip: 'Oldingi yil',
+                tooltip: context.l10n.reportPrevYear,
                 onPressed: () => setState(() => _year--),
                 icon: const Icon(AppIcons.back),
               ),
@@ -736,7 +749,7 @@ class _MonthlyPageState extends State<_MonthlyPage> {
                 ),
               ),
               IconButton(
-                tooltip: 'Keyingi yil',
+                tooltip: context.l10n.reportNextYear,
                 onPressed: () => setState(() => _year++),
                 icon: const Icon(AppIcons.chevronRight),
               ),
@@ -754,7 +767,7 @@ class _MonthlyPageState extends State<_MonthlyPage> {
               onRefresh: reload,
               children: [
                 _AmountTile(
-                  label: 'Jami to‘lovlar',
+                  label: context.l10n.reportTotalPayments,
                   amount: items.fold(
                     Decimal.zero,
                     (sum, item) => sum + item.amount,
@@ -764,7 +777,7 @@ class _MonthlyPageState extends State<_MonthlyPage> {
                   icon: AppIcons.chart,
                   wide: true,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 if (items.isNotEmpty)
                   AppCard(
                     child: SizedBox(
@@ -820,10 +833,10 @@ class _MonthlyPageState extends State<_MonthlyPage> {
                       ),
                     ),
                   ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.sm),
                 if (items.isEmpty)
-                  const AppEmptyState(
-                    title: 'Ma’lumot yo‘q',
+                  AppEmptyState(
+                    title: context.l10n.reportNoData,
                     icon: AppIcons.chart,
                   ),
                 for (final item in items)
@@ -841,7 +854,9 @@ class _MonthlyPageState extends State<_MonthlyPage> {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              '${item.paymentsCount} ta to‘lov',
+                              context.l10n.reportPaymentsCount(
+                                item.paymentsCount,
+                              ),
                               style: TextStyle(
                                 fontSize: 11,
                                 color: context.colors.textSecondary,
@@ -866,7 +881,7 @@ class _RiskyPage extends StatelessWidget {
   final int initialCurrency;
   @override
   Widget build(BuildContext context) => _CurrencyReportPage(
-    title: 'Muammoli mijozlar',
+    title: context.l10n.reportProblemClients,
     initialCurrency: initialCurrency,
     builder: (currency) => _ReportLoader<List<RiskyPartner>>(
       key: ValueKey(currency),
@@ -875,8 +890,8 @@ class _RiskyPage extends StatelessWidget {
         onRefresh: reload,
         children: [
           if (items.isEmpty)
-            const AppEmptyState(
-              title: 'Muammoli mijozlar yo‘q',
+            AppEmptyState(
+              title: context.l10n.reportNoProblemClients,
               icon: AppIcons.success,
             ),
           for (final item in items)
@@ -900,10 +915,10 @@ class _RiskyPage extends StatelessWidget {
                         ),
                         Text(
                           item.riskLevel == 'high'
-                              ? 'Yuqori xavf'
+                              ? context.l10n.reportRiskHigh
                               : item.riskLevel == 'medium'
-                              ? 'O‘rta xavf'
-                              : 'Past xavf',
+                              ? context.l10n.reportRiskMedium
+                              : context.l10n.reportRiskLow,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
@@ -922,27 +937,30 @@ class _RiskyPage extends StatelessWidget {
                           color: context.colors.textSecondary,
                         ),
                       ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.sm),
                     Text(
-                      '${item.overdueItems} ta kechikkan to‘lov · O‘rtacha ${item.averageDelayDays} kun',
+                      context.l10n.reportOverdueSummary(
+                        item.overdueItems,
+                        item.averageDelayDays,
+                      ),
                       style: TextStyle(
                         fontSize: 12,
                         color: context.colors.textSecondary,
                       ),
                     ),
                     _MoneyRow(
-                      label: 'Muddati o‘tgan',
+                      label: context.l10n.dashboardOverdueLabel,
                       amount: item.overdueAmount ?? Decimal.zero,
                       currency: currency,
                       color: context.colors.error,
                     ),
                     _MoneyRow(
-                      label: 'Qolgan',
+                      label: context.l10n.commonRemaining,
                       amount: item.totalRemaining ?? Decimal.zero,
                       currency: currency,
                     ),
                     Text(
-                      'Xavf balli: ${item.riskScore}',
+                      context.l10n.reportRiskScore(item.riskScore),
                       style: const TextStyle(fontSize: 12),
                     ),
                   ],
@@ -960,7 +978,7 @@ class _PartnersPage extends StatelessWidget {
   final int initialCurrency;
   @override
   Widget build(BuildContext context) => _CurrencyReportPage(
-    title: 'Mijozlar bo‘yicha',
+    title: context.l10n.reportByClients,
     initialCurrency: initialCurrency,
     builder: (currency) => _PagedReport<InstallmentPartnerRanking>(
       key: ValueKey(currency),
@@ -982,30 +1000,30 @@ class _PartnersPage extends StatelessWidget {
                   color: context.colors.textSecondary,
                 ),
               ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
             Text(
-              '${item.activePlans} ta faol reja',
+              context.l10n.reportActivePlansCount(item.activePlans),
               style: TextStyle(fontSize: 12, color: context.colors.primary),
             ),
             _MoneyRow(
-              label: 'Berilgan',
+              label: context.l10n.reportGiven,
               amount: item.totalGiven,
               currency: currency,
             ),
             _MoneyRow(
-              label: 'To‘langan',
+              label: context.l10n.commonPaid,
               amount: item.totalPaid ?? Decimal.zero,
               currency: currency,
               color: context.colors.success,
             ),
             _MoneyRow(
-              label: 'Qolgan',
+              label: context.l10n.commonRemaining,
               amount: item.remaining,
               currency: currency,
             ),
             if (item.lastPaymentAt != null)
               Text(
-                'Oxirgi to‘lov: ${item.lastPaymentAt}',
+                context.l10n.reportLastPayment(item.lastPaymentAt!),
                 style: TextStyle(
                   fontSize: 11,
                   color: context.colors.textSecondary,
@@ -1014,7 +1032,7 @@ class _PartnersPage extends StatelessWidget {
             if (item.totalGiven > Decimal.zero) ...[
               const SizedBox(height: 10),
               ClipRRect(
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(AppRadius.xxs),
                 child: LinearProgressIndicator(
                   value: ((item.totalPaid ?? Decimal.zero) / item.totalGiven)
                       .toDouble()
@@ -1028,7 +1046,7 @@ class _PartnersPage extends StatelessWidget {
             ],
             if (item.overdue > Decimal.zero)
               _MoneyRow(
-                label: 'Muddati o‘tgan',
+                label: context.l10n.dashboardOverdueLabel,
                 amount: item.overdue,
                 currency: currency,
                 color: context.colors.error,
@@ -1046,7 +1064,7 @@ class _ItemsPage extends StatelessWidget {
   final String status;
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(_statusLabel(status))),
+    appBar: AppBar(title: Text(_statusLabel(context, status))),
     body: SafeArea(
       child: _PagedReport<InstallmentReportItem>(
         load: (page) => _repository.getInstallmentReportItems(
@@ -1066,7 +1084,7 @@ class _ItemsPage extends StatelessWidget {
                 item.partnerName,
                 style: const TextStyle(fontWeight: FontWeight.w700),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xxs),
               Text(
                 '${item.number}-qism${item.dueDate == null ? '' : ' · ${AppDateFormatter.display(item.dueDate!)}'}',
                 style: TextStyle(
@@ -1075,18 +1093,18 @@ class _ItemsPage extends StatelessWidget {
                 ),
               ),
               _MoneyRow(
-                label: 'Summa',
+                label: context.l10n.walletAmountLabel,
                 amount: item.amount,
                 currency: currency,
               ),
               _MoneyRow(
-                label: 'To‘langan',
+                label: context.l10n.commonPaid,
                 amount: item.paidAmount,
                 currency: currency,
                 color: context.colors.success,
               ),
               _MoneyRow(
-                label: 'Qolgan',
+                label: context.l10n.commonRemaining,
                 amount: item.remaining,
                 currency: currency,
               ),
@@ -1167,7 +1185,10 @@ class _PagedReportState<T> extends State<_PagedReport<T>> {
       onRefresh: () => _load(reset: true),
       children: [
         if (_items.isEmpty)
-          const AppEmptyState(title: 'Ma’lumot yo‘q', icon: AppIcons.receipt),
+          AppEmptyState(
+            title: context.l10n.reportNoData,
+            icon: AppIcons.receipt,
+          ),
         for (final item in _items)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
@@ -1180,7 +1201,9 @@ class _PagedReportState<T> extends State<_PagedReport<T>> {
                 : TextButton(
                     onPressed: () => _load(),
                     child: Text(
-                      _error == null ? 'Yana yuklash' : 'Qayta urinish',
+                      _error == null
+                          ? context.l10n.commonLoadMore
+                          : context.l10n.commonRetry,
                     ),
                   ),
           ),
@@ -1212,7 +1235,7 @@ class _MoneyRow extends StatelessWidget {
             style: TextStyle(fontSize: 12, color: context.colors.textSecondary),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: Text(
             _money(amount, currency),

@@ -4,6 +4,7 @@ import 'package:local_auth/local_auth.dart';
 
 import '../../../../core/constants/app_durations.dart';
 import '../../../../core/storage/secure_storage_service.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 sealed class PincodeLockState extends Equatable {
   const PincodeLockState();
@@ -57,11 +58,16 @@ class PincodeLockCubit extends Cubit<PincodeLockState> {
 
   Future<bool> tryBiometrics() async {
     try {
-      final canCheck = await _localAuth.canCheckBiometrics || await _localAuth.isDeviceSupported();
+      final canCheck =
+          await _localAuth.canCheckBiometrics ||
+          await _localAuth.isDeviceSupported();
       if (!canCheck || isClosed) return false;
       final authenticated = await _localAuth.authenticate(
-        localizedReason: 'Ilovaga kirish uchun tasdiqlang',
-        options: const AuthenticationOptions(biometricOnly: true, stickyAuth: true),
+        localizedReason: AppL10n.current.authBiometricsReason,
+        options: const AuthenticationOptions(
+          biometricOnly: true,
+          stickyAuth: true,
+        ),
       );
       if (isClosed) return authenticated;
       if (authenticated) emit(const PincodeLockUnlocked());

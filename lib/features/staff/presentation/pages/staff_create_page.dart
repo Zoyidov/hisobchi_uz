@@ -16,6 +16,7 @@ import '../../data/staff_repository.dart';
 import '../cubit/staff_create_cubit.dart';
 import '../widgets/permission_group_list.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Xodim qo'shish — 3 qadam (MOBILE_APP_TZ.md 15.1).
 class StaffCreatePage extends StatelessWidget {
@@ -37,12 +38,12 @@ class _View extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Xodim qo\'shish')),
+      appBar: AppBar(title: Text(context.l10n.staffAdd)),
       body: SafeArea(
         child: BlocConsumer<StaffCreateCubit, StaffCreateState>(
           listener: (context, state) {
             if (state.success) {
-              AppSnackbar.success(context, 'Xodim qo\'shildi');
+              AppSnackbar.success(context, context.l10n.staffAdded);
               Navigator.of(context).pop();
             } else if (state.error != null) {
               AppSnackbar.error(context, state.error!.message);
@@ -81,7 +82,11 @@ class _StepIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final labels = ['Telefon', 'SMS Kod', 'Ma\'lumotlar'];
+    final labels = [
+      context.l10n.staffStepPhone,
+      context.l10n.staffStepSms,
+      context.l10n.installmentStepDetails,
+    ];
 
     return Row(
       children: List.generate(3, (i) {
@@ -99,7 +104,7 @@ class _StepIndicator extends StatelessWidget {
                       : active
                       ? colors.primary.withValues(alpha: 0.2)
                       : colors.surfaceSecondary,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.small),
                   border: Border.all(
                     color: current ? colors.primary : colors.borderSubtle,
                   ),
@@ -111,7 +116,7 @@ class _StepIndicator extends StatelessWidget {
                         '${i + 1}',
                         style: TextStyle(
                           color: current
-                              ? Colors.white
+                              ? context.colors.onPrimary
                               : active
                               ? colors.primary
                               : colors.textTertiary,
@@ -160,12 +165,12 @@ class _PhoneStepState extends State<_PhoneStep> {
         children: [
           AppPhoneField(
             controller: _phoneController,
-            label: 'Xodim telefoni',
+            label: context.l10n.staffPhone,
             onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: AppSpacing.lg),
           AppButton.primary(
-            label: 'Davom etish',
+            label: context.l10n.commonContinue,
             isLoading: state.isLoading,
             onPressed: PhoneFormatter.isValid(_phoneController.text)
                 ? () => context.read<StaffCreateCubit>().submitPhone(
@@ -262,15 +267,21 @@ class _DetailsStepState extends State<_DetailsStep> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AppTextField(controller: _nameController, label: 'Ism'),
+          AppTextField(
+            controller: _nameController,
+            label: context.l10n.partnersNameField,
+          ),
           const SizedBox(height: AppSpacing.md),
           AppTextField(
             controller: _passwordController,
-            label: 'Parol',
+            label: context.l10n.authPasswordLabel,
             obscureText: true,
           ),
           const SizedBox(height: AppSpacing.lg),
-          Text('Ruxsatlar', style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            context.l10n.staffPermissions,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: AppSpacing.sm),
           PermissionGroupList(
             groups: state.permissionGroups,
@@ -279,7 +290,7 @@ class _DetailsStepState extends State<_DetailsStep> {
             onToggleCategory: cubit.toggleAllInCategory,
           ),
           AppButton.primary(
-            label: 'Saqlash',
+            label: context.l10n.commonSave,
             isLoading: state.isLoading,
             onPressed: () {
               final nameError = Validators.required(_nameController.text);

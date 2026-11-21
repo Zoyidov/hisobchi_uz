@@ -20,6 +20,9 @@ import '../data/dashboard_models.dart';
 import '../data/dashboard_repository.dart';
 import 'dashboard_cubit.dart';
 import '../../../core/icons/app_icons.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/localization/app_localization_extension.dart';
 
 part 'widgets/dashboard_header.dart';
 part 'widgets/dashboard_overview.dart';
@@ -131,14 +134,14 @@ class _DashboardContent extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       _OverviewCard(summary: summary),
-      const SizedBox(height: 12),
+      const SizedBox(height: AppSpacing.sm),
       const _QuickActions(),
-      const SizedBox(height: 12),
+      const SizedBox(height: AppSpacing.sm),
       _PaymentOverview(summary: summary),
-      const SizedBox(height: 12),
+      const SizedBox(height: AppSpacing.sm),
       _ProjectsSection(summary: summary),
       if (tutorials.isNotEmpty) ...[
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.sm),
         _TutorialsSection(tutorials: tutorials),
       ],
     ],

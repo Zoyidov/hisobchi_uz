@@ -6,6 +6,7 @@ import 'package:hisobchi_uz/core/network/api_client.dart';
 import 'package:hisobchi_uz/core/theme/app_colors.dart';
 import 'package:hisobchi_uz/features/subscription/data/subscription_repository.dart';
 import 'package:hisobchi_uz/features/profile/presentation/widgets/profile_subscription_card.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 void main() {
   testWidgets('profile shows plan, deadline and expandable actual usage', (
@@ -52,6 +53,9 @@ void main() {
     final key = GlobalKey<ProfileSubscriptionCardState>();
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('uz'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: ThemeData(extensions: const [AppColorsExtension.light]),
         home: Scaffold(
           body: SingleChildScrollView(

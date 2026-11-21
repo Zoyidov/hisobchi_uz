@@ -4,6 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hisobchi_uz/core/theme/app_colors.dart';
 import 'package:hisobchi_uz/core/domain/entities/app_file.dart';
 import 'package:hisobchi_uz/core/widgets/media/app_file_attachment.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
+
+import '../../helpers/localized_finders.dart';
 
 void main() {
   testWidgets('removal detaches the uploaded file from the form', (
@@ -12,6 +15,9 @@ void main() {
     List<AppFile>? attached;
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('uz'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: ThemeData(extensions: const [AppColorsExtension.light]),
         home: Scaffold(
           body: AppFileAttachment(
@@ -22,7 +28,7 @@ void main() {
         ),
       ),
     );
-    await tester.tap(find.byTooltip('Delete'));
+    await tester.tap(findDeleteTooltip(tester));
     await tester.pump();
     expect(attached, isEmpty);
     expect(find.text('photo.jpg'), findsNothing);
@@ -38,6 +44,9 @@ void main() {
       for (final scale in [1.0, 2.0]) {
         await tester.pumpWidget(
           MaterialApp(
+            locale: const Locale('uz'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             theme: ThemeData(extensions: const [AppColorsExtension.light]),
             builder: (context, child) => MediaQuery(
               data: MediaQuery.of(

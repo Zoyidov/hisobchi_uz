@@ -5,6 +5,8 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/formatters/date_formatter.dart';
 import '../../../../core/widgets/sheets/app_bottom_sheet.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class DateRangeResult {
   const DateRangeResult({this.start, this.end, this.isCleared = false});
@@ -28,8 +30,8 @@ Future<DateRangeResult?> showTransactionDateFilterSheet(
 
   return showAppBottomSheet<DateRangeResult>(
     context,
-    title: 'Sana bo\'yicha saralash',
-    subtitle: 'Tranzaksiyalar vaqt oralig\'ini tanlang',
+    title: context.l10n.dateFilterTitle,
+    subtitle: context.l10n.dateFilterSubtitle,
     child: ListView(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -37,8 +39,8 @@ Future<DateRangeResult?> showTransactionDateFilterSheet(
       children: [
         if (currentFrom != null || currentTo != null) ...[
           _PresetTile(
-            title: 'Barcha vaqt (filterni tozalash)',
-            subtitle: 'Cheklovlarsiz barcha tranzaksiyalar',
+            title: context.l10n.dateFilterAll,
+            subtitle: context.l10n.dateFilterAllSubtitle,
             icon: AppIcons.sort,
             isSelected: false,
             onTap: () => Navigator.of(
@@ -48,7 +50,7 @@ Future<DateRangeResult?> showTransactionDateFilterSheet(
           const Divider(height: 1),
         ],
         _PresetTile(
-          title: 'Bu oy',
+          title: context.l10n.dateFilterThisMonth,
           subtitle:
               '${AppDateFormatter.display(thisMonthStart)} — ${AppDateFormatter.display(today)}',
           icon: AppIcons.calendar,
@@ -58,7 +60,7 @@ Future<DateRangeResult?> showTransactionDateFilterSheet(
           ).pop(DateRangeResult(start: thisMonthStart, end: today)),
         ),
         _PresetTile(
-          title: 'Bugun',
+          title: context.l10n.dateToday,
           subtitle: AppDateFormatter.display(today),
           icon: AppIcons.clock,
           isSelected: currentFrom == today && currentTo == today,
@@ -67,7 +69,7 @@ Future<DateRangeResult?> showTransactionDateFilterSheet(
           ).pop(DateRangeResult(start: today, end: today)),
         ),
         _PresetTile(
-          title: 'Oxirgi 7 kun',
+          title: context.l10n.dateFilterLast7,
           subtitle:
               '${AppDateFormatter.display(last7DaysStart)} — ${AppDateFormatter.display(today)}',
           icon: AppIcons.calendar,
@@ -77,7 +79,7 @@ Future<DateRangeResult?> showTransactionDateFilterSheet(
           ).pop(DateRangeResult(start: last7DaysStart, end: today)),
         ),
         _PresetTile(
-          title: 'O\'tgan oy',
+          title: context.l10n.dateFilterLastMonth,
           subtitle:
               '${AppDateFormatter.display(lastMonthStart)} — ${AppDateFormatter.display(lastMonthEnd)}',
           icon: AppIcons.calendarRemove,
@@ -88,7 +90,7 @@ Future<DateRangeResult?> showTransactionDateFilterSheet(
           ).pop(DateRangeResult(start: lastMonthStart, end: lastMonthEnd)),
         ),
         _PresetTile(
-          title: 'Oxirgi 30 kun',
+          title: context.l10n.dateFilterLast30,
           subtitle:
               '${AppDateFormatter.display(last30DaysStart)} — ${AppDateFormatter.display(today)}',
           icon: AppIcons.calendar,
@@ -99,8 +101,8 @@ Future<DateRangeResult?> showTransactionDateFilterSheet(
         ),
         const Divider(height: 1),
         _PresetTile(
-          title: 'Ixtiyoriy sana oralig\'i...',
-          subtitle: 'Kalendardan kerakli oraliqni tanlash',
+          title: context.l10n.dateFilterCustom,
+          subtitle: context.l10n.dateFilterCustomSubtitle,
           icon: AppIcons.calendarAdd,
           isSelected: false,
           onTap: () async {
@@ -117,7 +119,7 @@ Future<DateRangeResult?> showTransactionDateFilterSheet(
                   data: Theme.of(context).copyWith(
                     colorScheme: Theme.of(context).colorScheme.copyWith(
                       primary: colors.primary,
-                      onPrimary: Colors.white,
+                      onPrimary: context.colors.onPrimary,
                     ),
                   ),
                   child: child!,
@@ -165,7 +167,7 @@ class _PresetTile extends StatelessWidget {
           color: isSelected
               ? colors.primary.withValues(alpha: 0.15)
               : colors.surfaceSecondary,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppRadius.small),
         ),
         child: Icon(
           icon,

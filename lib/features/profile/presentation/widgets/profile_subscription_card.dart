@@ -10,6 +10,9 @@ import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../../subscription/data/subscription_models.dart';
 import '../../../subscription/data/subscription_repository.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class ProfileSubscriptionCard extends StatefulWidget {
   const ProfileSubscriptionCard({
@@ -77,12 +80,12 @@ class ProfileSubscriptionCardState extends State<ProfileSubscriptionCard> {
           children: [
             Expanded(
               child: Text(
-                'Tarif ma’lumotlarini yuklab bo‘lmadi',
+                context.l10n.subscriptionLoadError,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
             IconButton(
-              tooltip: 'Qayta urinish',
+              tooltip: context.l10n.commonRetry,
               onPressed: _load,
               icon: const Icon(AppIcons.refresh),
             ),
@@ -96,7 +99,7 @@ class ProfileSubscriptionCardState extends State<ProfileSubscriptionCard> {
           AppCard(
             hasShadow: false,
             padding: const EdgeInsets.all(18),
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(AppRadius.card),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -105,29 +108,31 @@ class ProfileSubscriptionCardState extends State<ProfileSubscriptionCard> {
                     AppSkeletonBox(
                       width: 44,
                       height: 44,
-                      borderRadius: BorderRadius.all(Radius.circular(14)),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(AppRadius.medium),
+                      ),
                     ),
-                    SizedBox(width: 12),
+                    SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           AppSkeletonBox(width: 74, height: 10),
-                          SizedBox(height: 8),
+                          SizedBox(height: AppSpacing.xs),
                           AppSkeletonBox(width: 130, height: 22),
                         ],
                       ),
                     ),
-                    SizedBox(width: 8),
+                    SizedBox(width: AppSpacing.xs),
                     AppSkeletonBox(width: 21, height: 21),
                   ],
                 ),
                 if (widget.showDetails) ...[
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.md),
                   const Row(
                     children: [
                       AppSkeletonBox(width: 50, height: 24),
-                      SizedBox(width: 8),
+                      SizedBox(width: AppSpacing.xs),
                       AppSkeletonBox(width: 86, height: 24),
                     ],
                   ),
@@ -144,7 +149,7 @@ class ProfileSubscriptionCardState extends State<ProfileSubscriptionCard> {
             const SizedBox(height: 10),
             const AppSkeletonBox(
               height: 52,
-              borderRadius: BorderRadius.all(Radius.circular(18)),
+              borderRadius: BorderRadius.all(Radius.circular(AppRadius.xl)),
             ),
           ],
         ],
@@ -157,7 +162,7 @@ class ProfileSubscriptionCardState extends State<ProfileSubscriptionCard> {
           hasShadow: false,
           onTap: _openPlans,
           padding: const EdgeInsets.all(18),
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(AppRadius.card),
           border: Border.all(color: colors.primary.withValues(alpha: .2)),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -175,38 +180,40 @@ class ProfileSubscriptionCardState extends State<ProfileSubscriptionCard> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: .16),
-                      borderRadius: BorderRadius.circular(14),
+                      color: context.colors.onPrimary.withValues(alpha: .16),
+                      borderRadius: BorderRadius.circular(AppRadius.medium),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       AppIcons.premium,
-                      color: Colors.white,
+                      color: context.colors.onPrimary,
                       size: 24,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'JORIY TARIF',
+                          context.l10n.subscriptionCurrentBadge,
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: .75),
+                            color: context.colors.onPrimary.withValues(
+                              alpha: .75,
+                            ),
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 1,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.xxs),
                         Text(
                           info.hasSubscription
                               ? (info.planDisplayName ??
                                     info.planName ??
-                                    'Obuna')
-                              : 'Obuna mavjud emas',
-                          style: const TextStyle(
-                            color: Colors.white,
+                                    context.l10n.subscriptionTitle)
+                              : context.l10n.subscriptionNone,
+                          style: TextStyle(
+                            color: context.colors.onPrimary,
                             fontSize: 21,
                             fontWeight: FontWeight.w800,
                           ),
@@ -214,11 +221,15 @@ class ProfileSubscriptionCardState extends State<ProfileSubscriptionCard> {
                       ],
                     ),
                   ),
-                  const Icon(AppIcons.forward, color: Colors.white, size: 21),
+                  Icon(
+                    AppIcons.forward,
+                    color: context.colors.onPrimary,
+                    size: 21,
+                  ),
                 ],
               ),
               if (widget.showDetails) ...[
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -226,20 +237,25 @@ class ProfileSubscriptionCardState extends State<ProfileSubscriptionCard> {
                     if (info.statusLabel?.isNotEmpty ?? false)
                       _Tag(text: info.statusLabel!),
                     if (info.isOverdue)
-                      const _Tag(text: 'To‘lov muddati o‘tgan')
+                      _Tag(text: context.l10n.subscriptionOverdue)
                     else if (info.daysUntilDue != null)
                       _Tag(
-                        text:
-                            '${info.daysUntilDue! < 0 ? 0 : info.daysUntilDue} kun qoldi',
+                        text: context.l10n.subscriptionDaysLeft(
+                          info.daysUntilDue! < 0 ? 0 : info.daysUntilDue!,
+                        ),
                       ),
                   ],
                 ),
                 if (info.periodEnd != null) ...[
                   const SizedBox(height: 10),
                   Text(
-                    'Amal qilish muddati: ${date == null ? info.periodEnd : AppDateFormatter.display(date)}',
+                    context.l10n.subscriptionValidUntil(
+                      date == null
+                          ? info.periodEnd!
+                          : AppDateFormatter.display(date),
+                    ),
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: .9),
+                      color: context.colors.onPrimary.withValues(alpha: .9),
                       fontSize: 12,
                     ),
                   ),
@@ -253,15 +269,15 @@ class ProfileSubscriptionCardState extends State<ProfileSubscriptionCard> {
           AppCard(
             hasShadow: false,
             padding: EdgeInsets.zero,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
             child: Column(
               children: [
                 Material(
                   color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
                   child: ListTile(
                     dense: true,
-                    title: const Text('Limitlar va foydalanish'),
+                    title: Text(context.l10n.subscriptionLimitsUsage),
                     leading: Icon(
                       AppIcons.pieChart,
                       color: colors.primary,
@@ -283,17 +299,17 @@ class ProfileSubscriptionCardState extends State<ProfileSubscriptionCard> {
                             children: [
                               for (final (label, limit, color) in [
                                 (
-                                  'Mijozlar',
+                                  context.l10n.partnersClientsTitle,
                                   info.usage.customers,
                                   colors.primary,
                                 ),
                                 (
-                                  'Loyihalar',
+                                  context.l10n.navProjects,
                                   info.usage.projects,
                                   colors.success,
                                 ),
                                 (
-                                  'Xodimlar',
+                                  context.l10n.profileStaff,
                                   info.usage.users,
                                   colors.accentViolet,
                                 ),
@@ -325,7 +341,9 @@ class ProfileSubscriptionCardState extends State<ProfileSubscriptionCard> {
                                       LinearProgressIndicator(
                                         value: limit.percentage,
                                         minHeight: 5,
-                                        borderRadius: BorderRadius.circular(4),
+                                        borderRadius: BorderRadius.circular(
+                                          AppRadius.xxs,
+                                        ),
                                         color: color,
                                         backgroundColor: color.withValues(
                                           alpha: .1,
@@ -354,13 +372,13 @@ class _Tag extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
     decoration: BoxDecoration(
-      color: Colors.white.withValues(alpha: .15),
-      borderRadius: BorderRadius.circular(8),
+      color: context.colors.onPrimary.withValues(alpha: .15),
+      borderRadius: BorderRadius.circular(AppRadius.sm),
     ),
     child: Text(
       text,
-      style: const TextStyle(
-        color: Colors.white,
+      style: TextStyle(
+        color: context.colors.onPrimary,
         fontSize: 11,
         fontWeight: FontWeight.w600,
       ),

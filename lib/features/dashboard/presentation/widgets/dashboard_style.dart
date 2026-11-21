@@ -78,7 +78,7 @@ class _IconTile extends StatelessWidget {
     height: size,
     decoration: BoxDecoration(
       color: _DashboardStyle.tint(context, color),
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(AppRadius.small),
     ),
     child: Icon(icon, color: color, size: 23),
   );
@@ -89,8 +89,11 @@ class _DashboardSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      AppSkeletonBox(height: 140, borderRadius: BorderRadius.circular(22)),
-      const SizedBox(height: 12),
+      AppSkeletonBox(
+        height: 140,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+      ),
+      const SizedBox(height: AppSpacing.sm),
       Row(
         children: [
           for (var i = 0; i < 4; i++)
@@ -99,16 +102,22 @@ class _DashboardSkeleton extends StatelessWidget {
                 padding: EdgeInsets.only(right: i < 3 ? 10 : 0),
                 child: AppSkeletonBox(
                   height: 78,
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
                 ),
               ),
             ),
         ],
       ),
-      const SizedBox(height: 12),
-      AppSkeletonBox(height: 218, borderRadius: BorderRadius.circular(20)),
-      const SizedBox(height: 12),
-      AppSkeletonBox(height: 108, borderRadius: BorderRadius.circular(20)),
+      const SizedBox(height: AppSpacing.sm),
+      AppSkeletonBox(
+        height: 218,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+      ),
+      const SizedBox(height: AppSpacing.sm),
+      AppSkeletonBox(
+        height: 108,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+      ),
     ],
   );
 }

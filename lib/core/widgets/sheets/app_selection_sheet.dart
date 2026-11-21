@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import 'app_bottom_sheet.dart';
 import '../../icons/app_icons.dart';
+import '../../localization/app_localization_extension.dart';
 
 class AppSelectionItem<T> {
   const AppSelectionItem({
@@ -72,8 +73,8 @@ class _SelectionListState<T> extends State<_SelectionList<T>> {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             child: TextField(
               onChanged: (v) => setState(() => _query = v),
-              decoration: const InputDecoration(
-                hintText: 'Qidirish...',
+              decoration: InputDecoration(
+                hintText: context.l10n.commonSearch,
                 prefixIcon: Icon(AppIcons.search),
               ),
             ),

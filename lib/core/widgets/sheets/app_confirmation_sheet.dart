@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../buttons/app_button.dart';
 import 'app_bottom_sheet.dart';
+import '../../theme/app_spacing.dart';
+import '../../localization/app_localization_extension.dart';
 
 /// Destructive amallar uchun tasdiqlash — dialog emas, sheet
 /// (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 61, 106).
@@ -9,18 +11,18 @@ Future<bool> showAppConfirmationSheet(
   BuildContext context, {
   required String title,
   required String description,
-  String confirmLabel = 'Ha, davom etish',
-  String cancelLabel = 'Bekor qilish',
+  String? confirmLabel,
+  String? cancelLabel,
   bool destructive = true,
 }) async {
   final result = await showAppBottomSheet<bool>(
     context,
     title: title,
     subtitle: description,
-    child: const SizedBox(height: 8),
+    child: const SizedBox(height: AppSpacing.xs),
     stickyAction: _ConfirmationActions(
-      confirmLabel: confirmLabel,
-      cancelLabel: cancelLabel,
+      confirmLabel: confirmLabel ?? context.l10n.commonConfirmContinue,
+      cancelLabel: cancelLabel ?? context.l10n.commonCancel,
       destructive: destructive,
     ),
   );
@@ -52,8 +54,11 @@ class _ConfirmationActions extends StatelessWidget {
                 label: confirmLabel,
                 onPressed: () => Navigator.of(context).pop(true),
               ),
-        const SizedBox(height: 8),
-        AppButton.secondary(label: cancelLabel, onPressed: () => Navigator.of(context).pop(false)),
+        const SizedBox(height: AppSpacing.xs),
+        AppButton.secondary(
+          label: cancelLabel,
+          onPressed: () => Navigator.of(context).pop(false),
+        ),
       ],
     );
   }

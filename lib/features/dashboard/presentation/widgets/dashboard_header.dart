@@ -2,12 +2,13 @@ part of '../dashboard_page.dart';
 
 class _DashboardHeader extends StatelessWidget {
   const _DashboardHeader();
-  String get _greeting => switch (DateTime.now().hour) {
-    >= 5 && < 11 => 'Xayrli tong,',
-    >= 11 && < 17 => 'Xayrli kun,',
-    >= 17 && < 22 => 'Xayrli kech,',
-    _ => 'Xayrli tun,',
-  };
+  static String _greeting(AppLocalizations l10n) =>
+      switch (DateTime.now().hour) {
+        >= 5 && < 11 => l10n.greetingMorning,
+        >= 11 && < 17 => l10n.greetingDay,
+        >= 17 && < 22 => l10n.greetingEvening,
+        _ => l10n.greetingNight,
+      };
   @override
   Widget build(BuildContext context) {
     final user = context.watch<UserCubit>().currentUserOrNull;
@@ -18,11 +19,11 @@ class _DashboardHeader extends StatelessWidget {
         if (user != null) ...[
           Semantics(
             button: true,
-            label: 'Profilni ochish',
+            label: context.l10n.dashboardOpenProfile,
             child: Material(
               color: _DashboardStyle.surface(context),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(AppRadius.medium),
                 side: BorderSide(color: colors.borderSubtle),
               ),
               clipBehavior: Clip.antiAlias,
@@ -36,7 +37,7 @@ class _DashboardHeader extends StatelessWidget {
                         : 'assets/icon/hisup_mark.svg',
                     width: 38,
                     height: 38,
-                    semanticsLabel: 'Hisup logosi',
+                    semanticsLabel: context.l10n.hisupLogoLabel,
                   ),
                 ),
               ),
@@ -49,7 +50,7 @@ class _DashboardHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                _greeting,
+                _greeting(context.l10n),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   fontSize: 12,
                   color: colors.textSecondary,
@@ -57,7 +58,7 @@ class _DashboardHeader extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                user?.name ?? 'Boshqaruv paneli',
+                user?.name ?? context.l10n.dashboardTitle,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -68,7 +69,7 @@ class _DashboardHeader extends StatelessWidget {
                 ),
               ),
               if (owner.isStaffMode) ...[
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xxs),
                 Text(
                   '${owner.ownerName ?? 'Tashkilot'} hisobida',
                   style: Theme.of(
@@ -79,10 +80,10 @@ class _DashboardHeader extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpacing.sm),
         BlocBuilder<NotificationBadgeCubit, int>(
           builder: (context, count) => Semantics(
-            label: '$count ta o‘qilmagan bildirishnoma',
+            label: context.l10n.notificationsUnreadCount(count),
             button: true,
             child: SizedBox(
               width: 46,
@@ -92,7 +93,7 @@ class _DashboardHeader extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 onTap: () => context.push(RoutePaths.profileNotifications),
                 child: Tooltip(
-                  message: 'Bildirishnomalar',
+                  message: context.l10n.notificationsTitle,
                   child: Center(
                     child: Badge(
                       isLabelVisible: count > 0,

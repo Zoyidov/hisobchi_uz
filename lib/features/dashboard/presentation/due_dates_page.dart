@@ -18,6 +18,8 @@ import '../../partners/presentation/pages/wallet_form_page.dart';
 import '../data/dashboard_models.dart';
 import '../data/dashboard_repository.dart';
 import '../../../core/icons/app_icons.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/localization/app_localization_extension.dart';
 
 class PartnerDueDatesCubit extends PagedListCubit<PartnerDueItem> {
   PartnerDueDatesCubit(this._repository, this.type) {
@@ -67,13 +69,13 @@ class InstallmentDueDatesCubit extends PagedListCubit<InstallmentDueItem> {
       _repository.getInstallmentDueDates(type, page: page);
 }
 
-String _titleFor(DueDateType type) => switch (type) {
-  DueDateType.qarzExpired => 'Muddati o\'tgan qarzlar',
-  DueDateType.qarzToday => 'Bugun muddati',
-  DueDateType.qarz3Days => '3 kun ichida',
-  DueDateType.installmentExpired => 'Muddati o\'tgan (bo\'lib to\'lash)',
-  DueDateType.installmentToday => 'Bugun (bo\'lib to\'lash)',
-  DueDateType.installment3Days => '3 kun ichida (bo\'lib to\'lash)',
+String _titleFor(AppLocalizations l10n, DueDateType type) => switch (type) {
+  DueDateType.qarzExpired => l10n.dueQarzExpired,
+  DueDateType.qarzToday => l10n.dueQarzToday,
+  DueDateType.qarz3Days => l10n.dueIn3Days,
+  DueDateType.installmentExpired => l10n.dueInstallmentExpired,
+  DueDateType.installmentToday => l10n.dueInstallmentToday,
+  DueDateType.installment3Days => l10n.dueInstallment3Days,
 };
 
 /// Dashboard kartasi bosilganda ochiladigan detal ro'yxat (MOBILE_APP_TZ.md 7.2).
@@ -107,7 +109,7 @@ class _PartnerDueView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_titleFor(type))),
+      appBar: AppBar(title: Text(_titleFor(context.l10n, type))),
       body: BlocBuilder<PartnerDueDatesCubit, PagedListState<PartnerDueItem>>(
         builder: (context, state) {
           final cubit = context.read<PartnerDueDatesCubit>();
@@ -117,7 +119,7 @@ class _PartnerDueView extends StatelessWidget {
             onRefresh: cubit.refresh,
             onRetry: cubit.loadFirst,
             emptyIcon: AppIcons.success,
-            emptyTitle: 'Bu bo\'limda ma\'lumot yo\'q',
+            emptyTitle: context.l10n.dueEmpty,
             itemBuilder: (context, item, index) => AppCard(
               child: Row(
                 children: [
@@ -129,13 +131,13 @@ class _PartnerDueView extends StatelessWidget {
                           item.partnerName,
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.xxs),
                         MoneyText(
                           item.remainingAmount,
                           currencyTypeId: item.currencyTypeId,
                           size: MoneySize.list,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.xxs),
                         AppStatusChip(
                           label: item.status,
                           tone: (item.daysOverdue ?? 0) > 0
@@ -190,7 +192,7 @@ class _InstallmentDueView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_titleFor(type))),
+      appBar: AppBar(title: Text(_titleFor(context.l10n, type))),
       body:
           BlocBuilder<
             InstallmentDueDatesCubit,
@@ -204,7 +206,7 @@ class _InstallmentDueView extends StatelessWidget {
                 onRefresh: cubit.refresh,
                 onRetry: cubit.loadFirst,
                 emptyIcon: AppIcons.success,
-                emptyTitle: 'Bu bo\'limda ma\'lumot yo\'q',
+                emptyTitle: context.l10n.dueEmpty,
                 itemBuilder: (context, item, index) => AppCard(
                   child: Row(
                     children: [
@@ -216,9 +218,9 @@ class _InstallmentDueView extends StatelessWidget {
                               item.partnerName,
                               style: Theme.of(context).textTheme.titleSmall,
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: AppSpacing.xxs),
                             MoneyText(item.remaining, size: MoneySize.list),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: AppSpacing.xxs),
                             AppStatusChip(
                               label: item.statusLabel,
                               tone: (item.daysOverdue ?? 0) > 0

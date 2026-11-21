@@ -15,14 +15,17 @@ import '../../../documents/data/documents_repository.dart';
 import '../../data/projects_repository.dart';
 import 'worker_selection_sheet.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 Future<bool?> showProjectWorkerAssignmentSheet(
   BuildContext context, {
   required int projectId,
 }) => showAppBottomSheet<bool>(
   context,
-  title: 'Loyihaga xodim biriktirish',
-  subtitle: 'Ushbu loyihaga biriktirilmagan ishchilar',
+  title: context.l10n.projectAssignStaff,
+  subtitle: context.l10n.projectUnassignedWorkers,
   heightFactor: .85,
   child: _Assignment(projectId: projectId),
 );
@@ -127,15 +130,15 @@ class _AssignmentState extends State<_Assignment> {
                   child: TextField(
                     enabled: !_saving,
                     onChanged: (value) => setState(() => _query = value.trim()),
-                    decoration: const InputDecoration(
-                      hintText: 'Ism, telefon yoki lavozim',
+                    decoration: InputDecoration(
+                      hintText: context.l10n.workerSearchHint,
                       prefixIcon: Icon(AppIcons.search),
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.xs),
                 IconButton.filled(
-                  tooltip: 'Yangi ishchi yaratish',
+                  tooltip: context.l10n.workerCreateNew,
                   onPressed: _saving || _creating ? null : _create,
                   icon: const Icon(AppIcons.add),
                 ),
@@ -153,8 +156,8 @@ class _AssignmentState extends State<_Assignment> {
                       padding: const EdgeInsets.all(24),
                       child: Text(
                         _query.isEmpty
-                            ? 'Biriktirish uchun bo‘sh ishchi yo‘q. Yangi ishchi yaratish uchun + tugmasini bosing.'
-                            : 'Ishchilar topilmadi',
+                            ? context.l10n.workerNoneFree
+                            : context.l10n.workersNotFound,
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -165,7 +168,8 @@ class _AssignmentState extends State<_Assignment> {
                       vertical: 8,
                     ),
                     itemCount: items.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 8),
+                    separatorBuilder: (_, _) =>
+                        const SizedBox(height: AppSpacing.xs),
                     itemBuilder: (context, index) {
                       final worker = items[index];
                       final selected = _selected.contains(worker.id);
@@ -174,7 +178,7 @@ class _AssignmentState extends State<_Assignment> {
                             ? context.colors.primaryContainer
                             : context.colors.surface,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(AppRadius.medium),
                           side: BorderSide(
                             color: selected
                                 ? context.colors.primary
@@ -215,10 +219,10 @@ class _AssignmentState extends State<_Assignment> {
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
             child: AppButton.primary(
               label: _saving
-                  ? 'Biriktirilmoqda…'
+                  ? context.l10n.workerAssigning
                   : _selected.isEmpty
-                  ? 'Xodimlarni tanlang'
-                  : '${_selected.length} ta xodimni biriktirish',
+                  ? context.l10n.workerSelectStaff
+                  : context.l10n.workerAssignCount(_selected.length),
               isLoading: _saving,
               onPressed: _selected.isEmpty || _loading || _creating
                   ? null

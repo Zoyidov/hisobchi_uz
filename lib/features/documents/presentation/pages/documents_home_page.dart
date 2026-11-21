@@ -11,6 +11,7 @@ import 'cost_types_page.dart';
 import 'simple_document_list_page.dart';
 import 'workers_page.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Profil → Ma'lumotnomalar (MOBILE_APP_TZ.md 11-bo'lim).
 class DocumentsHomePage extends StatelessWidget {
@@ -21,7 +22,7 @@ class DocumentsHomePage extends StatelessWidget {
     final repository = getIt<DocumentsRepository>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Ma\'lumotnomalar')),
+      appBar: AppBar(title: Text(context.l10n.docReferenceBooks)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.md,
@@ -35,12 +36,11 @@ class DocumentsHomePage extends StatelessWidget {
             children: [
               AppGroupedTile(
                 icon: AppIcons.tools,
-                label: 'Ish turlari',
+                label: context.l10n.docWorkTypes,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (_) => SimpleDocumentListPage(
-                      title: 'Ish turlari',
-                      entityLabel: 'Ish turi',
+                      kind: SimpleDocumentKind.workType,
                       cubit: SimpleDocumentCubit(
                         fetchAll: repository.getWorkTypes,
                         create: (name, desc) => repository.createWorkType(
@@ -61,7 +61,7 @@ class DocumentsHomePage extends StatelessWidget {
               ),
               AppGroupedTile(
                 icon: AppIcons.payments,
-                label: 'Xarajat turlari',
+                label: context.l10n.docCostTypes,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (_) => const CostTypesPage(),
@@ -70,12 +70,11 @@ class DocumentsHomePage extends StatelessWidget {
               ),
               AppGroupedTile(
                 icon: AppIcons.worker,
-                label: 'Lavozimlar',
+                label: context.l10n.docPositions,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (_) => SimpleDocumentListPage(
-                      title: 'Lavozimlar',
-                      entityLabel: 'Lavozim',
+                      kind: SimpleDocumentKind.position,
                       cubit: SimpleDocumentCubit(
                         fetchAll: repository.getPositions,
                         create: (name, desc) => repository.createPosition(
@@ -96,14 +95,14 @@ class DocumentsHomePage extends StatelessWidget {
               ),
               AppGroupedTile(
                 icon: AppIcons.worker,
-                label: 'Ishchilar',
+                label: context.l10n.docWorkers,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(builder: (_) => const WorkersPage()),
                 ),
               ),
               AppGroupedTile(
                 icon: AppIcons.exchange,
-                label: 'Valyuta kurslari',
+                label: context.l10n.docCurrencyRates,
                 onTap: () => context.push(RoutePaths.profileCurrency),
               ),
             ],

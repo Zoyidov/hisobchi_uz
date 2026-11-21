@@ -16,6 +16,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/media/app_avatar.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Hisob tanlash — Senior Level FinTech Multi-Tenant Account Switcher ekrani.
 class AccountSelectionPage extends StatefulWidget {
@@ -58,8 +59,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
     if (user == null || !user.isOwner) {
       setState(() {
         _activating = false;
-        _activationError =
-            "Hisob ma'lumotlarini yuklab bo'lmadi. Qayta urinib ko'ring.";
+        _activationError = context.l10n.authAccountsLoadError;
       });
       return;
     }
@@ -148,7 +148,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                           ),
                         ),
                         child: Text(
-                          'HISOBNI TANLASH 🏢',
+                          context.l10n.authAccountSelectionBadge,
                           style: TextStyle(
                             color: colors.primary,
                             fontSize: 10.5,
@@ -158,7 +158,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                         ),
                       ),
                       IconButton(
-                        tooltip: 'Chiqish',
+                        tooltip: context.l10n.authLogout,
                         icon: Icon(
                           AppIcons.logout,
                           color: colors.textTertiary,
@@ -177,16 +177,16 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
 
                   // Headings
                   Text(
-                    'Qaysi hisobda ishlaysiz? 👋',
+                    context.l10n.authAccountSelectionTitle,
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                       fontSize: 27,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.5,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
-                    "Xodim sifatida ish joyingizni tanlang yoki o‘zingizning biznes hisobingizga kiring.",
+                    context.l10n.authAccountSelectionSubtitle,
                     style: TextStyle(
                       color: colors.textSecondary,
                       fontSize: 14.5,
@@ -205,7 +205,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                           Text(
                             userState is UserError
                                 ? userState.failure.message
-                                : "Hisob ma'lumotlari yuklanmoqda...",
+                                : context.l10n.authAccountsLoading,
                           ),
                           TextButton(
                             onPressed: userState is UserLoading
@@ -213,7 +213,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                                 : () async {
                                     await context.read<UserCubit>().loadMe();
                                   },
-                            child: const Text('Qayta yuklash'),
+                            child: Text(context.l10n.commonReload),
                           ),
                         ],
                         if ((user != null && !user.isOwner) ||
@@ -232,8 +232,8 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                               icon: const Icon(AppIcons.shop),
                               label: Text(
                                 _activating
-                                    ? 'Hisob ochilmoqda...'
-                                    : "O'z biznes hisobimni ochish",
+                                    ? context.l10n.authAccountOpening
+                                    : context.l10n.authOpenOwnBusiness,
                               ),
                             ),
                           ),
@@ -246,7 +246,9 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                             ),
                             child: AppButtonPressable(
                               child: InkWell(
-                                borderRadius: BorderRadius.circular(22),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.card,
+                                ),
                                 onTap: () async {
                                   HapticFeedback.mediumImpact();
                                   await context
@@ -262,7 +264,9 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                                     color: isDark
                                         ? colors.surfaceSecondary
                                         : colors.surface,
-                                    borderRadius: BorderRadius.circular(22),
+                                    borderRadius: BorderRadius.circular(
+                                      AppRadius.card,
+                                    ),
                                     border: Border.all(
                                       color: colors.primary.withValues(
                                         alpha: 0.5,
@@ -299,10 +303,10 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                                                 width: 2,
                                               ),
                                             ),
-                                            child: const Icon(
+                                            child: Icon(
                                               AppIcons.star,
                                               size: 11,
-                                              color: Colors.white,
+                                              color: context.colors.onPrimary,
                                             ),
                                           ),
                                         ],
@@ -341,7 +345,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                                                         ),
                                                   ),
                                                   child: Text(
-                                                    'ASOSIY • EGASI',
+                                                    context.l10n.authOwnerBadge,
                                                     style: TextStyle(
                                                       fontSize: 10,
                                                       fontWeight:
@@ -355,7 +359,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                                             ),
                                             const SizedBox(height: 5),
                                             Text(
-                                              'Shaxsiy biznesingiz va to\'liq hisobdorlik',
+                                              context.l10n.authOwnerDescription,
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 color: colors.textSecondary,
@@ -364,7 +368,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                                           ],
                                         ),
                                       ),
-                                      const SizedBox(width: 8),
+                                      const SizedBox(width: AppSpacing.xs),
                                       Icon(
                                         AppIcons.chevronRight,
                                         color: colors.primary,
@@ -383,7 +387,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                           Padding(
                             padding: const EdgeInsets.only(left: 4, bottom: 12),
                             child: Text(
-                              'XODIM SIFATIDA BIRIKTIRILGAN HISOBDORLIKLAR',
+                              context.l10n.authStaffAccountsHeader,
                               style: TextStyle(
                                 fontSize: 11.5,
                                 fontWeight: FontWeight.w700,
@@ -399,7 +403,9 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                               ),
                               child: AppButtonPressable(
                                 child: InkWell(
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.card,
+                                  ),
                                   onTap: () async {
                                     HapticFeedback.mediumImpact();
                                     await context
@@ -420,7 +426,9 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                                       color: isDark
                                           ? colors.surfaceSecondary
                                           : colors.surface,
-                                      borderRadius: BorderRadius.circular(20),
+                                      borderRadius: BorderRadius.circular(
+                                        AppRadius.card,
+                                      ),
                                       border: Border.all(color: colors.border),
                                       boxShadow: colors.cardShadow,
                                     ),
@@ -462,7 +470,9 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                                                           ),
                                                     ),
                                                     child: Text(
-                                                      'XODIM',
+                                                      context
+                                                          .l10n
+                                                          .authStaffBadge,
                                                       style: TextStyle(
                                                         fontSize: 10,
                                                         fontWeight:
@@ -475,9 +485,13 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                                                   ),
                                                 ],
                                               ),
-                                              const SizedBox(height: 4),
+                                              const SizedBox(
+                                                height: AppSpacing.xxs,
+                                              ),
                                               Text(
-                                                'Biriktirilgan korxona hisoboti',
+                                                context
+                                                    .l10n
+                                                    .authStaffAccountDescription,
                                                 style: TextStyle(
                                                   fontSize: 12.5,
                                                   color: colors.textTertiary,
@@ -486,7 +500,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                                             ],
                                           ),
                                         ),
-                                        const SizedBox(width: 8),
+                                        const SizedBox(width: AppSpacing.xs),
                                         Icon(
                                           AppIcons.chevronRight,
                                           color: colors.textTertiary,
@@ -526,7 +540,7 @@ class _AccountSelectionPageState extends State<AccountSelectionPage> {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            'Har bir hisob xavfsiz ajratilgan holda yuritiladi',
+                            context.l10n.authAccountsIsolated,
                             style: TextStyle(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w500,

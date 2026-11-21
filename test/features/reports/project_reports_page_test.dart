@@ -9,6 +9,9 @@ import 'package:hisobchi_uz/core/theme/app_theme.dart';
 import 'package:hisobchi_uz/features/projects/data/projects_repository.dart';
 import 'package:hisobchi_uz/features/reports/data/reports_repository.dart';
 import 'package:hisobchi_uz/features/reports/presentation/pages/project_reports_page.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
+
+import '../../helpers/localized_finders.dart';
 
 const report = {
   'income_uzs': '2000.75',
@@ -123,6 +126,9 @@ void main() {
         addTearDown(getIt.reset);
         await tester.pumpWidget(
           MaterialApp(
+            locale: const Locale('uz'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             theme: dark ? AppTheme.dark() : AppTheme.light(),
             builder: (context, child) => MediaQuery(
               data: MediaQuery.of(
@@ -160,7 +166,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(requests.last.path, '/project/project-incomes');
         expect(requests.last.queryParameters['project_id'], 37);
-        await tester.pageBack();
+        await tapBack(tester);
         await tester.pumpAndSettle();
         await tester.scrollUntilVisible(
           find.text('Materiallar'),
@@ -172,7 +178,7 @@ void main() {
         expect(requests.last.path, '/project/project-costs');
         expect(requests.last.queryParameters['cost_type_id'], 7);
         expect(requests.last.queryParameters['project_id'], 37);
-        await tester.pageBack();
+        await tapBack(tester);
         await tester.pumpAndSettle();
         expect(requests.last.path, '/reports/projects/balance');
         await tester.tap(find.text('Sinov loyiha'));

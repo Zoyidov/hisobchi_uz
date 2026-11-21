@@ -16,39 +16,37 @@ import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/document_models.dart';
 import '../cubit/simple_document_cubit.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Ish turlari / Lavozimlar uchun umumiy CRUD ekrani — bir xil naqsh
 /// (MOBILE_APP_TZ.md 11-bo'lim: "barcha ma'lumotnomalarda bir xil CRUD").
 class SimpleDocumentListPage extends StatelessWidget {
   const SimpleDocumentListPage({
     super.key,
-    required this.title,
-    required this.entityLabel,
+    required this.kind,
     required this.cubit,
   });
 
-  final String title;
-  final String entityLabel;
+  final SimpleDocumentKind kind;
   final SimpleDocumentCubit cubit;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: cubit..load(),
-      child: _View(title: title, entityLabel: entityLabel),
+      child: _View(kind: kind),
     );
   }
 }
 
 class _View extends StatelessWidget {
-  const _View({required this.title, required this.entityLabel});
-  final String title;
-  final String entityLabel;
+  const _View({required this.kind});
+  final SimpleDocumentKind kind;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(kind.title(context.l10n))),
       body: BlocBuilder<SimpleDocumentCubit, SimpleDocumentState>(
         builder: (context, state) {
           return switch (state) {
@@ -60,8 +58,8 @@ class _View extends StatelessWidget {
             SimpleDocumentLoaded(:final items) =>
               items.isEmpty
                   ? AppEmptyState(
-                      title: '$entityLabel topilmadi',
-                      actionLabel: '$entityLabel qo\'shish',
+                      title: kind.notFound(context.l10n),
+                      actionLabel: kind.add(context.l10n),
                       onAction: () => _openForm(context),
                     )
                   : RefreshIndicator(
@@ -72,10 +70,8 @@ class _View extends StatelessWidget {
                         itemCount: items.length,
                         separatorBuilder: (_, __) =>
                             const SizedBox(height: AppSpacing.sm),
-                        itemBuilder: (context, i) => _DocumentTile(
-                          item: items[i],
-                          entityLabel: entityLabel,
-                        ),
+                        itemBuilder: (context, i) =>
+                            _DocumentTile(item: items[i], kind: kind),
                       ),
                     ),
           };
@@ -89,20 +85,20 @@ class _View extends StatelessWidget {
           heroTag: null,
           onPressed: () => _openForm(context),
           icon: const Icon(AppIcons.add),
-          label: Text(entityLabel),
+          label: Text(kind.add(context.l10n)),
         ),
       ),
     );
   }
 
   void _openForm(BuildContext context) =>
-      showDocumentFormSheet(context, entityLabel: entityLabel);
+      showDocumentFormSheet(context, kind: kind);
 }
 
 class _DocumentTile extends StatelessWidget {
-  const _DocumentTile({required this.item, required this.entityLabel});
+  const _DocumentTile({required this.item, required this.kind});
   final SimpleDocument item;
-  final String entityLabel;
+  final SimpleDocumentKind kind;
 
   @override
   Widget build(BuildContext context) {
@@ -110,11 +106,7 @@ class _DocumentTile extends StatelessWidget {
     return AppCard(
       onTap: item.isDeleted
           ? null
-          : () => showDocumentFormSheet(
-              context,
-              entityLabel: entityLabel,
-              editing: item,
-            ),
+          : () => showDocumentFormSheet(context, kind: kind, editing: item),
       child: Row(
         children: [
           Expanded(
@@ -141,10 +133,10 @@ class _DocumentTile extends StatelessWidget {
                     ),
                   ),
                 if (item.isDeleted)
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(top: 6),
                     child: AppStatusChip(
-                      label: 'O\'chirilgan',
+                      label: context.l10n.commonDeleted,
                       tone: AppStatusChipTone.neutral,
                     ),
                   ),
@@ -153,7 +145,7 @@ class _DocumentTile extends StatelessWidget {
           ),
           if (item.isDeleted)
             AppButton.text(
-              label: 'Tiklash',
+              label: context.l10n.commonRestore,
               onPressed: () =>
                   context.read<SimpleDocumentCubit>().submitRestore(item.id),
             )
@@ -163,8 +155,8 @@ class _DocumentTile extends StatelessWidget {
               onPressed: () async {
                 final confirmed = await showAppConfirmationSheet(
                   context,
-                  title: '$entityLabel o\'chirilsinmi?',
-                  description: 'Bu amalni keyin qaytarib bo\'lmaydi.',
+                  title: kind.deleteConfirm(context.l10n),
+                  description: context.l10n.commonIrreversible,
                 );
                 if (confirmed && context.mounted) {
                   final error = await context
@@ -184,7 +176,7 @@ class _DocumentTile extends StatelessWidget {
 
 Future<void> showDocumentFormSheet(
   BuildContext context, {
-  required String entityLabel,
+  required SimpleDocumentKind kind,
   SimpleDocument? editing,
 }) {
   final cubit = context.read<SimpleDocumentCubit>();
@@ -196,9 +188,7 @@ Future<void> showDocumentFormSheet(
 
   return showAppBottomSheet<void>(
     context,
-    title: editing == null
-        ? '$entityLabel qo\'shish'
-        : '$entityLabel tahrirlash',
+    title: editing == null ? kind.add(context.l10n) : kind.edit(context.l10n),
     child: StatefulBuilder(
       builder: (context, setState) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -207,13 +197,13 @@ Future<void> showDocumentFormSheet(
           children: [
             AppTextField(
               controller: nameController,
-              label: 'Nomi',
+              label: context.l10n.commonName,
               errorText: error,
             ),
             const SizedBox(height: AppSpacing.md),
             AppTextField(
               controller: descriptionController,
-              label: 'Tavsif (ixtiyoriy)',
+              label: context.l10n.commonDescriptionOptional,
               maxLines: 2,
               minLines: 1,
             ),
@@ -223,7 +213,7 @@ Future<void> showDocumentFormSheet(
     ),
     stickyAction: Builder(
       builder: (sheetContext) => AppButton.primary(
-        label: 'Saqlash',
+        label: context.l10n.commonSave,
         onPressed: () async {
           final name = nameController.text.trim();
           if (name.isEmpty) return;
@@ -248,4 +238,36 @@ Future<void> showDocumentFormSheet(
       ),
     ),
   );
+}
+
+/// Oddiy ma'lumotnoma turlari — sahifa matnlari tur bo'yicha to'liq
+/// gaplar sifatida lokalizatsiya qilinadi (o'zbek/rus grammatikasi uchun
+/// "{nom} qo'shish" kabi yopishtirish ishlatilmaydi).
+enum SimpleDocumentKind { workType, position }
+
+extension SimpleDocumentKindL10n on SimpleDocumentKind {
+  String title(AppLocalizations l10n) => switch (this) {
+    SimpleDocumentKind.workType => l10n.docWorkTypes,
+    SimpleDocumentKind.position => l10n.docPositions,
+  };
+
+  String notFound(AppLocalizations l10n) => switch (this) {
+    SimpleDocumentKind.workType => l10n.docWorkTypeNotFound,
+    SimpleDocumentKind.position => l10n.docPositionNotFound,
+  };
+
+  String add(AppLocalizations l10n) => switch (this) {
+    SimpleDocumentKind.workType => l10n.docWorkTypeAdd,
+    SimpleDocumentKind.position => l10n.docPositionAdd,
+  };
+
+  String edit(AppLocalizations l10n) => switch (this) {
+    SimpleDocumentKind.workType => l10n.docWorkTypeEdit,
+    SimpleDocumentKind.position => l10n.docPositionEdit,
+  };
+
+  String deleteConfirm(AppLocalizations l10n) => switch (this) {
+    SimpleDocumentKind.workType => l10n.docWorkTypeDeleteConfirm,
+    SimpleDocumentKind.position => l10n.docPositionDeleteConfirm,
+  };
 }

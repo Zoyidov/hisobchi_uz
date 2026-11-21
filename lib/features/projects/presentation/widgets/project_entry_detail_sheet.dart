@@ -10,6 +10,9 @@ import '../../../../core/widgets/cards/app_card.dart';
 import '../../../../core/widgets/sheets/app_bottom_sheet.dart';
 import '../../data/project_models.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 Future<void> showProjectIncomeDetail(
   BuildContext context,
@@ -55,7 +58,9 @@ Future<void> _show(
   final accent = expense ? colors.error : colors.success;
   await showAppBottomSheet<void>(
     context,
-    title: expense ? 'Xarajat tafsilotlari' : 'Daromad tafsilotlari',
+    title: expense
+        ? context.l10n.entryCostDetails
+        : context.l10n.entryIncomeDetails,
     heightFactor: .75,
     child: SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
@@ -71,7 +76,7 @@ Future<void> _show(
                   accent.withValues(alpha: .04),
                 ],
               ),
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(AppRadius.card),
             ),
             child: Column(
               children: [
@@ -80,7 +85,7 @@ Future<void> _show(
                   height: 44,
                   decoration: BoxDecoration(
                     color: accent.withValues(alpha: .12),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppRadius.medium),
                   ),
                   child: Icon(
                     expense ? AppIcons.expense : AppIcons.income,
@@ -88,7 +93,7 @@ Future<void> _show(
                     size: 22,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.sm),
                 Text(
                   MoneyFormatter.format(amount, currencyLabel: currency),
                   textAlign: TextAlign.center,
@@ -100,7 +105,9 @@ Future<void> _show(
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  expense ? 'Loyiha xarajati' : 'Loyiha daromadi',
+                  expense
+                      ? context.l10n.entryProjectCost
+                      : context.l10n.entryProjectIncome,
                   style: Theme.of(
                     context,
                   ).textTheme.bodySmall?.copyWith(color: colors.textSecondary),
@@ -108,21 +115,21 @@ Future<void> _show(
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           AppCard(
             hasShadow: false,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
             child: Column(
               children: [
                 _DetailRow(
-                  label: 'Operatsiya',
+                  label: context.l10n.entryOperation,
                   value: '#$id',
                   icon: AppIcons.receipt,
                 ),
                 if (createdAt != null) ...[
                   Divider(height: 24, color: colors.divider),
                   _DetailRow(
-                    label: 'Sana',
+                    label: context.l10n.commonDate,
                     value: AppDateFormatter.displayDateTime(createdAt),
                     icon: AppIcons.clock,
                   ),
@@ -130,7 +137,7 @@ Future<void> _show(
                 if (costType?.isNotEmpty == true) ...[
                   Divider(height: 24, color: colors.divider),
                   _DetailRow(
-                    label: 'Xarajat turi',
+                    label: context.l10n.costType,
                     value: costType!,
                     icon: AppIcons.category,
                   ),
@@ -138,7 +145,7 @@ Future<void> _show(
                 if (worker?.isNotEmpty == true) ...[
                   Divider(height: 24, color: colors.divider),
                   _DetailRow(
-                    label: 'Ishchi',
+                    label: context.l10n.costWorkerLabel,
                     value: worker!,
                     icon: AppIcons.user,
                   ),
@@ -146,24 +153,24 @@ Future<void> _show(
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           AppCard(
             hasShadow: false,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Izoh',
+                  context.l10n.commonNote,
                   style: Theme.of(
                     context,
                   ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.xs),
                 SelectableText(
                   description?.trim().isNotEmpty == true
                       ? description!.trim()
-                      : 'Izoh kiritilmagan',
+                      : context.l10n.entryNoNote,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: colors.textSecondary,
                     height: 1.5,
@@ -173,7 +180,7 @@ Future<void> _show(
             ),
           ),
           if (files.isNotEmpty) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             AppFilePreview(files: files),
           ],
         ],
@@ -197,7 +204,7 @@ class _DetailRow extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Icon(icon, size: 18, color: context.colors.textTertiary),
-      const SizedBox(width: 8),
+      const SizedBox(width: AppSpacing.xs),
       Expanded(
         child: Text(
           label,
@@ -206,7 +213,7 @@ class _DetailRow extends StatelessWidget {
           ).textTheme.bodySmall?.copyWith(color: context.colors.textSecondary),
         ),
       ),
-      const SizedBox(width: 12),
+      const SizedBox(width: AppSpacing.sm),
       Flexible(
         child: SelectableText(
           value,

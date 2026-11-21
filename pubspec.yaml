@@ -22,9 +22,6 @@ dependencies:
   # Network
   dio: ^5.7.0
 
-  # Responsive
-  flutter_screenutil: ^5.9.3
-
   # DI
   get_it: ^8.0.3
 

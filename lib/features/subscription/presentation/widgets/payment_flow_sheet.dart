@@ -9,6 +9,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../data/subscription_models.dart';
 import '../cubit/payment_flow_cubit.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// To'lov oqimi ekrani — buyurtma yaratish → tashqi to'lov → polling
 /// (MOBILE_APP_TZ.md 13.4).
@@ -62,7 +63,7 @@ class _PaymentFlowView extends StatelessWidget {
                 height: 5,
                 decoration: BoxDecoration(
                   color: colors.border.withValues(alpha: 0.8),
-                  borderRadius: BorderRadius.circular(3),
+                  borderRadius: BorderRadius.circular(AppRadius.xxs),
                 ),
               ),
             ),
@@ -79,16 +80,14 @@ class _PaymentFlowView extends StatelessWidget {
                 return switch (state) {
                   PaymentFlowCreatingOrder() => _buildLoadingState(
                     context,
-                    title: 'Buyurtma shakllantirilmoqda',
-                    subtitle:
-                        'To\'lov tizimiga xavfsiz ulanish o\'rnatilmoqda...',
+                    title: context.l10n.paymentCreatingOrder,
+                    subtitle: context.l10n.paymentConnecting,
                     icon: AppIcons.shield,
                   ),
                   PaymentFlowPolling() => _buildLoadingState(
                     context,
-                    title: 'To\'lov tekshirilmoqda',
-                    subtitle:
-                        'To\'lov ilovasida to\'lovni tasdiqlang. Tekshiruv avtomatik davom etmoqda...',
+                    title: context.l10n.paymentVerifying,
+                    subtitle: context.l10n.paymentConfirmInApp,
                     icon: AppIcons.refresh,
                     showCancel: true,
                   ),
@@ -166,7 +165,7 @@ class _PaymentFlowView extends StatelessWidget {
         if (showCancel) ...[
           const SizedBox(height: AppSpacing.xl),
           AppButton.secondary(
-            label: 'To\'lovni bekor qilish',
+            label: context.l10n.paymentCancel,
             size: AppButtonSize.medium,
             onPressed: () => Navigator.of(context).pop(false),
           ),
@@ -194,7 +193,7 @@ class _PaymentFlowView extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
-          'To\'lov kutilmoqda',
+          context.l10n.paymentWaiting,
           style: Theme.of(
             context,
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
@@ -202,7 +201,7 @@ class _PaymentFlowView extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          'Agar to\'lov ilovasi orqali to\'lovni amalga oshirgan bo\'lsangiz, "Tekshirish" tugmasini bosing',
+          context.l10n.paymentCheckHint,
           style: TextStyle(
             color: colors.textSecondary,
             fontSize: 13,
@@ -216,7 +215,7 @@ class _PaymentFlowView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: colors.surfaceSecondary,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
               border: Border.all(color: colors.borderSubtle),
             ),
             child: Text(
@@ -234,7 +233,7 @@ class _PaymentFlowView extends StatelessWidget {
           children: [
             Expanded(
               child: AppButton.secondary(
-                label: 'Bekor qilish',
+                label: context.l10n.commonCancel,
                 size: AppButtonSize.medium,
                 onPressed: () => Navigator.of(context).pop(false),
               ),
@@ -242,7 +241,7 @@ class _PaymentFlowView extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: AppButton.primary(
-                label: 'Tekshirish',
+                label: context.l10n.paymentCheck,
                 size: AppButtonSize.medium,
                 onPressed: () =>
                     context.read<PaymentFlowCubit>().checkNow(orderNumber),
@@ -270,7 +269,7 @@ class _PaymentFlowView extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
-          'Muvaffaqiyatli to\'landi!',
+          context.l10n.paymentSuccess,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w700,
             color: colors.success,
@@ -279,7 +278,7 @@ class _PaymentFlowView extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          'To\'lov qabul qilindi va xizmatlar yangilandi',
+          context.l10n.paymentSuccessSubtitle,
           style: TextStyle(color: colors.textSecondary, fontSize: 14),
           textAlign: TextAlign.center,
         ),
@@ -304,7 +303,7 @@ class _PaymentFlowView extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
-          'To\'lov amalga oshmadi',
+          context.l10n.paymentFailed,
           style: Theme.of(
             context,
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
@@ -312,7 +311,7 @@ class _PaymentFlowView extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          errorMessage ?? 'To\'lov bekor qilindi yoki xatolik yuz berdi',
+          errorMessage ?? context.l10n.paymentFailedDefault,
           style: TextStyle(
             color: colors.textSecondary,
             fontSize: 13,
@@ -325,7 +324,7 @@ class _PaymentFlowView extends StatelessWidget {
           children: [
             Expanded(
               child: AppButton.secondary(
-                label: 'Yopish',
+                label: context.l10n.commonClose,
                 size: AppButtonSize.medium,
                 onPressed: () => Navigator.of(context).pop(false),
               ),
@@ -333,7 +332,7 @@ class _PaymentFlowView extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: AppButton.primary(
-                label: 'Qayta urinish',
+                label: context.l10n.commonRetry,
                 size: AppButtonSize.medium,
                 onPressed: () => context.read<PaymentFlowCubit>().start(),
               ),

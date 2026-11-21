@@ -17,6 +17,7 @@ import '../../../../core/widgets/inputs/app_phone_field.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/widgets/sheets/app_bottom_sheet.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Shaxsiy ma'lumotlar — ism, parol, telefon (MOBILE_APP_TZ.md 17.2).
 class ProfileEditPage extends StatefulWidget {
@@ -46,7 +47,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     setState(() => _savingName = false);
     result.when(
       success: (_) {
-        AppSnackbar.success(context, 'Saqlandi');
+        AppSnackbar.success(context, context.l10n.commonSaved);
         context.read<UserCubit>().loadMe();
       },
       failure: (f) => AppSnackbar.error(context, f.message),
@@ -57,14 +58,17 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   Widget build(BuildContext context) {
     final user = context.watch<UserCubit>().currentUserOrNull;
     return Scaffold(
-      appBar: AppBar(title: const Text('Shaxsiy ma\'lumotlar')),
+      appBar: AppBar(title: Text(context.l10n.profilePersonalInfo)),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [
-          AppTextField(controller: _nameController, label: 'Ism'),
+          AppTextField(
+            controller: _nameController,
+            label: context.l10n.partnersNameField,
+          ),
           const SizedBox(height: AppSpacing.sm),
           AppButton.secondary(
-            label: 'Ismni saqlash',
+            label: context.l10n.profileSaveName,
             isLoading: _savingName,
             onPressed: _saveName,
             expand: false,
@@ -75,12 +79,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             children: [
               AppGroupedTile(
                 icon: AppIcons.lock,
-                label: 'Parolni o\'zgartirish',
+                label: context.l10n.profileChangePassword,
                 onTap: () => _showChangePassword(context),
               ),
               AppGroupedTile(
                 icon: AppIcons.phone,
-                label: 'Telefonni o\'zgartirish',
+                label: context.l10n.profileChangePhone,
                 value: user != null
                     ? PhoneFormatter.toDisplay(user.phone)
                     : null,
@@ -100,7 +104,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
     await showAppBottomSheet<void>(
       context,
-      title: 'Parolni o\'zgartirish',
+      title: context.l10n.profileChangePassword,
       child: StatefulBuilder(
         builder: (context, setState) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -109,14 +113,14 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             children: [
               AppTextField(
                 controller: oldController,
-                label: 'Eski parol',
+                label: context.l10n.profileOldPassword,
                 obscureText: true,
                 errorText: error,
               ),
               const SizedBox(height: AppSpacing.md),
               AppTextField(
                 controller: newController,
-                label: 'Yangi parol',
+                label: context.l10n.authNewPasswordLabel,
                 obscureText: true,
               ),
             ],
@@ -125,7 +129,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       ),
       stickyAction: Builder(
         builder: (sheetContext) => AppButton.primary(
-          label: 'Saqlash',
+          label: context.l10n.commonSave,
           onPressed: () async {
             final passwordError = Validators.password(newController.text);
             if (passwordError != null) {
@@ -139,7 +143,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             if (!sheetContext.mounted) return;
             result.when(
               success: (_) {
-                AppSnackbar.success(sheetContext, 'Saqlandi');
+                AppSnackbar.success(sheetContext, context.l10n.commonSaved);
                 Navigator.of(sheetContext).pop();
               },
               failure: (f) => AppSnackbar.error(sheetContext, f.message),
@@ -154,17 +158,17 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     final phoneController = TextEditingController();
     await showAppBottomSheet<void>(
       context,
-      title: 'Yangi telefon raqam',
+      title: context.l10n.profileNewPhoneTitle,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         child: AppPhoneField(
           controller: phoneController,
-          label: 'Yangi telefon',
+          label: context.l10n.profileNewPhone,
         ),
       ),
       stickyAction: Builder(
         builder: (sheetContext) => AppButton.primary(
-          label: 'Davom etish',
+          label: context.l10n.commonContinue,
           onPressed: () async {
             if (!PhoneFormatter.isValid(phoneController.text)) return;
             final result = await getIt<AuthRepository>().verifyNewPhone(
@@ -189,7 +193,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 if (!context.mounted) return;
                 confirmResult.when(
                   success: (_) {
-                    AppSnackbar.success(context, 'Telefon raqam yangilandi');
+                    AppSnackbar.success(
+                      context,
+                      context.l10n.profilePhoneUpdated,
+                    );
                     context.read<UserCubit>().loadMe();
                   },
                   failure: (f) => AppSnackbar.error(context, f.message),
@@ -207,7 +214,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     final controller = TextEditingController();
     return showAppBottomSheet<String>(
       context,
-      title: 'Tasdiqlash kodi',
+      title: context.l10n.profileVerificationCode,
       subtitle: PhoneFormatter.toDisplay(phone),
       child: Padding(
         padding: const EdgeInsets.symmetric(

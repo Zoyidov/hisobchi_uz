@@ -35,6 +35,8 @@ import '../widgets/transaction_receipt_sheet.dart';
 import '../widgets/transaction_tile.dart';
 import 'wallet_form_page.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Hamkor kartochkasi — 3 tabli ekran (MOBILE_APP_TZ.md 8.5).
 class PartnerDetailPage extends StatelessWidget {
@@ -129,7 +131,7 @@ class _Loaded extends StatelessWidget {
           PermissionGuard(
             permission: AppPermission.partnersEdit,
             child: IconButton(
-              tooltip: 'Hamkorni tahrirlash',
+              tooltip: context.l10n.partnersEdit,
               icon: const AppEditIcon(size: 20),
               onPressed: () async {
                 await context.push(
@@ -150,7 +152,7 @@ class _Loaded extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 color: colors.surfaceSecondary,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.medium),
               ),
               child: TabBar(
                 dividerHeight: 0,
@@ -158,18 +160,18 @@ class _Loaded extends StatelessWidget {
                 indicatorPadding: const EdgeInsets.all(4),
                 indicator: BoxDecoration(
                   color: colors.primary,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.small),
                 ),
-                labelColor: Colors.white,
+                labelColor: context.colors.onPrimary,
                 unselectedLabelColor: colors.textSecondary,
                 labelStyle: Theme.of(
                   context,
                 ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700),
                 labelPadding: const EdgeInsets.symmetric(horizontal: 4),
-                tabs: const [
-                  Tab(text: 'Tranzaksiyalar'),
-                  Tab(text: 'Bo‘lib to‘lash'),
-                  Tab(text: 'SMS tarixi'),
+                tabs: [
+                  Tab(text: context.l10n.partnerDetailTransactionsTab),
+                  Tab(text: context.l10n.commonInstallment),
+                  Tab(text: context.l10n.partnerDetailSmsTab),
                 ],
               ),
             ),
@@ -222,9 +224,9 @@ class _Loaded extends StatelessWidget {
                   child: FilledButton.icon(
                     style: FilledButton.styleFrom(
                       backgroundColor: colors.success,
-                      foregroundColor: Colors.white,
+                      foregroundColor: context.colors.onPrimary,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(AppRadius.medium),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
@@ -240,8 +242,8 @@ class _Loaded extends StatelessWidget {
                       }
                     },
                     icon: const Icon(AppIcons.income, size: 18),
-                    label: const Text(
-                      'Kirim',
+                    label: Text(
+                      context.l10n.commonIncome,
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
@@ -257,9 +259,9 @@ class _Loaded extends StatelessWidget {
                   child: FilledButton.icon(
                     style: FilledButton.styleFrom(
                       backgroundColor: colors.error,
-                      foregroundColor: Colors.white,
+                      foregroundColor: context.colors.onPrimary,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(AppRadius.medium),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
@@ -275,8 +277,8 @@ class _Loaded extends StatelessWidget {
                       }
                     },
                     icon: const Icon(AppIcons.expense, size: 18),
-                    label: const Text(
-                      'Chiqim',
+                    label: Text(
+                      context.l10n.commonExpense,
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
@@ -305,7 +307,7 @@ class _QuickActionsRow extends StatelessWidget {
         _action(
           context,
           AppIcons.call,
-          'Qo\'ng\'iroq',
+          context.l10n.commonCall,
           () => launchUrl(Uri.parse('tel:${partner.phone}')),
         ),
         _action(
@@ -319,7 +321,7 @@ class _QuickActionsRow extends StatelessWidget {
           child: _action(
             context,
             AppIcons.chart,
-            'Hisobot',
+            context.l10n.commonReport,
             () => context.push(
               RoutePaths.reportPartnerDetail(partner.id),
               extra: partner,
@@ -329,7 +331,7 @@ class _QuickActionsRow extends StatelessWidget {
         _action(
           context,
           AppIcons.download,
-          'Excel',
+          context.l10n.commonExcelShort,
           () => downloadAndShareExcel(
             context,
             download: () => getIt<PartnersRepository>()
@@ -340,7 +342,7 @@ class _QuickActionsRow extends StatelessWidget {
         _action(
           context,
           AppIcons.settings,
-          'SMS sozlama',
+          context.l10n.partnerSmsSettingShort,
           () => context.push(RoutePaths.smsSettings(partner.id)),
         ),
       ],
@@ -365,7 +367,7 @@ class _QuickActionsRow extends StatelessWidget {
       message: label,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.medium),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
           child: Column(
@@ -383,12 +385,12 @@ class _QuickActionsRow extends StatelessWidget {
                       accent.withValues(alpha: .08),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(13),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                   border: Border.all(color: accent.withValues(alpha: .22)),
                 ),
                 child: Icon(icon, color: accent, size: 19),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xxs),
               Text(
                 label,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -474,7 +476,7 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
         curve: Curves.easeOutCubic,
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(AppRadius.xl),
           border: Border.all(color: tint.withValues(alpha: 0.22), width: 1.2),
           boxShadow: [
             BoxShadow(
@@ -501,7 +503,7 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
                     height: 38,
                     decoration: BoxDecoration(
                       color: colors.surfaceSecondary,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
                       border: Border.all(
                         color: colors.border.withValues(alpha: 0.4),
                       ),
@@ -519,8 +521,8 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
                           width: tabWidth,
                           child: Container(
                             decoration: BoxDecoration(
-                              color: isDark ? colors.surface : Colors.white,
-                              borderRadius: BorderRadius.circular(9),
+                              color: colors.surface,
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withValues(
@@ -565,7 +567,7 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
 
             // Aktiv valyutadagi ma'lumotlar (yo'naltirilgan silliq slide va fade animatsiya bilan)
             ClipRRect(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
               child: AnimatedSize(
                 duration: const Duration(milliseconds: 280),
                 curve: Curves.fastOutSlowIn,
@@ -616,7 +618,7 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
 
             // Silliq nuqta indikatori (faqat ikkala valyuta mavjud bo'lganda)
             if (hasUsd) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.xs),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -661,7 +663,7 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: tint.withValues(alpha: isSelected ? 0.16 : 0.08),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(AppRadius.xs),
                 ),
                 child: Text(
                   label,
@@ -706,7 +708,7 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
       height: 4,
       decoration: BoxDecoration(
         color: isSelected ? color : color.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(AppRadius.hairline),
       ),
     );
   }
@@ -733,7 +735,7 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: tint.withValues(alpha: .12),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Text(
                   currency,
@@ -750,7 +752,7 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Sof balans',
+                    context.l10n.balanceNet,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       color: colors.textSecondary,
                       fontWeight: FontWeight.w500,
@@ -759,8 +761,8 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
                   const SizedBox(height: 2),
                   Text(
                     currency == 'UZS'
-                        ? 'O‘zbek so‘mi hisobi'
-                        : 'AQSH dollari hisobi',
+                        ? context.l10n.partnerAccountUzs
+                        : context.l10n.partnerAccountUsd,
                     style: TextStyle(
                       fontSize: 11,
                       color: colors.textTertiary,
@@ -791,14 +793,14 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
           decoration: BoxDecoration(
             color: colors.surfaceSecondary.withValues(alpha: .6),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           child: Row(
             children: [
               Expanded(
                 child: _flow(
                   context,
-                  'Kirim',
+                  context.l10n.commonIncome,
                   account.debt,
                   colors.success,
                   AppIcons.income,
@@ -810,11 +812,11 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
                 height: 24,
                 color: colors.border.withValues(alpha: 0.5),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: _flow(
                   context,
-                  'Chiqim',
+                  context.l10n.commonExpense,
                   account.credit,
                   colors.error,
                   AppIcons.expense,
@@ -825,12 +827,12 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
           ),
         ),
         if (account.balanceWithInstallment > Decimal.zero) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.xs),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: colors.info.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadius.small),
               border: Border.all(color: colors.info.withValues(alpha: 0.18)),
             ),
             child: Row(
@@ -839,7 +841,7 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
-                    'Bo‘lib to‘lash qoldig‘i',
+                    context.l10n.balanceInstallmentRemaining,
                     style: TextStyle(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w500,
@@ -884,7 +886,7 @@ class _MultiCurrencyAccountCardState extends State<_MultiCurrencyAccountCard> {
         ),
         child: Icon(icon, size: 14, color: color),
       ),
-      const SizedBox(width: 8),
+      const SizedBox(width: AppSpacing.xs),
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -940,7 +942,7 @@ class _TransactionsTab extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(right: AppSpacing.xs),
                     child: AppFilterChip(
-                      label: filter.label,
+                      label: filter.label(context.l10n),
                       selected: cubit.filter == filter,
                       onTap: () => cubit.updateFilter(filter),
                     ),
@@ -951,7 +953,7 @@ class _TransactionsTab extends StatelessWidget {
                     color: cubit.hasDateFilter
                         ? colors.primary.withValues(alpha: 0.12)
                         : Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                     border: Border.all(
                       color: cubit.hasDateFilter
                           ? colors.primary
@@ -959,7 +961,7 @@ class _TransactionsTab extends StatelessWidget {
                     ),
                   ),
                   child: IconButton(
-                    tooltip: 'Sana bo‘yicha filtr',
+                    tooltip: context.l10n.commonFilterByDate,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(
                       minWidth: 38,
@@ -996,7 +998,7 @@ class _TransactionsTab extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: colors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.small),
                     border: Border.all(
                       color: colors.primary.withValues(alpha: 0.25),
                     ),
@@ -1047,8 +1049,8 @@ class _TransactionsTab extends StatelessWidget {
                 ),
                 WalletListLoaded(:final wallets) =>
                   wallets.isEmpty
-                      ? const AppEmptyState(
-                          title: 'Hozircha tranzaksiya yo\'q',
+                      ? AppEmptyState(
+                          title: context.l10n.partnerDetailEmptyTransactions,
                           icon: AppIcons.receipt,
                         )
                       : RefreshIndicator(
@@ -1130,7 +1132,7 @@ class _TransactionsTab extends StatelessWidget {
         if (!context.mounted) return;
         result.when(
           success: (_) {
-            AppSnackbar.success(context, 'Saqlandi');
+            AppSnackbar.success(context, context.l10n.commonSaved);
             context.read<WalletListCubit>().refresh();
             context.read<PartnerDetailCubit>().load();
           },
@@ -1146,7 +1148,7 @@ class _TransactionsTab extends StatelessWidget {
         if (!context.mounted) return;
         result.when(
           success: (_) {
-            AppSnackbar.success(context, 'O\'chirildi');
+            AppSnackbar.success(context, context.l10n.commonDeletedToast);
             context.read<WalletListCubit>().refresh();
             context.read<PartnerDetailCubit>().load();
           },

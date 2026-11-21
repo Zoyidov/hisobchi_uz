@@ -10,6 +10,7 @@ import '../../../../core/widgets/states/app_error_state.dart';
 import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/partners_repository.dart';
 import '../../data/sms_models.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// SMS sozlamalari — hamkor bo'yicha (MOBILE_APP_TZ.md 8.10).
 class PartnerSmsSettingsPage extends StatefulWidget {
@@ -37,7 +38,9 @@ class _PartnerSmsSettingsPageState extends State<PartnerSmsSettingsPage> {
       _settings = null;
       _error = null;
     });
-    final result = await getIt<PartnersRepository>().getSmsSettings(widget.partnerId);
+    final result = await getIt<PartnersRepository>().getSmsSettings(
+      widget.partnerId,
+    );
     if (!mounted) return;
     result.when(
       success: (s) => setState(() => _settings = s),
@@ -50,11 +53,14 @@ class _PartnerSmsSettingsPageState extends State<PartnerSmsSettingsPage> {
       _settings = updated;
       _saving = true;
     });
-    final result = await getIt<PartnersRepository>().updateSmsSettings(widget.partnerId, updated);
+    final result = await getIt<PartnersRepository>().updateSmsSettings(
+      widget.partnerId,
+      updated,
+    );
     if (!mounted) return;
     setState(() => _saving = false);
     result.when(
-      success: (_) => AppSnackbar.success(context, 'Saqlandi'),
+      success: (_) => AppSnackbar.success(context, context.l10n.commonSaved),
       failure: (f) => AppSnackbar.error(context, f.message),
     );
   }
@@ -62,13 +68,19 @@ class _PartnerSmsSettingsPageState extends State<PartnerSmsSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('SMS sozlamalari')),
+      appBar: AppBar(title: Text(context.l10n.partnerDetailSmsSettings)),
       body: _buildBody(context),
     );
   }
 
   Widget _buildBody(BuildContext context) {
-    if (_error != null) return AppErrorState(title: 'Sozlamalarni yuklab bo\'lmadi', description: _error, onRetry: _load);
+    if (_error != null) {
+      return AppErrorState(
+        title: context.l10n.partnerSmsSettingsLoadError,
+        description: _error,
+        onRetry: _load,
+      );
+    }
     final s = _settings;
     if (s == null) return const AppSkeletonList();
 
@@ -81,7 +93,7 @@ class _PartnerSmsSettingsPageState extends State<PartnerSmsSettingsPage> {
             children: [
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('SMS xizmati'),
+                title: Text(context.l10n.partnerSmsService),
                 value: s.enabled,
                 onChanged: (v) => _save(s.copyWith(enabled: v)),
               ),
@@ -98,13 +110,13 @@ class _PartnerSmsSettingsPageState extends State<PartnerSmsSettingsPage> {
                 children: [
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Kirim qilinganda SMS'),
+                    title: Text(context.l10n.partnerSmsOnIncome),
                     value: s.sendOnKirim,
                     onChanged: (v) => _save(s.copyWith(sendOnKirim: v)),
                   ),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Chiqim qilinganda SMS'),
+                    title: Text(context.l10n.partnerSmsOnExpense),
                     value: s.sendOnChiqim,
                     onChanged: (v) => _save(s.copyWith(sendOnChiqim: v)),
                   ),
@@ -114,21 +126,30 @@ class _PartnerSmsSettingsPageState extends State<PartnerSmsSettingsPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Muddatdan oldin eslatish', style: Theme.of(context).textTheme.bodyMedium),
-                        const SizedBox(height: 8),
+                        Text(
+                          context.l10n.partnerSmsRemindBefore,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
                         AppSegmentedControl<int>(
                           value: s.remindBeforeDays,
                           segments: s.remindBeforeOptions
-                              .map((d) => AppSegment(value: d, label: '$d kun'))
+                              .map(
+                                (d) => AppSegment(
+                                  value: d,
+                                  label: context.l10n.commonDaysCount(d),
+                                ),
+                              )
                               .toList(),
-                          onChanged: (v) => _save(s.copyWith(remindBeforeDays: v)),
+                          onChanged: (v) =>
+                              _save(s.copyWith(remindBeforeDays: v)),
                         ),
                       ],
                     ),
                   ),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Muddat kunida eslatish'),
+                    title: Text(context.l10n.partnerSmsRemindOnDue),
                     value: s.sendOnDueDate,
                     onChanged: (v) => _save(s.copyWith(sendOnDueDate: v)),
                   ),
@@ -137,12 +158,23 @@ class _PartnerSmsSettingsPageState extends State<PartnerSmsSettingsPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Muddatdan keyin', style: Theme.of(context).textTheme.bodyMedium),
-                        const SizedBox(height: 8),
+                        Text(
+                          context.l10n.partnerSmsAfterDue,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
                         AppSegmentedControl<int>(
                           value: s.sendAfterDueDays,
-                          segments: s.sendAfterOptions.map((d) => AppSegment(value: d, label: '$d kun')).toList(),
-                          onChanged: (v) => _save(s.copyWith(sendAfterDueDays: v)),
+                          segments: s.sendAfterOptions
+                              .map(
+                                (d) => AppSegment(
+                                  value: d,
+                                  label: context.l10n.commonDaysCount(d),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (v) =>
+                              _save(s.copyWith(sendAfterDueDays: v)),
                         ),
                       ],
                     ),
@@ -153,8 +185,11 @@ class _PartnerSmsSettingsPageState extends State<PartnerSmsSettingsPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('SMS yuborish vaqti'),
-                        Text(s.sendDate, style: TextStyle(color: colors.textSecondary)),
+                        Text(context.l10n.partnerSmsSendTime),
+                        Text(
+                          s.sendDate,
+                          style: TextStyle(color: colors.textSecondary),
+                        ),
                       ],
                     ),
                   ),

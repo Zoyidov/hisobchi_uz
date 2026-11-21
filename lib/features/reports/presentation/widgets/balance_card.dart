@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters/money_formatter.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class BalanceCard extends StatelessWidget {
   const BalanceCard({
@@ -22,10 +25,10 @@ class BalanceCard extends StatelessWidget {
         ? context.colors.error
         : context.colors.success;
     final subtitle = balance < Decimal.zero
-        ? 'Mijoz qarzi'
+        ? context.l10n.reportClientDebt
         : balance > Decimal.zero
-        ? 'Mijoz haqqi'
-        : 'Hisob yopilgan';
+        ? context.l10n.reportClientCredit
+        : context.l10n.reportAccountClosed;
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -36,7 +39,7 @@ class BalanceCard extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [tint, Color.lerp(tint, context.colors.textPrimary, .16)!],
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         boxShadow: [
           BoxShadow(
             color: tint.withValues(alpha: .18),
@@ -53,23 +56,23 @@ class BalanceCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(9),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: .16),
+                  color: context.colors.onPrimary.withValues(alpha: .16),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   balance < Decimal.zero ? AppIcons.income : AppIcons.expense,
                   size: 22,
-                  color: Colors.white,
+                  color: context.colors.onPrimary,
                 ),
               ),
-              const SizedBox(width: 12),
-              const Expanded(
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
                 child: Text(
-                  'Joriy balans',
+                  context.l10n.reportCurrentBalance,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: context.colors.onPrimary,
                   ),
                 ),
               ),
@@ -78,41 +81,48 @@ class BalanceCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white.withValues(alpha: .85),
+                  color: context.colors.onPrimary.withValues(alpha: .85),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Text(
             MoneyFormatter.groupDigits(balance),
             textAlign: TextAlign.right,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.w800,
-              color: Colors.white,
+              color: context.colors.onPrimary,
               letterSpacing: -.6,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.xs),
           Text(
             subtitle,
             textAlign: TextAlign.right,
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Colors.white.withValues(alpha: .9),
+              color: context.colors.onPrimary.withValues(alpha: .9),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Row(
             children: [
-              const Icon(AppIcons.exchange, size: 16, color: Colors.white),
+              Icon(
+                AppIcons.exchange,
+                size: 16,
+                color: context.colors.onPrimary,
+              ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  '$operationsCount ta operatsiya',
-                  style: const TextStyle(fontSize: 12, color: Colors.white),
+                  context.l10n.reportOperationsCount(operationsCount),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: context.colors.onPrimary,
+                  ),
                 ),
               ),
             ],

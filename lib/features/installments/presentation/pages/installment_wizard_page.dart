@@ -14,6 +14,9 @@ import '../../data/installments_repository.dart';
 import '../cubit/installment_create_cubit.dart';
 import '../widgets/installment_form_widgets.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// The legacy installment flow, adapted to the application's semantic theme.
 class InstallmentWizardPage extends StatelessWidget {
@@ -43,7 +46,7 @@ class _WizardView extends StatelessWidget {
             previous.submitError != current.submitError,
         listener: (context, state) {
           if (state.createdPlan != null) {
-            AppSnackbar.success(context, 'Reja yaratildi');
+            AppSnackbar.success(context, context.l10n.installmentPlanCreated);
             context.pop(state.createdPlan);
           } else if (state.submitError != null) {
             AppSnackbar.error(context, state.submitError!.message);
@@ -61,13 +64,13 @@ class _WizardView extends StatelessWidget {
             child: Scaffold(
               appBar: AppBar(
                 title: Text(
-                  'Muddatli to‘lov',
+                  context.l10n.installmentTitle,
                   style: Theme.of(
                     context,
                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
                 ),
                 leading: IconButton(
-                  tooltip: 'Orqaga',
+                  tooltip: context.l10n.commonBack,
                   icon: const Icon(AppIcons.back, size: 20),
                   onPressed: state.isSubmitting
                       ? null
@@ -140,7 +143,7 @@ class _StepBody extends StatelessWidget {
             letterSpacing: -0.4,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.md),
         ...children,
       ],
     ),
@@ -152,7 +155,7 @@ class _StepIndicator extends StatelessWidget {
   final int step;
   @override
   Widget build(BuildContext context) => Semantics(
-    label: '${step + 1}-bosqich, jami 3 bosqich',
+    label: context.l10n.installmentStepOf3(step + 1),
     child: Row(
       children: List.generate(3, (index) {
         final active = index <= step;
@@ -172,7 +175,7 @@ class _StepIndicator extends StatelessWidget {
                     color: active
                         ? context.colors.primary
                         : context.colors.border,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.small),
                     boxShadow: index == step
                         ? [
                             BoxShadow(
@@ -186,9 +189,13 @@ class _StepIndicator extends StatelessWidget {
                         : [],
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
-                  ['Ma’lumotlar', 'Grafik turi', 'Taqsimot'][index],
+                  [
+                    context.l10n.installmentStepDetails,
+                    context.l10n.installmentStepSchedule,
+                    context.l10n.installmentStepDistribution,
+                  ][index],
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: active ? FontWeight.w800 : FontWeight.w600,
@@ -241,13 +248,13 @@ class _WizardFooter extends StatelessWidget {
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
                       ),
                       side: BorderSide(color: context.colors.border),
                     ),
                     onPressed: state.isSubmitting ? null : cubit.previousStep,
                     child: Text(
-                      'Orqaga',
+                      context.l10n.commonBack,
                       style: TextStyle(
                         fontFamily: Theme.of(
                           context,
@@ -258,7 +265,7 @@ class _WizardFooter extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.sm),
               ],
               Expanded(
                 flex: 3,
@@ -269,7 +276,7 @@ class _WizardFooter extends StatelessWidget {
                         : context.colors.primary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
                   ),
                   onPressed: !enabled
@@ -279,7 +286,10 @@ class _WizardFooter extends StatelessWidget {
                           if (state.step == 0 &&
                               (state.totalAmount == null ||
                                   state.totalAmount! <= Decimal.zero)) {
-                            AppSnackbar.error(context, 'Summani kiriting');
+                            AppSnackbar.error(
+                              context,
+                              context.l10n.installmentEnterAmount,
+                            );
                             return;
                           }
                           if (finalStep) {
@@ -295,7 +305,9 @@ class _WizardFooter extends StatelessWidget {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : Text(
-                          finalStep ? 'Saqlash' : 'Davom etish',
+                          finalStep
+                              ? context.l10n.commonSave
+                              : context.l10n.commonContinue,
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
@@ -336,7 +348,7 @@ class _BasicInfoStepState extends State<_BasicInfoStep> {
     final name = widget.partner.name.trim();
     return _StepBody(
       step: 0,
-      title: '1-bosqich • Asosiy ma’lumotlar',
+      title: context.l10n.installmentStep1Title,
       children: [
         InstallmentSectionCard(
           accent: colors.primary.withValues(alpha: 0.3),
@@ -348,7 +360,7 @@ class _BasicInfoStepState extends State<_BasicInfoStep> {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: colors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
                 child: Text(
                   name.isEmpty ? '?' : name.characters.first.toUpperCase(),
@@ -364,10 +376,10 @@ class _BasicInfoStepState extends State<_BasicInfoStep> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const InstallmentFieldLabel('Mijoz'),
-                    const SizedBox(height: 4),
+                    InstallmentFieldLabel(context.l10n.installmentClient),
+                    const SizedBox(height: AppSpacing.xxs),
                     Text(
-                      name.isEmpty ? 'Mijoz' : name,
+                      name.isEmpty ? context.l10n.installmentClient : name,
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
@@ -379,13 +391,13 @@ class _BasicInfoStepState extends State<_BasicInfoStep> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.sm),
         InstallmentSectionCard(
           accent: colors.primary.withValues(alpha: 0.2),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const InstallmentFieldLabel('Miqdor va valyuta'),
+              InstallmentFieldLabel(context.l10n.installmentAmountAndCurrency),
               const SizedBox(height: 5),
               InstallmentAmountInput(
                 value: state.totalAmount,
@@ -399,12 +411,14 @@ class _BasicInfoStepState extends State<_BasicInfoStep> {
                   final label = Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const InstallmentFieldLabel('Valyuta turi'),
-                      const SizedBox(height: 4),
+                      InstallmentFieldLabel(
+                        context.l10n.installmentCurrencyType,
+                      ),
+                      const SizedBox(height: AppSpacing.xxs),
                       Text(
                         state.currencyTypeId == 1
-                            ? 'O‘zbek so‘mi'
-                            : 'AQSH dollari',
+                            ? context.l10n.currencyUzs
+                            : context.l10n.currencyUsd,
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -420,13 +434,17 @@ class _BasicInfoStepState extends State<_BasicInfoStep> {
                       MediaQuery.textScalerOf(context).scale(14) > 19) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [label, const SizedBox(height: 12), selector],
+                      children: [
+                        label,
+                        const SizedBox(height: AppSpacing.sm),
+                        selector,
+                      ],
                     );
                   }
                   return Row(
                     children: [
                       Expanded(child: label),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.xs),
                       selector,
                     ],
                   );
@@ -435,9 +453,9 @@ class _BasicInfoStepState extends State<_BasicInfoStep> {
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.md),
         InstallmentSectionCard(
-          label: 'Izoh (ixtiyoriy)',
+          label: context.l10n.commonNoteOptional,
           child: TextField(
             controller: _noteController,
             minLines: 3,
@@ -445,7 +463,7 @@ class _BasicInfoStepState extends State<_BasicInfoStep> {
             onChanged: cubit.setNote,
             style: TextStyle(fontSize: 14, color: colors.textPrimary),
             decoration: InputDecoration(
-              hintText: 'Tafsilotlarni yozishingiz mumkin...',
+              hintText: context.l10n.installmentNoteHint,
               hintStyle: TextStyle(fontSize: 13, color: colors.textTertiary),
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
@@ -455,9 +473,9 @@ class _BasicInfoStepState extends State<_BasicInfoStep> {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.md),
         InstallmentSectionCard(
-          label: 'Hujjatlar (ixtiyoriy)',
+          label: context.l10n.installmentDocumentsOptional,
           child: AppFileAttachment(
             initialFiles: state.files,
             uploadType: 'installment',
@@ -479,7 +497,7 @@ class _CurrencySelector extends StatelessWidget {
     padding: const EdgeInsets.all(4),
     decoration: BoxDecoration(
       color: context.colors.surfaceSecondary,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadius.md),
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,
@@ -490,10 +508,10 @@ class _CurrencySelector extends StatelessWidget {
             button: true,
             child: Material(
               color: value == id ? context.colors.primary : Colors.transparent,
-              borderRadius: BorderRadius.circular(9),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
               child: InkWell(
                 onTap: () => onChanged(id),
-                borderRadius: BorderRadius.circular(9),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 15,
@@ -526,7 +544,7 @@ class _ScheduleTypeStep extends StatelessWidget {
     final state = context.watch<InstallmentCreateCubit>().state;
     return _StepBody(
       step: 1,
-      title: '2-bosqich • Grafik turi',
+      title: context.l10n.installmentStep2Title,
       children: [
         for (final type in InstallmentScheduleType.values) ...[
           _ScheduleTypeCard(
@@ -555,7 +573,7 @@ class _ScheduleTypeStep extends StatelessWidget {
               }
             },
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
         ],
       ],
     );
@@ -581,7 +599,7 @@ class _ScheduleTypeCard extends StatelessWidget {
       child: Material(
         color: colors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(AppRadius.large),
           side: BorderSide(
             color: selected ? colors.primary : colors.border,
             width: selected ? 2 : 1,
@@ -599,7 +617,7 @@ class _ScheduleTypeCard extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: colors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
                   ),
                   child: Icon(
                     equal ? AppIcons.calculator : AppIcons.calendarEdit,
@@ -613,7 +631,9 @@ class _ScheduleTypeCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        equal ? 'Teng bo‘lib to‘lash' : 'Erkin grafik',
+                        equal
+                            ? context.l10n.installmentEqualSchedule
+                            : context.l10n.installmentFreeSchedule,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
@@ -623,8 +643,8 @@ class _ScheduleTypeCard extends StatelessWidget {
                       const SizedBox(height: 6),
                       Text(
                         equal
-                            ? 'Boshlanish sanasi va qismlar sonini belgilang. Tizim har bir qism uchun teng summani avtomatik hisoblaydi.'
-                            : 'Har bir qism uchun summa va sanani alohida belgilang. To‘liq moslashuvchanlik va nazorat.',
+                            ? context.l10n.installmentEqualDescription
+                            : context.l10n.installmentFreeDescription,
                         style: TextStyle(
                           fontSize: 12,
                           height: 1.6,
@@ -634,7 +654,7 @@ class _ScheduleTypeCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.xs),
                 Icon(
                   selected ? AppIcons.success : AppIcons.radioOff,
                   color: selected ? colors.primary : colors.border,
@@ -660,8 +680,8 @@ class _DistributionStep extends StatelessWidget {
     return _StepBody(
       step: 2,
       title: equal
-          ? '3-bosqich • Teng bo‘lib to‘lash'
-          : '3-bosqich • Erkin grafik',
+          ? context.l10n.installmentStep3Equal
+          : context.l10n.installmentStep3Free,
       children: [
         _AdvanceToggle(
           enabled: state.hasAdvance,
@@ -685,28 +705,28 @@ class _DistributionStep extends StatelessWidget {
                   ),
                 ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.md),
         if (equal) ...[
           _EqualSettings(state: state),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.lg),
           if (state.preview.isNotEmpty) ...[
             InstallmentInfoBox(
-              title: 'Taqsimot hisob-kitobi',
-              description: _calculation(state),
+              title: context.l10n.installmentDistributionCalc,
+              description: _calculation(context.l10n, state),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.lg),
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'To‘lov jadvali',
+                    context.l10n.installmentPaymentTable,
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
                   ),
                 ),
                 _CountBadge(count: state.preview.length),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm),
             for (final item in state.preview) ...[
               InstallmentPaymentCard(
                 number: item.itemNumber,
@@ -715,15 +735,15 @@ class _DistributionStep extends StatelessWidget {
                 currency: currency,
                 isAdvance: item.isAdvance,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.sm),
             ],
           ],
         ] else
           _CustomItemsEditor(state: state),
         if (state.step2ValidationError != null) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           InstallmentInfoBox(
-            title: 'Rejani tekshiring',
+            title: context.l10n.installmentReviewPlan,
             description: state.step2ValidationError!,
             color: context.colors.warning,
             icon: AppIcons.error,
@@ -733,17 +753,41 @@ class _DistributionStep extends StatelessWidget {
     );
   }
 
-  String _calculation(InstallmentCreateState state) {
+  String _calculation(AppLocalizations l10n, InstallmentCreateState state) {
     final total = state.totalAmount ?? Decimal.zero;
     final advance = state.hasAdvance
         ? state.advanceAmount ?? Decimal.zero
         : Decimal.zero;
     final regular = state.preview.where((item) => !item.isAdvance);
     final currency = MoneyFormatter.currencyCode(state.currencyTypeId);
-    return 'Jami: ${MoneyFormatter.groupDigits(total)} $currency\n'
-        '${state.hasAdvance ? 'Boshlang‘ich to‘lov: ${MoneyFormatter.groupDigits(advance)} $currency\nQolgan: ' : ''}'
-        '${MoneyFormatter.groupDigits(total - advance)} $currency ÷ ${state.installmentCount} qism'
-        '${regular.isEmpty ? '' : ' = ${MoneyFormatter.groupDigits(regular.first.amount)} $currency/qism'}';
+    final buffer = StringBuffer(
+      l10n.installmentTotalLine(MoneyFormatter.groupDigits(total), currency),
+    );
+    if (state.hasAdvance) {
+      buffer
+        ..writeln(
+          l10n.installmentAdvanceLine(
+            MoneyFormatter.groupDigits(advance),
+            currency,
+          ),
+        )
+        ..write('${l10n.installmentRemainingPrefix} ');
+    }
+    buffer.write(
+      l10n.installmentPerPartFormula(
+        MoneyFormatter.groupDigits(total - advance),
+        currency,
+        state.installmentCount,
+      ),
+    );
+    if (regular.isNotEmpty) {
+      final perPart = l10n.installmentPerPartResult(
+        MoneyFormatter.groupDigits(regular.first.amount),
+        currency,
+      );
+      buffer.write(' $perPart');
+    }
+    return buffer.toString();
   }
 }
 
@@ -771,18 +815,18 @@ class _AdvanceToggle extends StatelessWidget {
               size: 24,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Boshlang‘ich to‘lov',
+                Text(
+                  context.l10n.installmentAdvance,
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xxs),
                 Text(
-                  'Avans miqdorini belgilash',
+                  context.l10n.installmentSetAdvance,
                   style: TextStyle(
                     fontSize: 12,
                     color: context.colors.textSecondary,
@@ -792,7 +836,7 @@ class _AdvanceToggle extends StatelessWidget {
             ),
           ),
           Semantics(
-            label: 'Boshlang‘ich to‘lov',
+            label: context.l10n.installmentAdvance,
             child: Switch(
               value: enabled,
               onChanged: onChanged,
@@ -813,15 +857,17 @@ class _EqualSettings extends StatelessWidget {
     final cubit = context.read<InstallmentCreateCubit>();
     final date = InstallmentSectionCard(
       label: state.hasAdvance
-          ? 'Birinchi qism sanasi'
-          : 'Birinchi to‘lov sanasi',
+          ? context.l10n.installmentFirstPartDate
+          : context.l10n.installmentFirstPaymentDate,
       child: InstallmentDateButton(
         date: state.startDate ?? DateTime.now(),
         onChanged: cubit.setStartDate,
       ),
     );
     final count = InstallmentSectionCard(
-      label: state.hasAdvance ? 'Qolgan qismlar' : 'Qismlar soni',
+      label: state.hasAdvance
+          ? context.l10n.installmentRemainingParts
+          : context.l10n.installmentPartsCount,
       child: DropdownButtonFormField<int>(
         initialValue: state.installmentCount,
         decoration: InputDecoration(
@@ -832,7 +878,7 @@ class _EqualSettings extends StatelessWidget {
             vertical: 14,
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppRadius.small),
             borderSide: BorderSide.none,
           ),
         ),
@@ -844,7 +890,7 @@ class _EqualSettings extends StatelessWidget {
             value: index + 1,
             enabled: state.hasAdvance || index > 0,
             child: Text(
-              '${index + 1} ta',
+              context.l10n.commonCountShort(index + 1),
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
             ),
           ),
@@ -858,13 +904,19 @@ class _EqualSettings extends StatelessWidget {
       builder: (context, constraints) {
         if (constraints.maxWidth < 310 ||
             MediaQuery.textScalerOf(context).scale(14) > 19) {
-          return Column(children: [date, const SizedBox(height: 12), count]);
+          return Column(
+            children: [
+              date,
+              const SizedBox(height: AppSpacing.sm),
+              count,
+            ],
+          );
         }
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(child: date),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.sm),
             Expanded(child: count),
           ],
         );
@@ -904,15 +956,24 @@ class _CustomItemsEditor extends StatelessWidget {
       children: [
         InstallmentInfoBox(
           title: valid
-              ? 'To‘liq taqsimlandi'
+              ? context.l10n.installmentFullyDistributed
               : remaining < Decimal.zero
-              ? 'Summa oshib ketdi'
-              : 'Taqsimot qoldi',
+              ? context.l10n.installmentAmountExceeded
+              : context.l10n.installmentDistributionLeft,
           description: valid
-              ? 'Jami ${MoneyFormatter.groupDigits(sum)} $currency rejalashtirildi.'
+              ? context.l10n.installmentPlannedTotal(
+                  MoneyFormatter.groupDigits(sum),
+                  currency,
+                )
               : remaining < Decimal.zero
-              ? '${MoneyFormatter.groupDigits(remaining.abs())} $currency ga kamaytiring.'
-              : 'Qolgan: ${MoneyFormatter.groupDigits(remaining)} $currency. Barcha summani taqsimlang.',
+              ? context.l10n.installmentReduceBy(
+                  MoneyFormatter.groupDigits(remaining.abs()),
+                  currency,
+                )
+              : context.l10n.installmentRemainingDistribute(
+                  MoneyFormatter.groupDigits(remaining),
+                  currency,
+                ),
           color: valid
               ? context.colors.success
               : remaining < Decimal.zero
@@ -920,7 +981,7 @@ class _CustomItemsEditor extends StatelessWidget {
               : context.colors.warning,
           icon: valid ? AppIcons.success : AppIcons.info,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.md),
         for (var index = 0; index < state.customItems.length; index++) ...[
           InstallmentPaymentCard(
             key: ValueKey('custom-$index'),
@@ -938,19 +999,19 @@ class _CustomItemsEditor extends StatelessWidget {
               cubit.setCustomItems(items);
             },
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
         ],
         OutlinedButton.icon(
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
             side: BorderSide(color: context.colors.primary),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadius.lg),
             ),
           ),
           icon: const Icon(AppIcons.addCircle),
-          label: const Text(
-            'Yangi qism qo‘shish',
+          label: Text(
+            context.l10n.installmentAddPart,
             style: TextStyle(fontWeight: FontWeight.w700),
           ),
           onPressed: () {
@@ -987,10 +1048,10 @@ class _CountBadge extends StatelessWidget {
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
     decoration: BoxDecoration(
       color: context.colors.primary.withValues(alpha: 0.1),
-      borderRadius: BorderRadius.circular(6),
+      borderRadius: BorderRadius.circular(AppRadius.xs),
     ),
     child: Text(
-      '$count ta',
+      context.l10n.commonCountShort(count),
       style: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w700,

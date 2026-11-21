@@ -21,6 +21,7 @@ import 'package:hisobchi_uz/features/dashboard/data/dashboard_repository.dart';
 import 'package:hisobchi_uz/features/dashboard/presentation/dashboard_page.dart';
 import 'package:hisobchi_uz/features/notifications/data/notifications_repository.dart';
 import 'package:hisobchi_uz/features/notifications/presentation/cubit/notification_badge_cubit.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 class _Auth implements AuthRepository {
   @override
@@ -151,6 +152,9 @@ mount(
       child: ValueListenableBuilder(
         valueListenable: theme,
         builder: (_, value, _) => MaterialApp.router(
+          locale: const Locale('uz'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
           themeMode: value,

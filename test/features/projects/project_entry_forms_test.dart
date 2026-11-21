@@ -16,6 +16,7 @@ import 'package:hisobchi_uz/features/projects/data/project_models.dart';
 import 'package:hisobchi_uz/features/projects/data/projects_repository.dart';
 import 'package:hisobchi_uz/features/projects/presentation/widgets/project_incomes_tab.dart';
 import 'package:hisobchi_uz/features/projects/presentation/widgets/project_costs_tab.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 final income = ProjectIncome(
   id: 9,
@@ -112,6 +113,9 @@ void main() {
         addTearDown(getIt.reset);
         await tester.pumpWidget(
           MaterialApp(
+            locale: const Locale('uz'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             theme: ThemeData(extensions: const [AppColorsExtension.light]),
             home: Scaffold(
               body: expense

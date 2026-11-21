@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hisobchi_uz/core/icons/app_icons.dart';
 import 'package:hisobchi_uz/core/widgets/icons/app_edit_icon.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 void main() {
   testWidgets('Solar edit icon inherits icon size and color', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
+        locale: const Locale('uz'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: IconTheme(
             data: IconThemeData(color: Colors.red, size: 20),

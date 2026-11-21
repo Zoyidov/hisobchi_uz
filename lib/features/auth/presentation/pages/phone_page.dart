@@ -17,6 +17,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/feedback/app_snackbar.dart';
 import '../cubit/phone_cubit.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Telefon raqam kiritish — Senior Level Modern FinTech Auth ekrani.
 class PhonePage extends StatelessWidget {
@@ -218,7 +219,7 @@ class _PhoneViewState extends State<_PhoneView>
 
                                   // Headline & Subtitle
                                   Text(
-                                    'Keling, boshlaymiz! 👋',
+                                    context.l10n.authPhoneHeading,
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineLarge
@@ -228,9 +229,9 @@ class _PhoneViewState extends State<_PhoneView>
                                           letterSpacing: -0.6,
                                         ),
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: AppSpacing.xs),
                                   Text(
-                                    'Hisobingizga kirish yoki yangi biznesingizni ulash uchun telefon raqamingizni kiriting.',
+                                    context.l10n.authPhoneSubtitle,
                                     style: TextStyle(
                                       color: colors.textSecondary,
                                       fontSize: 14.5,
@@ -292,7 +293,7 @@ class _PhoneViewState extends State<_PhoneView>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Telefon raqami',
+                context.l10n.authPhoneLabel,
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -304,9 +305,9 @@ class _PhoneViewState extends State<_PhoneView>
                 Row(
                   children: [
                     Icon(AppIcons.success, size: 14, color: colors.success),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: AppSpacing.xxs),
                     Text(
-                      'To\'g\'ri format',
+                      context.l10n.authPhoneValid,
                       style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w600,
@@ -326,7 +327,7 @@ class _PhoneViewState extends State<_PhoneView>
             color: isDark
                 ? colors.surfaceSecondary.withValues(alpha: 0.65)
                 : colors.surface,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
             border: Border.all(
               color: _isFocused
                   ? colors.primary
@@ -359,7 +360,7 @@ class _PhoneViewState extends State<_PhoneView>
                   color: colors.surfaceSecondary.withValues(
                     alpha: isDark ? 0.7 : 0.9,
                   ),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                   border: Border.all(color: colors.borderSubtle, width: 1),
                 ),
                 child: Row(
@@ -380,7 +381,7 @@ class _PhoneViewState extends State<_PhoneView>
                 ),
               ),
 
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.sm),
 
               // Phone Number Input Field
               Expanded(
@@ -444,7 +445,7 @@ class _PhoneViewState extends State<_PhoneView>
                     ? InkWell(
                         key: const ValueKey('clear_btn'),
                         onTap: _clearInput,
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(AppRadius.medium),
                         child: Padding(
                           padding: const EdgeInsets.all(4),
                           child: Icon(
@@ -485,7 +486,7 @@ class _PhoneViewState extends State<_PhoneView>
               margin: const EdgeInsets.only(top: 2, right: 10),
               decoration: BoxDecoration(
                 color: _agreed ? colors.primary : Colors.transparent,
-                borderRadius: BorderRadius.circular(7),
+                borderRadius: BorderRadius.circular(AppRadius.xs),
                 border: Border.all(
                   color: _agreed
                       ? colors.primary
@@ -503,7 +504,11 @@ class _PhoneViewState extends State<_PhoneView>
                     : null,
               ),
               child: _agreed
-                  ? const Icon(AppIcons.check, size: 15, color: Colors.white)
+                  ? Icon(
+                      AppIcons.check,
+                      size: 15,
+                      color: context.colors.onPrimary,
+                    )
                   : null,
             ),
           ),
@@ -514,7 +519,7 @@ class _PhoneViewState extends State<_PhoneView>
               onTap: () => setState(() => _agreed = !_agreed),
               child: Text.rich(
                 TextSpan(
-                  text: 'Men ',
+                  text: context.l10n.authAgreementPrefix,
                   style: TextStyle(
                     fontSize: 12.5,
                     color: colors.textSecondary,
@@ -527,11 +532,11 @@ class _PhoneViewState extends State<_PhoneView>
                       child: GestureDetector(
                         onTap: () => _showTermsModal(
                           context,
-                          'Foydalanish shartlari',
-                          'Hisup platformasidan foydalanish orqali siz barcha moliyaviy amaliyotlar shaffofligi, xavfsizlik talablari hamda xizmat ko\'rsatish qoidalariga rozilik bildirasiz.',
+                          context.l10n.authTermsLink,
+                          context.l10n.authTermsBody,
                         ),
                         child: Text(
-                          'Foydalanish shartlari',
+                          context.l10n.authTermsLink,
                           style: TextStyle(
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
@@ -544,18 +549,18 @@ class _PhoneViewState extends State<_PhoneView>
                         ),
                       ),
                     ),
-                    const TextSpan(text: ' va '),
+                    TextSpan(text: context.l10n.authAgreementAnd),
                     WidgetSpan(
                       alignment: PlaceholderAlignment.baseline,
                       baseline: TextBaseline.alphabetic,
                       child: GestureDetector(
                         onTap: () => _showTermsModal(
                           context,
-                          'Maxfiylik siyosati',
-                          'Sizning shaxsiy ma\'lumotlaringiz va moliyaviy hisobotlaringiz 256-bitli SSL xavfsizlik protokollari bilan qat\'iy himoyalangan bo\'lib, uchinchi shaxslarga berilmaydi.',
+                          context.l10n.authPrivacyLink,
+                          context.l10n.authPrivacyBody,
                         ),
                         child: Text(
-                          'Maxfiylik siyosati',
+                          context.l10n.authPrivacyLink,
                           style: TextStyle(
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
@@ -568,7 +573,7 @@ class _PhoneViewState extends State<_PhoneView>
                         ),
                       ),
                     ),
-                    const TextSpan(text: 'ga to\'liq roziman'),
+                    TextSpan(text: context.l10n.authAgreementSuffix),
                   ],
                 ),
               ),
@@ -601,7 +606,7 @@ class _PhoneViewState extends State<_PhoneView>
                 )
               : null,
           color: enabled ? null : colors.disabled.withValues(alpha: 0.6),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
           boxShadow: enabled
               ? [
                   BoxShadow(
@@ -615,7 +620,7 @@ class _PhoneViewState extends State<_PhoneView>
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
             onTap: enabled
                 ? () {
                     HapticFeedback.mediumImpact();
@@ -626,35 +631,41 @@ class _PhoneViewState extends State<_PhoneView>
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 200),
                 child: isLoading
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 22,
                         height: 22,
                         child: CircularProgressIndicator(
                           strokeWidth: 2.4,
-                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                          valueColor: AlwaysStoppedAnimation(
+                            context.colors.onPrimary,
+                          ),
                         ),
                       )
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Davom etish',
+                            context.l10n.commonContinue,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               color: enabled
-                                  ? Colors.white
-                                  : Colors.white.withValues(alpha: 0.6),
+                                  ? context.colors.onPrimary
+                                  : context.colors.onPrimary.withValues(
+                                      alpha: 0.6,
+                                    ),
                               letterSpacing: 0.2,
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppSpacing.xs),
                           Icon(
                             AppIcons.forward,
                             size: 19,
                             color: enabled
-                                ? Colors.white
-                                : Colors.white.withValues(alpha: 0.6),
+                                ? context.colors.onPrimary
+                                : context.colors.onPrimary.withValues(
+                                    alpha: 0.6,
+                                  ),
                           ),
                         ],
                       ),
@@ -684,7 +695,7 @@ class _PhoneViewState extends State<_PhoneView>
             Icon(AppIcons.shield, size: 15, color: colors.textTertiary),
             const SizedBox(width: 6),
             Text(
-              '256-bit shifrlangan • Ma\'lumotlar to\'liq xavfsiz',
+              context.l10n.authSecureFooter,
               style: TextStyle(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w500,
@@ -720,11 +731,11 @@ class _PhoneViewState extends State<_PhoneView>
                     height: 4,
                     decoration: BoxDecoration(
                       color: colors.border,
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(AppRadius.hairline),
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSpacing.lg),
                 Row(
                   children: [
                     Container(
@@ -732,7 +743,7 @@ class _PhoneViewState extends State<_PhoneView>
                       height: 40,
                       decoration: BoxDecoration(
                         color: colors.primaryContainer,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
                       ),
                       child: Icon(
                         AppIcons.file,
@@ -740,7 +751,7 @@ class _PhoneViewState extends State<_PhoneView>
                         size: 22,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
                         title,
@@ -751,7 +762,7 @@ class _PhoneViewState extends State<_PhoneView>
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
                 Text(
                   content,
                   style: TextStyle(
@@ -760,9 +771,9 @@ class _PhoneViewState extends State<_PhoneView>
                     height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xl),
                 AppButton.primary(
-                  label: 'Tushundim',
+                  label: context.l10n.commonGotIt,
                   onPressed: () => Navigator.of(ctx).pop(),
                 ),
               ],
@@ -780,7 +791,9 @@ class _PhoneViewState extends State<_PhoneView>
     showDialog<void>(
       context: context,
       builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.large),
+        ),
         backgroundColor: colors.surface,
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -796,9 +809,9 @@ class _PhoneViewState extends State<_PhoneView>
                 ),
                 child: Icon(AppIcons.private, color: colors.error, size: 30),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               Text(
-                'Kirish cheklangan',
+                context.l10n.authBlockedTitle,
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -814,9 +827,9 @@ class _PhoneViewState extends State<_PhoneView>
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xl),
               AppButton.primary(
-                label: 'Tushundim',
+                label: context.l10n.commonGotIt,
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],

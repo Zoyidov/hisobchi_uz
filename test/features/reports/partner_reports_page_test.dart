@@ -12,6 +12,7 @@ import 'package:hisobchi_uz/core/theme/app_colors.dart';
 import 'package:hisobchi_uz/features/reports/data/partner_report_models.dart';
 import 'package:hisobchi_uz/features/reports/data/reports_repository.dart';
 import 'package:hisobchi_uz/features/reports/presentation/pages/partner_reports_page.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 class _Auth implements AuthRepository {
   @override
@@ -56,6 +57,9 @@ void main() {
       addTearDown(getIt.reset);
       await tester.pumpWidget(
         MaterialApp(
+          locale: const Locale('uz'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           theme: ThemeData(extensions: const [AppColorsExtension.light]),
           home: MultiBlocProvider(
             providers: [

@@ -12,6 +12,8 @@ import '../../../../core/widgets/feedback/app_snackbar.dart';
 import '../../../../core/widgets/media/app_file_preview.dart';
 import '../../data/partner_models.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 enum ReceiptAction { cancel, delete }
 
@@ -50,49 +52,71 @@ class _BankReceiptSheet extends StatelessWidget {
   final bool isOwner;
   final bool canCancel;
 
-  String _buildShareText() {
+  String _buildShareText(AppLocalizations l10n) {
     final isExpense = wallet.isExpense;
     final buffer = StringBuffer();
-    buffer.writeln('🧾 ELEKTRON TO\'LOV KVITANSIYASI — Hisup');
+    buffer.writeln(l10n.receiptShareTitle);
     buffer.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    buffer.writeln('Chek raqami: № ${wallet.id.toString().padLeft(8, '0')}');
     buffer.writeln(
-      'Holati: ${wallet.isCancelled ? "BEKOR QILINGAN" : "MUVAFFAQIYATLI O'TKAZILDI"}',
+      l10n.receiptShareNumber(wallet.id.toString().padLeft(8, '0')),
     );
     buffer.writeln(
-      'Operatsiya: ${isExpense ? "Chiqim (To'lov)" : "Kirim (Mablag' tushumi)"}',
+      l10n.receiptShareStatus(
+        wallet.isCancelled
+            ? l10n.receiptShareStatusCancelled
+            : l10n.receiptShareStatusSuccess,
+      ),
     );
     buffer.writeln(
-      'Summa: ${isExpense ? "-" : "+"}${MoneyFormatter.format(wallet.summa, currencyTypeId: wallet.currencyTypeId)}',
+      l10n.receiptShareOperation(
+        isExpense ? l10n.receiptExpenseType : l10n.receiptIncomeTypeShare,
+      ),
     );
     buffer.writeln(
-      'Komissiya: 0 ${MoneyFormatter.currencyCode(wallet.currencyTypeId)} (0%)',
+      l10n.receiptShareAmount(
+        isExpense ? "-" : "+",
+        MoneyFormatter.format(
+          wallet.summa,
+          currencyTypeId: wallet.currencyTypeId,
+        ),
+      ),
     );
-    buffer.writeln('Hamkor: ${partner.name}');
+    buffer.writeln(
+      l10n.receiptCommission(
+        MoneyFormatter.currencyCode(wallet.currencyTypeId),
+      ),
+    );
+    buffer.writeln(l10n.receiptSharePartner(partner.name));
     if (partner.phone.isNotEmpty) {
-      buffer.writeln('Telefon: ${PhoneFormatter.toDisplay(partner.phone)}');
+      buffer.writeln(
+        l10n.receiptSharePhone(PhoneFormatter.toDisplay(partner.phone)),
+      );
     }
     if (wallet.createdAt != null) {
       buffer.writeln(
-        'Sana va vaqt: ${AppDateFormatter.displayDateTime(wallet.createdAt!)}',
+        l10n.receiptShareDateTime(
+          AppDateFormatter.displayDateTime(wallet.createdAt!),
+        ),
       );
     }
     if (wallet.performedByName != null && wallet.performedByName!.isNotEmpty) {
-      buffer.writeln('Kassir / Mas\'ul xodim: ${wallet.performedByName}');
+      buffer.writeln(l10n.receiptShareCashier(wallet.performedByName!));
     }
     if (wallet.description != null && wallet.description!.isNotEmpty) {
-      buffer.writeln('To\'lov maqsadi: ${wallet.description}');
+      buffer.writeln(l10n.receiptSharePurpose(wallet.description!));
     }
     if (wallet.returnDate != null) {
       buffer.writeln(
-        'Qaytarish muddati: ${AppDateFormatter.display(wallet.returnDate!)}',
+        l10n.receiptShareReturnDate(
+          AppDateFormatter.display(wallet.returnDate!),
+        ),
       );
     }
     if (wallet.isCancelled && wallet.cancelReason != null) {
-      buffer.writeln('Bekor qilish sababi: ${wallet.cancelReason}');
+      buffer.writeln(l10n.receiptShareCancelReason(wallet.cancelReason!));
     }
     buffer.writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    buffer.writeln('Hisup rasmiy bank standarti to\'lov hujjati');
+    buffer.writeln(l10n.receiptShareFooter);
     return buffer.toString();
   }
 
@@ -103,24 +127,23 @@ class _BankReceiptSheet extends StatelessWidget {
     HapticFeedback.mediumImpact();
     try {
       await Share.share(
-        _buildShareText(),
-        subject: 'To‘lov cheki № ${wallet.id.toString().padLeft(8, '0')}',
+        _buildShareText(context.l10n),
+        subject: context.l10n.receiptShareSubject(
+          wallet.id.toString().padLeft(8, '0'),
+        ),
         sharePositionOrigin: origin,
       );
     } catch (_) {
       if (context.mounted) {
-        AppSnackbar.error(
-          context,
-          'Chekni ulashib bo‘lmadi. Qayta urinib ko‘ring.',
-        );
+        AppSnackbar.error(context, context.l10n.receiptShareError);
       }
     }
   }
 
   void _copyReceipt(BuildContext context) {
     HapticFeedback.selectionClick();
-    Clipboard.setData(ClipboardData(text: _buildShareText()));
-    AppSnackbar.success(context, 'Chek ma\'lumotlari to\'liq nusxalandi');
+    Clipboard.setData(ClipboardData(text: _buildShareText(context.l10n)));
+    AppSnackbar.success(context, context.l10n.receiptCopied);
   }
 
   @override
@@ -131,10 +154,10 @@ class _BankReceiptSheet extends StatelessWidget {
     final isCancelled = wallet.isCancelled;
 
     // Banking Paper colors
-    final receiptPaperColor = isDark ? const Color(0xFF192231) : Colors.white;
+    final receiptPaperColor = isDark ? colors.surfaceSecondary : colors.surface;
     final sheetBackgroundColor = isDark
-        ? const Color(0xFF0F1522)
-        : const Color(0xFFF1F5F9);
+        ? colors.background
+        : colors.surfaceSecondary;
 
     final statusColor = isCancelled
         ? colors.error
@@ -143,7 +166,9 @@ class _BankReceiptSheet extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: sheetBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppRadius.large),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -156,7 +181,7 @@ class _BankReceiptSheet extends StatelessWidget {
               height: 5,
               decoration: BoxDecoration(
                 color: colors.border.withValues(alpha: 0.8),
-                borderRadius: BorderRadius.circular(3),
+                borderRadius: BorderRadius.circular(AppRadius.xxs),
               ),
             ),
           ),
@@ -174,9 +199,9 @@ class _BankReceiptSheet extends StatelessWidget {
                 Row(
                   children: [
                     Icon(AppIcons.receipt, size: 20, color: colors.primary),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.xs),
                     Text(
-                      'To\'lov cheki',
+                      context.l10n.receiptTitle,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                         letterSpacing: -0.2,
@@ -186,7 +211,7 @@ class _BankReceiptSheet extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () => Navigator.of(context).pop(),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
                   child: Container(
                     width: 32,
                     height: 32,
@@ -218,7 +243,7 @@ class _BankReceiptSheet extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: receiptPaperColor,
                       borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(22),
+                        top: Radius.circular(AppRadius.card),
                       ),
                       boxShadow: [
                         BoxShadow(
@@ -258,13 +283,13 @@ class _BankReceiptSheet extends StatelessWidget {
                                             8,
                                           ),
                                         ),
-                                        child: const Icon(
+                                        child: Icon(
                                           AppIcons.bank,
                                           size: 16,
-                                          color: Colors.white,
+                                          color: context.colors.onPrimary,
                                         ),
                                       ),
-                                      const SizedBox(width: 8),
+                                      const SizedBox(width: AppSpacing.xs),
                                       Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -279,7 +304,7 @@ class _BankReceiptSheet extends StatelessWidget {
                                             ),
                                           ),
                                           Text(
-                                            'ELEKTRON KVITANSIYA',
+                                            context.l10n.receiptBadge,
                                             style: TextStyle(
                                               fontSize: 8.5,
                                               fontWeight: FontWeight.w600,
@@ -298,7 +323,9 @@ class _BankReceiptSheet extends StatelessWidget {
                                     ),
                                     decoration: BoxDecoration(
                                       color: colors.surfaceSecondary,
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(
+                                        AppRadius.sm,
+                                      ),
                                       border: Border.all(
                                         color: colors.borderSubtle,
                                       ),
@@ -316,7 +343,7 @@ class _BankReceiptSheet extends StatelessWidget {
                                 ],
                               ),
 
-                              const SizedBox(height: 20),
+                              const SizedBox(height: AppSpacing.lg),
 
                               // SUCCESS BADGE ICON
                               Stack(
@@ -352,21 +379,21 @@ class _BankReceiptSheet extends StatelessWidget {
                                       isCancelled
                                           ? AppIcons.close
                                           : AppIcons.check,
-                                      color: Colors.white,
+                                      color: context.colors.onPrimary,
                                       size: 30,
                                     ),
                                   ),
                                 ],
                               ),
 
-                              const SizedBox(height: 12),
+                              const SizedBox(height: AppSpacing.sm),
 
                               Text(
                                 isCancelled
-                                    ? 'To\'lov bekor qilingan'
+                                    ? context.l10n.receiptCancelled
                                     : (isExpense
-                                          ? 'To\'lov muvaffaqiyatli o\'tkazildi'
-                                          : 'Mablag\' muvaffaqiyatli qabul qilindi'),
+                                          ? context.l10n.receiptPaidOut
+                                          : context.l10n.receiptReceived),
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
@@ -394,7 +421,7 @@ class _BankReceiptSheet extends StatelessWidget {
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(width: 4),
+                                  const SizedBox(width: AppSpacing.xxs),
                                   Text(
                                     MoneyFormatter.groupDigits(wallet.summa),
                                     style: TextStyle(
@@ -423,11 +450,15 @@ class _BankReceiptSheet extends StatelessWidget {
                                 ],
                               ),
 
-                              const SizedBox(height: 4),
+                              const SizedBox(height: AppSpacing.xxs),
 
                               // COMMISSION ROW
                               Text(
-                                'Komissiya: 0 ${MoneyFormatter.currencyCode(wallet.currencyTypeId)} (0%)',
+                                context.l10n.receiptCommission(
+                                  MoneyFormatter.currencyCode(
+                                    wallet.currencyTypeId,
+                                  ),
+                                ),
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: colors.textTertiary,
@@ -452,29 +483,29 @@ class _BankReceiptSheet extends StatelessWidget {
                             children: [
                               _buildBankRow(
                                 context: context,
-                                label: 'Qabul qiluvchi (Hamkor)',
+                                label: context.l10n.receiptRecipient,
                                 value: partner.name,
                                 isBold: true,
                               ),
                               if (partner.phone.isNotEmpty)
                                 _buildBankRow(
                                   context: context,
-                                  label: 'Telefon raqami',
+                                  label: context.l10n.authPhoneLabel,
                                   value: PhoneFormatter.toDisplay(
                                     partner.phone,
                                   ),
                                 ),
                               _buildBankRow(
                                 context: context,
-                                label: 'Operatsiya turi',
+                                label: context.l10n.receiptOperationType,
                                 value: isExpense
-                                    ? 'Chiqim (To\'lov)'
-                                    : 'Kirim (Tushum)',
+                                    ? context.l10n.receiptExpenseType
+                                    : context.l10n.receiptIncomeType,
                                 valueColor: statusColor,
                               ),
                               _buildBankRow(
                                 context: context,
-                                label: 'Sana va vaqt',
+                                label: context.l10n.receiptDateTime,
                                 value: wallet.createdAt != null
                                     ? AppDateFormatter.displayDateTime(
                                         wallet.createdAt!,
@@ -483,7 +514,7 @@ class _BankReceiptSheet extends StatelessWidget {
                               ),
                               _buildBankRow(
                                 context: context,
-                                label: 'Tranzaksiya ID (RRN)',
+                                label: context.l10n.receiptTransactionId,
                                 value:
                                     'TRX-${wallet.id.toString().padLeft(8, '0')}',
                                 isMonospace: true,
@@ -495,7 +526,7 @@ class _BankReceiptSheet extends StatelessWidget {
                                     );
                                     AppSnackbar.success(
                                       context,
-                                      'ID nusxalandi',
+                                      context.l10n.receiptIdCopied,
                                     );
                                   },
                                   child: Padding(
@@ -510,22 +541,22 @@ class _BankReceiptSheet extends StatelessWidget {
                               ),
                               _buildBankRow(
                                 context: context,
-                                label: 'Hisob valyutasi',
+                                label: context.l10n.receiptAccountCurrency,
                                 value: wallet.currencyTypeId == 2
-                                    ? 'AQSH Dollari (USD)'
-                                    : 'O\'zbek so\'mi (UZS)',
+                                    ? context.l10n.currencyUsdFull
+                                    : context.l10n.currencyUzsFull,
                               ),
                               if (wallet.performedByName != null &&
                                   wallet.performedByName!.isNotEmpty)
                                 _buildBankRow(
                                   context: context,
-                                  label: 'Kassir / Mas\'ul xodim',
+                                  label: context.l10n.receiptCashier,
                                   value: wallet.performedByName!,
                                 ),
                               if (wallet.returnDate != null)
                                 _buildBankRow(
                                   context: context,
-                                  label: 'Qaytarish muddati',
+                                  label: context.l10n.receiptReturnDate,
                                   value: AppDateFormatter.display(
                                     wallet.returnDate!,
                                   ),
@@ -535,22 +566,22 @@ class _BankReceiptSheet extends StatelessWidget {
                                   wallet.description!.isNotEmpty)
                                 _buildBankRow(
                                   context: context,
-                                  label: 'To\'lov maqsadi (Izoh)',
+                                  label: context.l10n.receiptPurpose,
                                   value: wallet.description!,
                                 ),
                               if (isCancelled && wallet.cancelReason != null)
                                 _buildBankRow(
                                   context: context,
-                                  label: 'Bekor qilish sababi',
+                                  label: context.l10n.walletCancelReasonLabel,
                                   value: wallet.cancelReason!,
                                   valueColor: colors.error,
                                 ),
 
-                              const SizedBox(height: 16),
+                              const SizedBox(height: AppSpacing.md),
 
                               if (wallet.files.isNotEmpty) ...[
                                 AppFilePreview(files: wallet.files),
-                                const SizedBox(height: 16),
+                                const SizedBox(height: AppSpacing.md),
                               ],
 
                               // Minimalist verification badge (no stamp, clean FinTech style)
@@ -562,7 +593,9 @@ class _BankReceiptSheet extends StatelessWidget {
                                 ),
                                 decoration: BoxDecoration(
                                   color: statusColor.withValues(alpha: 0.06),
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.md,
+                                  ),
                                   border: Border.all(
                                     color: statusColor.withValues(alpha: 0.15),
                                     width: 1,
@@ -595,8 +628,10 @@ class _BankReceiptSheet extends StatelessWidget {
                                         children: [
                                           Text(
                                             isCancelled
-                                                ? 'Bekor qilingan to\'lov'
-                                                : 'Muvaffaqiyatli tasdiqlangan',
+                                                ? context
+                                                      .l10n
+                                                      .receiptCancelledPayment
+                                                : context.l10n.receiptConfirmed,
                                             style: TextStyle(
                                               fontSize: 12.5,
                                               fontWeight: FontWeight.w700,
@@ -604,7 +639,7 @@ class _BankReceiptSheet extends StatelessWidget {
                                             ),
                                           ),
                                           Text(
-                                            'Hisup moliyaviy hisobot tizimida qayd etilgan',
+                                            context.l10n.receiptRegistered,
                                             style: TextStyle(
                                               fontSize: 11,
                                               color: colors.textTertiary,
@@ -630,7 +665,7 @@ class _BankReceiptSheet extends StatelessWidget {
                     toothHeight: 8,
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.lg),
 
                   // ACTION BUTTONS (Share Receipt, Copy, Cancel, Delete)
                   Row(
@@ -650,7 +685,9 @@ class _BankReceiptSheet extends StatelessWidget {
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.lg,
+                                ),
                                 boxShadow: [
                                   BoxShadow(
                                     color: colors.primary.withValues(
@@ -664,21 +701,23 @@ class _BankReceiptSheet extends StatelessWidget {
                               child: Material(
                                 color: Colors.transparent,
                                 child: InkWell(
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.lg,
+                                  ),
                                   onTap: () => _shareReceipt(shareContext),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    children: const [
+                                    children: [
                                       Icon(
                                         AppIcons.share,
-                                        color: Colors.white,
+                                        color: context.colors.onPrimary,
                                         size: 19,
                                       ),
-                                      SizedBox(width: 8),
+                                      SizedBox(width: AppSpacing.xs),
                                       Text(
-                                        'Chekni ulashish',
+                                        context.l10n.receiptShare,
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color: context.colors.onPrimary,
                                           fontWeight: FontWeight.w700,
                                           fontSize: 15,
                                         ),
@@ -695,15 +734,15 @@ class _BankReceiptSheet extends StatelessWidget {
                       AppButtonPressable(
                         child: InkWell(
                           onTap: () => _copyReceipt(context),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(AppRadius.lg),
                           child: Container(
                             width: 52,
                             height: 52,
                             decoration: BoxDecoration(
                               color: isDark
                                   ? colors.surfaceSecondary
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(16),
+                                  : context.colors.onPrimary,
+                              borderRadius: BorderRadius.circular(AppRadius.lg),
                               border: Border.all(color: colors.border),
                               boxShadow: colors.cardShadow,
                             ),
@@ -720,7 +759,7 @@ class _BankReceiptSheet extends StatelessWidget {
 
                   // OPTIONAL MANAGEMENT (Cancel / Delete)
                   if ((canCancel && !isCancelled) || isOwner) ...[
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.sm),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -738,8 +777,8 @@ class _BankReceiptSheet extends StatelessWidget {
                               Navigator.of(context).pop(ReceiptAction.cancel);
                             },
                             icon: const Icon(AppIcons.cancel, size: 16),
-                            label: const Text(
-                              'Tranzaksiyani bekor qilish',
+                            label: Text(
+                              context.l10n.walletCancelTransaction,
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
@@ -765,8 +804,8 @@ class _BankReceiptSheet extends StatelessWidget {
                               Navigator.of(context).pop(ReceiptAction.delete);
                             },
                             icon: const Icon(AppIcons.delete, size: 16),
-                            label: const Text(
-                              'O\'chirish',
+                            label: Text(
+                              context.l10n.commonDelete,
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
@@ -813,7 +852,7 @@ class _BankReceiptSheet extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.xs),
           Expanded(
             flex: 6,
             child: Row(

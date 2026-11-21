@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
 import '../../icons/app_icons.dart';
+import '../../localization/app_localization_extension.dart';
 
 enum AppSnackbarType { success, error, warning }
 
@@ -57,7 +58,7 @@ abstract final class AppSnackbar {
     context,
     message,
     type: AppSnackbarType.error,
-    actionLabel: onRetry != null ? 'Qayta urinish' : null,
+    actionLabel: onRetry != null ? context.l10n.commonRetry : null,
     onAction: onRetry,
   );
 }

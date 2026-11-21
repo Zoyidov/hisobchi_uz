@@ -5,20 +5,15 @@ class _OverviewCard extends StatelessWidget {
   final DashboardSummary summary;
   @override
   Widget build(BuildContext context) {
-    final dark = _DashboardStyle.dark(context);
+    final colors = context.colors;
+    final onHero = colors.onPrimary;
     final overdue = summary.qarzExpired + summary.installmentExpired;
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: dark
-              ? const [Color(0xFF2459DE), Color(0xFF2532A7)]
-              : const [Color(0xFF278FFF), Color(0xFF2563EB)],
-        ),
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        gradient: colors.heroGradient,
         border: Border.all(
-          color: Colors.white.withValues(alpha: dark ? .16 : .1),
+          color: onHero.withValues(alpha: colors.isDark ? .16 : .1),
         ),
       ),
       clipBehavior: Clip.antiAlias,
@@ -34,24 +29,24 @@ class _OverviewCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hisob-kitoblar nazoratda',
+                        context.l10n.dashboardHeroTitle,
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
                               letterSpacing: -.55,
-                              color: Colors.white,
+                              color: onHero,
                             ),
                       ),
                       const SizedBox(height: 6),
                       Text(
                         overdue > 0
-                            ? '$overdue ta muddati o‘tgan to‘lov'
-                            : 'Loyiha va to‘lovlarni bir joyda boshqaring',
+                            ? context.l10n.dashboardOverduePayments(overdue)
+                            : context.l10n.dashboardHeroSubtitle,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           fontSize: 12,
                           height: 1.4,
-                          color: Colors.white.withValues(alpha: .92),
+                          color: onHero.withValues(alpha: .92),
                         ),
                       ),
                     ],
@@ -60,10 +55,10 @@ class _OverviewCard extends StatelessWidget {
                 if (MediaQuery.sizeOf(context).width >= 360 &&
                     MediaQuery.textScalerOf(context).scale(14) <= 20) ...[
                   const SizedBox(width: 6),
-                  const ExcludeSemantics(
+                  ExcludeSemantics(
                     child: CustomPaint(
-                      size: Size(76, 72),
-                      painter: _OverviewIllustration(),
+                      size: const Size(76, 72),
+                      painter: _OverviewIllustration(colors),
                     ),
                   ),
                 ],
@@ -71,38 +66,38 @@ class _OverviewCard extends StatelessWidget {
             ),
           ),
           Container(
-            color: Colors.white.withValues(alpha: .09),
+            color: onHero.withValues(alpha: .09),
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
             child: Row(
               children: [
                 Expanded(
                   child: _OverviewTile(
                     value: summary.partnersCount,
-                    label: 'Hamkorlar',
+                    label: context.l10n.navPartners,
                     onTap: () => context.go(RoutePaths.partners),
                   ),
                 ),
                 Container(
                   width: 1,
                   height: 24,
-                  color: Colors.white.withValues(alpha: .18),
+                  color: onHero.withValues(alpha: .18),
                 ),
                 Expanded(
                   child: _OverviewTile(
                     value: summary.projectsCount,
-                    label: 'Loyihalar',
+                    label: context.l10n.navProjects,
                     onTap: () => context.go(RoutePaths.projects),
                   ),
                 ),
                 Container(
                   width: 1,
                   height: 24,
-                  color: Colors.white.withValues(alpha: .18),
+                  color: onHero.withValues(alpha: .18),
                 ),
                 Expanded(
                   child: _OverviewTile(
                     value: summary.qarzToday,
-                    label: 'Bugungi qarzlar',
+                    label: context.l10n.dashboardTodayDebts,
                     onTap: () => _openDue(context, DueDateType.qarzToday),
                   ),
                 ),
@@ -125,44 +120,49 @@ class _OverviewTile extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   @override
-  Widget build(BuildContext context) => Material(
-    color: Colors.transparent,
-    borderRadius: BorderRadius.circular(10),
-    clipBehavior: Clip.antiAlias,
-    child: InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 3),
-        child: Column(
-          children: [
-            Text(
-              '$value',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontSize: 17,
-                height: 1.1,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+  Widget build(BuildContext context) {
+    final onHero = context.colors.onPrimary;
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(AppRadius.small),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 3),
+          child: Column(
+            children: [
+              Text(
+                '$value',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontSize: 17,
+                  height: 1.1,
+                  fontWeight: FontWeight.w700,
+                  color: onHero,
+                ),
               ),
-            ),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                fontSize: 10,
-                color: Colors.white.withValues(alpha: .85),
+              const SizedBox(height: 3),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  fontSize: 10,
+                  color: onHero.withValues(alpha: .85),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 /// Native canvas illustration; decorative only, never an image background.
 class _OverviewIllustration extends CustomPainter {
-  const _OverviewIllustration();
+  const _OverviewIllustration(this.colors);
+
+  final AppColorsExtension colors;
   @override
   void paint(Canvas canvas, Size size) {
     canvas.save();
@@ -170,23 +170,35 @@ class _OverviewIllustration extends CustomPainter {
     canvas.rotate(.12);
     final rect = RRect.fromRectAndRadius(
       Rect.fromLTWH(0, 0, size.width * .75, size.height * .88),
-      const Radius.circular(12),
+      const Radius.circular(AppRadius.md),
     );
     canvas.drawRRect(
       rect.shift(const Offset(3, 4)),
-      Paint()..color = const Color(0xFF132D97).withValues(alpha: .22),
+      Paint()..color = colors.heroGradientEnd.withValues(alpha: .45),
     );
     canvas.drawRRect(
       rect,
       Paint()
-        ..shader = const LinearGradient(
-          colors: [Color(0xFFF4F7FF), Color(0xFFBFD7FF)],
+        ..shader = LinearGradient(
+          colors: [
+            Color.alphaBlend(
+              colors.brandAccent.withValues(alpha: .05),
+              Colors.white,
+            ),
+            Color.alphaBlend(
+              colors.brandAccent.withValues(alpha: .30),
+              Colors.white,
+            ),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ).createShader(rect.outerRect),
     );
     final stroke = Paint()
-      ..color = const Color(0xFF8DB9FF)
+      ..color = Color.alphaBlend(
+        colors.brandAccent.withValues(alpha: .50),
+        Colors.white,
+      )
       ..strokeWidth = 3
       ..strokeCap = StrokeCap.round;
     canvas.drawLine(const Offset(11, 15), const Offset(37, 15), stroke);
@@ -195,19 +207,15 @@ class _OverviewIllustration extends CustomPainter {
       canvas.drawRRect(
         RRect.fromRectAndRadius(
           Rect.fromLTWH(11 + i * 9, 51 - i * 5, 6, 9 + i * 5),
-          const Radius.circular(2),
+          const Radius.circular(AppRadius.hairline),
         ),
-        Paint()
-          ..color = Color.lerp(
-            const Color(0xFF43AAFF),
-            const Color(0xFF3965F5),
-            i / 3,
-          )!,
+        Paint()..color = Color.lerp(colors.brandAccent, colors.primary, i / 3)!,
       );
     }
     canvas.restore();
   }
 
   @override
-  bool shouldRepaint(covariant _OverviewIllustration oldDelegate) => false;
+  bool shouldRepaint(covariant _OverviewIllustration oldDelegate) =>
+      oldDelegate.colors != colors;
 }

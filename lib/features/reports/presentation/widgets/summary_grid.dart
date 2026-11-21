@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters/money_formatter.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class SummaryGrid extends StatelessWidget {
   const SummaryGrid({
@@ -28,7 +31,7 @@ class SummaryGrid extends StatelessWidget {
     child: LayoutBuilder(
       builder: (context, constraints) {
         final income = _SummaryCard(
-          title: 'Jami kirim',
+          title: context.l10n.reportTotalIncome,
           amount: totalIncome,
           currency: currency,
           icon: AppIcons.chartDown,
@@ -36,7 +39,7 @@ class SummaryGrid extends StatelessWidget {
           onTap: onIncomeTap,
         );
         final expense = _SummaryCard(
-          title: 'Jami chiqim',
+          title: context.l10n.reportTotalExpense,
           amount: totalExpense,
           currency: currency,
           icon: AppIcons.chartUp,
@@ -53,7 +56,7 @@ class SummaryGrid extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(child: income),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.sm),
             Expanded(child: expense),
           ],
         );
@@ -81,7 +84,7 @@ class _SummaryCard extends StatelessWidget {
   Widget build(BuildContext context) => Material(
     color: context.colors.surface,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppRadius.lg),
       side: BorderSide(color: context.colors.border),
     ),
     clipBehavior: Clip.antiAlias,
@@ -98,7 +101,7 @@ class _SummaryCard extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: .1),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.small),
                   ),
                   child: Icon(icon, color: color, size: 19),
                 ),
@@ -111,7 +114,7 @@ class _SummaryCard extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               title,
               style: TextStyle(

@@ -67,18 +67,18 @@ GoRouter buildAppRouter(AuthCubit authCubit) {
     initialLocation: RoutePaths.splash,
     refreshListenable: GoRouterRefreshStream(authCubit.stream),
     redirect: (context, state) {
-      final isAuthenticated = authCubit.state == AuthStatus.authenticated;
+      // Sessiya yo'q (token yo'q yoki backend 401 qaytardi) — sessiya talab
+      // qiladigan har qanday sahifadan kirish sahifasiga. PIN-kod va hisob
+      // tanlash sahifalari ham sessiya talab qiladi, shuning uchun ular
+      // istisno emas. Splash o'zi yo'naltiradi (animatsiya uzilmasligi uchun).
+      if (authCubit.state != AuthStatus.unauthenticated) return null;
       final loc = state.matchedLocation;
-
-      final isAuthFlow = loc.startsWith('/auth') ||
+      final allowed =
           loc == RoutePaths.splash ||
           loc == RoutePaths.onboarding ||
-          loc == RoutePaths.forceUpdate;
-
-      if (!isAuthenticated && authCubit.state != AuthStatus.splash && !isAuthFlow) {
-        return RoutePaths.phone;
-      }
-      return null;
+          loc == RoutePaths.forceUpdate ||
+          RoutePaths.isPublicAuth(loc);
+      return allowed ? null : RoutePaths.phone;
     },
     routes: [
       GoRoute(path: RoutePaths.splash, builder: (context, state) => const SplashPage()),

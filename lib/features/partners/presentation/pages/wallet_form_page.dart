@@ -22,6 +22,9 @@ import '../../data/wallet_repository.dart';
 import '../cubit/wallet_form_cubit.dart';
 import '../widgets/partner_search_sheet.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Dashboard/hamkor kartochkasidan chaqiriladigan kirish nuqtasi — agar
 /// `partner` berilmagan bo'lsa, avval qidiruvli tanlov sheeti ochiladi
@@ -134,8 +137,8 @@ class _WalletFormViewState extends State<_WalletFormView> {
     final colors = context.colors;
     final accent = _isExpense ? colors.error : colors.success;
     final title = _isEditing
-        ? 'Chiqimni tahrirlash'
-        : (_isExpense ? 'Chiqim' : 'Kirim');
+        ? context.l10n.walletEditExpense
+        : (_isExpense ? context.l10n.commonExpense : context.l10n.commonIncome);
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
@@ -152,7 +155,7 @@ class _WalletFormViewState extends State<_WalletFormView> {
         child: BlocConsumer<WalletFormCubit, WalletFormState>(
           listener: (context, state) {
             if (state is WalletFormSuccess) {
-              AppSnackbar.success(context, 'Saqlandi');
+              AppSnackbar.success(context, context.l10n.commonSaved);
               context.pop(state.wallet);
             } else if (state is WalletFormValidationError) {
               setState(() => _amountError = state.fieldErrors['summa']);
@@ -180,14 +183,16 @@ class _WalletFormViewState extends State<_WalletFormView> {
                               AppCard(
                                 hasShadow: false,
                                 padding: const EdgeInsets.all(12),
-                                borderRadius: BorderRadius.circular(18),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.xl,
+                                ),
                                 child: Row(
                                   children: [
                                     AppAvatar(
                                       name: widget.partner.name,
                                       size: 40,
                                     ),
-                                    const SizedBox(width: 12),
+                                    const SizedBox(width: AppSpacing.sm),
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment:
@@ -204,7 +209,9 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                                   fontWeight: FontWeight.w700,
                                                 ),
                                           ),
-                                          const SizedBox(height: 4),
+                                          const SizedBox(
+                                            height: AppSpacing.xxs,
+                                          ),
                                           Text(
                                             PhoneFormatter.toDisplay(
                                               widget.partner.phone,
@@ -223,24 +230,29 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                 ),
                               ),
                               if (widget.lockedType == null && !_isEditing) ...[
-                                const SizedBox(height: 16),
+                                const SizedBox(height: AppSpacing.md),
                                 AppSegmentedControl<String>(
                                   value: _type,
-                                  segments: const [
-                                    AppSegment(value: 'debt', label: 'Kirim'),
+                                  segments: [
+                                    AppSegment(
+                                      value: 'debt',
+                                      label: context.l10n.commonIncome,
+                                    ),
                                     AppSegment(
                                       value: 'credit',
-                                      label: 'Chiqim',
+                                      label: context.l10n.commonExpense,
                                     ),
                                   ],
                                   onChanged: (v) => setState(() => _type = v),
                                 ),
                               ],
-                              const SizedBox(height: 16),
+                              const SizedBox(height: AppSpacing.md),
                               AppCard(
                                 hasShadow: false,
                                 padding: const EdgeInsets.all(16),
-                                borderRadius: BorderRadius.circular(22),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.card,
+                                ),
                                 border: Border.all(
                                   color: accent.withValues(alpha: .22),
                                 ),
@@ -280,10 +292,16 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                             size: 18,
                                           ),
                                         ),
-                                        const SizedBox(width: 8),
+                                        const SizedBox(width: AppSpacing.xs),
                                         Expanded(
                                           child: Text(
-                                            '$_typeLabel summasi',
+                                            _isExpense
+                                                ? context
+                                                      .l10n
+                                                      .walletExpenseAmount
+                                                : context
+                                                      .l10n
+                                                      .walletIncomeAmount,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .titleSmall
@@ -294,7 +312,7 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 12),
+                                    const SizedBox(height: AppSpacing.sm),
                                     Wrap(
                                       spacing: 8,
                                       runSpacing: 4,
@@ -347,17 +365,19 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                   ],
                                 ),
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: AppSpacing.md),
                               AppCard(
                                 hasShadow: false,
                                 padding: const EdgeInsets.all(14),
-                                borderRadius: BorderRadius.circular(18),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.xl,
+                                ),
                                 child: Column(
                                   crossAxisAlignment:
                                       CrossAxisAlignment.stretch,
                                   children: [
                                     Text(
-                                      'Qo‘shimcha ma’lumot',
+                                      context.l10n.walletAdditionalInfo,
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleSmall
@@ -365,7 +385,7 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                             fontWeight: FontWeight.w600,
                                           ),
                                     ),
-                                    const SizedBox(height: 12),
+                                    const SizedBox(height: AppSpacing.sm),
                                     TextField(
                                       controller: _descriptionController,
                                       maxLines: 3,
@@ -373,8 +393,8 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                       textCapitalization:
                                           TextCapitalization.sentences,
                                       decoration: InputDecoration(
-                                        labelText: 'Izoh',
-                                        hintText: 'To‘lov haqida qisqacha',
+                                        labelText: context.l10n.commonNote,
+                                        hintText: context.l10n.walletNoteHint,
                                         prefixIcon: const Icon(
                                           AppIcons.notes,
                                           size: 20,
@@ -385,7 +405,7 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                       ),
                                     ),
                                     if (_isExpense) ...[
-                                      const SizedBox(height: 16),
+                                      const SizedBox(height: AppSpacing.md),
                                       Row(
                                         children: [
                                           Icon(
@@ -396,7 +416,9 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                           const SizedBox(width: 7),
                                           Expanded(
                                             child: Text(
-                                              'Qaytarish sanasi',
+                                              context
+                                                  .l10n
+                                                  .walletReturnDateLabel,
                                               style: Theme.of(
                                                 context,
                                               ).textTheme.labelLarge,
@@ -404,7 +426,8 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                           ),
                                           if (_returnDate != null)
                                             IconButton(
-                                              tooltip: 'Sanani olib tashlash',
+                                              tooltip:
+                                                  context.l10n.walletRemoveDate,
                                               visualDensity:
                                                   VisualDensity.compact,
                                               icon: const Icon(
@@ -417,27 +440,27 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                             ),
                                         ],
                                       ),
-                                      const SizedBox(height: 4),
+                                      const SizedBox(height: AppSpacing.xxs),
                                       Wrap(
                                         spacing: 6,
                                         runSpacing: 4,
                                         children: [
                                           _dateChip(
-                                            '1 hafta',
+                                            context.l10n.walletWeek1,
                                             () => _setReturnDate(
                                               const Duration(days: 7),
                                             ),
                                             selected: _matchesDays(7),
                                           ),
                                           _dateChip(
-                                            '2 hafta',
+                                            context.l10n.walletWeek2,
                                             () => _setReturnDate(
                                               const Duration(days: 14),
                                             ),
                                             selected: _matchesDays(14),
                                           ),
                                           _dateChip(
-                                            '1 oy',
+                                            context.l10n.walletMonth1,
                                             () => _setReturnDate(
                                               const Duration(days: 30),
                                             ),
@@ -448,14 +471,14 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                                 ? AppDateFormatter.display(
                                                     _returnDate!,
                                                   )
-                                                : 'Sana tanlash',
+                                                : context.l10n.walletPickDate,
                                             () => _pickDate(context),
                                             selected: _returnDate != null,
                                           ),
                                         ],
                                       ),
                                     ],
-                                    const SizedBox(height: 12),
+                                    const SizedBox(height: AppSpacing.sm),
                                     AppFileAttachment(
                                       onUploadingChanged: (value) =>
                                           _filesUploading = value,
@@ -466,7 +489,7 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                 ),
                               ),
                               if (_smsWillSend) ...[
-                                const SizedBox(height: 12),
+                                const SizedBox(height: AppSpacing.sm),
                                 Row(
                                   children: [
                                     Icon(
@@ -474,10 +497,10 @@ class _WalletFormViewState extends State<_WalletFormView> {
                                       size: 16,
                                       color: colors.info,
                                     ),
-                                    const SizedBox(width: 8),
+                                    const SizedBox(width: AppSpacing.xs),
                                     Expanded(
                                       child: Text(
-                                        'Hamkorga SMS xabar yuboriladi',
+                                        context.l10n.walletSmsWillBeSent,
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall
@@ -507,10 +530,10 @@ class _WalletFormViewState extends State<_WalletFormView> {
                         child: FilledButton.icon(
                           style: FilledButton.styleFrom(
                             backgroundColor: accent,
-                            foregroundColor: Colors.white,
+                            foregroundColor: context.colors.onPrimary,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(AppRadius.lg),
                             ),
                           ),
                           onPressed: isLoading ? null : () => _submit(context),
@@ -525,11 +548,12 @@ class _WalletFormViewState extends State<_WalletFormView> {
                               : const Icon(AppIcons.check, size: 20),
                           label: Text(
                             isLoading
-                                ? 'Saqlanmoqda…'
+                                ? context.l10n.commonSaving
                                 : (_isEditing
-                                      ? 'Saqlash'
-                                      : '$_typeLabel'
-                                            'ni saqlash'),
+                                      ? context.l10n.commonSave
+                                      : (_isExpense
+                                            ? context.l10n.walletSaveExpense
+                                            : context.l10n.walletSaveIncome)),
                             style: const TextStyle(fontWeight: FontWeight.w700),
                           ),
                         ),
@@ -544,8 +568,6 @@ class _WalletFormViewState extends State<_WalletFormView> {
       ),
     );
   }
-
-  String get _typeLabel => _isExpense ? 'Chiqim' : 'Kirim';
 
   bool _matchesDays(int days) {
     if (_returnDate == null) return false;
@@ -587,12 +609,12 @@ class _WalletFormViewState extends State<_WalletFormView> {
 
   void _submit(BuildContext context) {
     if (_filesUploading) {
-      AppSnackbar.error(context, 'Fayl yuklanishini kuting, keyin saqlang.');
+      AppSnackbar.error(context, context.l10n.fileWaitThenSave);
       return;
     }
     final digits = _amountController.text;
     if (digits.isEmpty || (int.tryParse(digits) ?? 0) <= 0) {
-      setState(() => _amountError = 'Summa 0 dan katta bo\'lishi kerak');
+      setState(() => _amountError = context.l10n.validationAmountPositive);
       return;
     }
     context.read<WalletFormCubit>().submit(

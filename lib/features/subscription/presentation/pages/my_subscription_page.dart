@@ -14,6 +14,8 @@ import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/subscription_models.dart';
 import '../../data/subscription_repository.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Mening obunam (MOBILE_APP_TZ.md 13.2).
 class MySubscriptionPage extends StatefulWidget {
@@ -49,12 +51,12 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Obuna va tariflar')),
+      appBar: AppBar(title: Text(context.l10n.profileSubscription)),
       body: _buildBody(context),
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.all(AppSpacing.md),
         child: AppButton.primary(
-          label: 'Tariflarni ko\'rish',
+          label: context.l10n.commonViewPlans,
           onPressed: () => context.push(RoutePaths.subscriptionPlans),
         ),
       ),
@@ -64,7 +66,7 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
   Widget _buildBody(BuildContext context) {
     if (_error != null) {
       return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
+        title: context.l10n.errorLoadShort,
         description: _error,
         onRetry: _load,
       );
@@ -72,7 +74,7 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
     final info = _info;
     if (info == null) return const AppSkeletonList();
     if (!info.hasSubscription) {
-      return const Center(child: Text('Faol obuna topilmadi'));
+      return Center(child: Text(context.l10n.subscriptionNoActive));
     }
 
     final colors = context.colors;
@@ -100,7 +102,7 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Joriy tarif',
+                            context.l10n.subscriptionCurrentPlan,
                             style: TextStyle(
                               color: colors.textSecondary,
                               fontSize: 12,
@@ -124,7 +126,7 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
                   padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
                     color: colors.surfaceSecondary,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                   child: Row(
                     children: [
@@ -133,12 +135,12 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
                         size: 16,
                         color: colors.textSecondary,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.xs),
                       Expanded(
                         child: Text(
                           (info.periodStart != null && info.periodEnd != null)
                               ? '${info.periodStart} — ${info.periodEnd}'
-                              : 'Muddati belgilanmagan',
+                              : context.l10n.subscriptionNoExpiry,
                           style: TextStyle(
                             color: colors.textSecondary,
                             fontSize: 13,
@@ -158,10 +160,12 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
                                         ? colors.error
                                         : colors.primary)
                                     .withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                           ),
                           child: Text(
-                            '${info.daysUntilDue} kun qoldi',
+                            context.l10n.subscriptionDaysLeft(
+                              info.daysUntilDue!,
+                            ),
                             style: TextStyle(
                               color: info.daysUntilDue! <= 5
                                   ? colors.error
@@ -185,7 +189,7 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
           ),
           const SizedBox(height: AppSpacing.lg),
           Text(
-            'Limitlar va foydalanish',
+            context.l10n.subscriptionLimitsUsage,
             style: Theme.of(
               context,
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
@@ -193,20 +197,25 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
           const SizedBox(height: AppSpacing.sm),
           _usageTile(
             context,
-            'Hamkorlar',
+            context.l10n.navPartners,
             AppIcons.partners,
             info.usage.customers,
           ),
           _usageTile(
             context,
-            'Loyihalar',
+            context.l10n.navProjects,
             AppIcons.project,
             info.usage.projects,
           ),
-          _usageTile(context, 'Xodimlar', AppIcons.worker, info.usage.users),
           _usageTile(
             context,
-            'SMS xabarnomalar',
+            context.l10n.profileStaff,
+            AppIcons.worker,
+            info.usage.users,
+          ),
+          _usageTile(
+            context,
+            context.l10n.subscriptionSmsNotifications,
             AppIcons.message,
             info.usage.sms,
           ),
@@ -236,7 +245,7 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
                   height: 36,
                   decoration: BoxDecoration(
                     color: colors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.small),
                   ),
                   child: Icon(icon, size: 18, color: colors.primary),
                 ),
@@ -251,7 +260,7 @@ class _MySubscriptionPageState extends State<MySubscriptionPage> {
                 ),
                 Text(
                   limit.isUnlimited
-                      ? 'Cheksiz'
+                      ? context.l10n.commonUnlimited
                       : '${limit.current} / ${limit.max}',
                   style: TextStyle(
                     color: colors.textSecondary,

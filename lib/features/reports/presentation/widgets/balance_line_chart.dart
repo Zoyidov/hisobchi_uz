@@ -2,6 +2,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class BalanceLineChart extends StatelessWidget {
   final List<FlSpot> spots;
@@ -24,25 +27,25 @@ class BalanceLineChart extends StatelessWidget {
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.card),
           border: Border.all(color: context.colors.border),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Balans dinamikasi',
+            Text(
+              context.l10n.reportBalanceDynamics,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.lg),
             Text(
-              'Hozircha ma’lumot yo‘q',
+              context.l10n.reportNoDataYet,
               style: TextStyle(
                 fontSize: 13,
                 color: context.colors.textSecondary,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm),
           ],
         ),
       );
@@ -54,16 +57,16 @@ class BalanceLineChart extends StatelessWidget {
     final barData = LineChartBarData(
       spots: spots,
       isCurved: true,
-      color: const Color(0xFF2F6BFF),
+      color: colors.primary,
       barWidth: 3,
       isStrokeCapRound: true,
       dotData: FlDotData(
         show: true,
         getDotPainter: (spot, percent, barData, index) => FlDotCirclePainter(
           radius: 3.5,
-          color: Colors.white,
+          color: colors.surface,
           strokeWidth: 2,
-          strokeColor: const Color(0xFF2F6BFF),
+          strokeColor: colors.primary,
         ),
       ),
       belowBarData: BarAreaData(
@@ -72,8 +75,8 @@ class BalanceLineChart extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            const Color(0xFF2F6BFF).withValues(alpha: 0.2),
-            const Color(0xFF2F6BFF).withValues(alpha: 0.0),
+            colors.primary.withValues(alpha: 0.2),
+            colors.primary.withValues(alpha: 0.0),
           ],
         ),
       ),
@@ -83,8 +86,8 @@ class BalanceLineChart extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: isDark ? colors.surfaceSecondary : Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        color: isDark ? colors.surfaceSecondary : colors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.card),
         border: Border.all(color: colors.border.withValues(alpha: 0.6)),
         boxShadow: [
           BoxShadow(
@@ -98,7 +101,7 @@ class BalanceLineChart extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Balans dinamikasi',
+            context.l10n.reportBalanceDynamics,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
@@ -108,14 +111,14 @@ class BalanceLineChart extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            'Oxirgi operatsiyalar ($currency)',
+            context.l10n.reportLastOperations(currency),
             style: TextStyle(
               fontSize: 12,
               color: colors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.lg),
           SizedBox(
             height: 220,
             child: LineChart(
@@ -140,7 +143,8 @@ class BalanceLineChart extends StatelessWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 42,
-                      getTitlesWidget: _getLeftTitles,
+                      getTitlesWidget: (value, meta) =>
+                          _getLeftTitles(value, meta, colors),
                     ),
                   ),
                   bottomTitles: AxisTitles(
@@ -148,7 +152,8 @@ class BalanceLineChart extends StatelessWidget {
                       showTitles: true,
                       reservedSize: 30,
                       interval: 1,
-                      getTitlesWidget: _getBottomTitles,
+                      getTitlesWidget: (value, meta) =>
+                          _getBottomTitles(value, meta, colors),
                     ),
                   ),
                 ),
@@ -169,15 +174,15 @@ class BalanceLineChart extends StatelessWidget {
                 lineTouchData: LineTouchData(
                   enabled: true,
                   touchTooltipData: LineTouchTooltipData(
-                    getTooltipColor: (_) => const Color(0xFF1E293B),
+                    getTooltipColor: (_) => colors.inverseSurface,
                     tooltipMargin: 6,
                     tooltipRoundedRadius: 8,
                     getTooltipItems: (touchedSpots) {
                       return touchedSpots.map((spot) {
                         return LineTooltipItem(
                           _formatNumber(spot.y),
-                          const TextStyle(
-                            color: Colors.white,
+                          TextStyle(
+                            color: colors.onInverseSurface,
                             fontWeight: FontWeight.bold,
                             fontSize: 11,
                           ),
@@ -205,9 +210,13 @@ class BalanceLineChart extends StatelessWidget {
     }
   }
 
-  Widget _getBottomTitles(double value, TitleMeta meta) {
-    const style = TextStyle(
-      color: Color(0xFF94A3B8),
+  Widget _getBottomTitles(
+    double value,
+    TitleMeta meta,
+    AppColorsExtension colors,
+  ) {
+    final style = TextStyle(
+      color: colors.textTertiary,
       fontWeight: FontWeight.w600,
       fontSize: 10,
     );
@@ -222,11 +231,15 @@ class BalanceLineChart extends StatelessWidget {
     return const SizedBox.shrink();
   }
 
-  Widget _getLeftTitles(double value, TitleMeta meta) {
+  Widget _getLeftTitles(
+    double value,
+    TitleMeta meta,
+    AppColorsExtension colors,
+  ) {
     if (value == meta.max) return const SizedBox.shrink();
 
-    const style = TextStyle(
-      color: Color(0xFF94A3B8),
+    final style = TextStyle(
+      color: colors.textTertiary,
       fontWeight: FontWeight.w600,
       fontSize: 10,
     );

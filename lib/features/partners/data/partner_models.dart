@@ -3,6 +3,7 @@ import 'package:decimal/decimal.dart';
 import '../../../core/utils/formatters/date_formatter.dart';
 import '../../../core/utils/money.dart';
 import '../../../core/domain/entities/app_file.dart';
+import '../../../core/localization/app_localization_extension.dart';
 
 /// Hamkorlar ro'yxati elementi (MOBILE_APP_TZ.md 8.2).
 class Partner {
@@ -337,11 +338,15 @@ class Wallet {
 }
 
 enum WalletFilterStatus {
-  all('Barchasi'),
-  debt('Kirim'),
-  credit('Chiqim'),
-  cancelled('Bekor qilingan');
+  all,
+  debt,
+  credit,
+  cancelled;
 
-  const WalletFilterStatus(this.label);
-  final String label;
+  String label(AppLocalizations l10n) => switch (this) {
+    WalletFilterStatus.all => l10n.commonAll,
+    WalletFilterStatus.debt => l10n.commonIncome,
+    WalletFilterStatus.credit => l10n.commonExpense,
+    WalletFilterStatus.cancelled => l10n.commonCancelled,
+  };
 }

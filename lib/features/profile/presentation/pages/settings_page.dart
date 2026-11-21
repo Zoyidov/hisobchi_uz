@@ -8,7 +8,7 @@ import '../../../../core/cubits/user_cubit.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/domain/repositories/auth_repository.dart';
 import '../../../../core/errors/failure.dart';
-// import '../../../../core/localization/locale_cubit.dart';
+import '../../../../core/localization/locale_cubit.dart';
 import '../../../../core/router/route_paths.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -19,6 +19,8 @@ import '../../../../core/widgets/feedback/app_snackbar.dart';
 import '../../../../core/widgets/sheets/app_confirmation_sheet.dart';
 import '../../../../core/widgets/sheets/app_selection_sheet.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Til, mavzu, pincode boshqaruvi (E_HISOB_FLUTTER_UI_UX_TZ.md 63-bo'lim).
 class SettingsPage extends StatefulWidget {
@@ -55,7 +57,7 @@ class _SettingsPageState extends State<SettingsPage> {
       await _checkPincodeStatus();
       if (!mounted) return;
       if (result == true || _hasPincode) {
-        AppSnackbar.success(context, 'PIN-kod muvaffaqiyatli yoqildi');
+        AppSnackbar.success(context, context.l10n.settingsPinEnabled);
       }
     } else {
       // O'chirish: tasdiqlash dialogi
@@ -72,7 +74,7 @@ class _SettingsPageState extends State<SettingsPage> {
       }
       await _checkPincodeStatus();
       if (mounted) {
-        AppSnackbar.success(context, 'PIN-kod o\'chirildi');
+        AppSnackbar.success(context, context.l10n.settingsPinDisabled);
       }
     }
   }
@@ -82,7 +84,7 @@ class _SettingsPageState extends State<SettingsPage> {
     await _checkPincodeStatus();
     if (!mounted) return;
     if (result == true) {
-      AppSnackbar.success(context, 'PIN-kod muvaffaqiyatli yangilandi');
+      AppSnackbar.success(context, context.l10n.settingsPinUpdated);
     }
   }
 
@@ -91,7 +93,9 @@ class _SettingsPageState extends State<SettingsPage> {
     return showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.card),
+        ),
         title: Row(
           children: [
             Container(
@@ -102,17 +106,17 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               child: Icon(AppIcons.unlock, color: colors.error, size: 24),
             ),
-            const SizedBox(width: 12),
-            const Expanded(
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
               child: Text(
-                'PIN-kodni o\'chirish',
+                context.l10n.settingsPinDisableTitle,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
             ),
           ],
         ),
         content: Text(
-          'Ilovaga kirishda PIN-kod va biometriya so\'ralmaydi. Hisobingiz xavfsizligi kamayishi mumkin.\n\nRostdan ham o\'chirmoqchimisiz?',
+          context.l10n.settingsPinDisableBody,
           style: TextStyle(
             fontSize: 14,
             color: colors.textSecondary,
@@ -123,20 +127,20 @@ class _SettingsPageState extends State<SettingsPage> {
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
             child: Text(
-              'Bekor qilish',
+              context.l10n.commonCancel,
               style: TextStyle(color: colors.textSecondary),
             ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: colors.error,
-              foregroundColor: Colors.white,
+              foregroundColor: context.colors.onPrimary,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.md),
               ),
             ),
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Ha, o\'chirilsin'),
+            child: Text(context.l10n.settingsPinDisableYes),
           ),
         ],
       ),
@@ -146,10 +150,11 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final themeMode = context.watch<ThemeCubit>().state;
+    final locale = context.watch<LocaleCubit>().state;
     final colors = context.colors;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Sozlamalar')),
+      appBar: AppBar(title: Text(context.l10n.profileSettings)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.md,
@@ -159,47 +164,53 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         children: [
           // 1. Umumiy sozlamalar (Til, Mavzu)
-          const _SectionHeader(title: 'UMUMIY'),
+          _SectionHeader(title: context.l10n.settingsGeneral),
           AppGroupedSection(
             children: [
-              // AppGroupedTile(
-              //   icon: AppIcons.language,
-              //   label: 'Til',
-              //   value: locale.languageCode == 'ru' ? 'Русский' : 'O\'zbek',
-              //   onTap: () async {
-              //     final selected = await showAppSelectionSheet<Locale>(
-              //       context,
-              //       title: 'Til',
-              //       selectedValue: locale,
-              //       items: const [
-              //         AppSelectionItem(value: Locale('uz'), label: 'O\'zbek'),
-              //         AppSelectionItem(value: Locale('ru'), label: 'Русский'),
-              //       ],
-              //     );
-              //     if (selected != null && context.mounted) {
-              //       context.read<LocaleCubit>().setLocale(selected);
-              //     }
-              //   },
-              // ),
+              AppGroupedTile(
+                icon: AppIcons.language,
+                label: context.l10n.settingsLanguage,
+                value: _languageName(locale),
+                onTap: () async {
+                  final selected = await showAppSelectionSheet<Locale>(
+                    context,
+                    title: context.l10n.settingsLanguage,
+                    selectedValue: locale,
+                    items: [
+                      for (final option in LocaleCubit.supportedLocales)
+                        AppSelectionItem(
+                          value: option,
+                          label: _languageName(option),
+                        ),
+                    ],
+                  );
+                  if (selected != null && context.mounted) {
+                    await context.read<LocaleCubit>().setLocale(selected);
+                  }
+                },
+              ),
               AppGroupedTile(
                 icon: AppIcons.darkMode,
-                label: 'Mavzu',
+                label: context.l10n.settingsTheme,
                 value: _themeLabel(themeMode),
                 onTap: () async {
                   final selected = await showAppSelectionSheet<ThemeMode>(
                     context,
-                    title: 'Mavzu',
+                    title: context.l10n.settingsTheme,
                     selectedValue: themeMode,
-                    items: const [
+                    items: [
                       AppSelectionItem(
                         value: ThemeMode.light,
-                        label: 'Yorug\'',
+                        label: context.l10n.settingsThemeLight,
                       ),
                       AppSelectionItem(
                         value: ThemeMode.dark,
-                        label: 'Qorong\'i',
+                        label: context.l10n.settingsThemeDark,
                       ),
-                      AppSelectionItem(value: ThemeMode.system, label: 'Tizim'),
+                      AppSelectionItem(
+                        value: ThemeMode.system,
+                        label: context.l10n.settingsThemeSystem,
+                      ),
                     ],
                   );
                   if (selected != null && context.mounted) {
@@ -211,16 +222,16 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
 
           // 2. Xavfsizlik (PIN-kod boshqaruvi)
-          const _SectionHeader(title: 'XAVFSIZLIK'),
+          _SectionHeader(title: context.l10n.settingsSecurity),
           AppGroupedSection(
             children: [
               AppGroupedTile(
                 icon: _hasPincode ? AppIcons.lock : AppIcons.unlock,
                 iconColor: _hasPincode ? colors.primary : colors.textTertiary,
-                label: 'PIN-kod bilan himoyalash',
+                label: context.l10n.settingsPinProtect,
                 subtitle: _hasPincode
-                    ? 'Ilovaga kirishda PIN-kod va biometriya so\'raladi'
-                    : 'Ilovaga kirishda PIN-kod so\'ralmaydi',
+                    ? context.l10n.settingsPinOnSubtitle
+                    : context.l10n.settingsPinOffSubtitle,
                 showChevron: false,
                 trailing: _isLoadingPincode
                     ? const SizedBox(
@@ -238,8 +249,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 AppGroupedTile(
                   icon: AppIcons.password,
                   iconColor: colors.accentViolet,
-                  label: 'PIN-kodni o\'zgartirish',
-                  subtitle: 'Yangi 4 xonali kod o\'rnatish',
+                  label: context.l10n.settingsPinChange,
+                  subtitle: context.l10n.settingsPinChangeSubtitle,
                   onTap: _changePincode,
                 ),
               ],
@@ -247,13 +258,13 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
 
           // 3. Xavfli hudud (Hisobni o'chirish)
-          const _SectionHeader(title: 'XAVFLI HUDUD'),
+          _SectionHeader(title: context.l10n.settingsDangerZone),
           AppGroupedSection(
             margin: EdgeInsets.zero,
             children: [
               AppGroupedTile(
                 icon: AppIcons.delete,
-                label: 'Hisobni o\'chirish',
+                label: context.l10n.authDeleteAccount,
                 destructive: true,
                 showChevron: false,
                 onTap: () => _confirmDeleteAccount(context),
@@ -265,19 +276,25 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  /// Til nomi o'sha tilning o'zida (endonim) — foydalanuvchi interfeys
+  /// tilini tushunmasa ham o'z tilini topa olishi uchun tarjima qilinmaydi.
+  static String _languageName(Locale locale) => switch (locale.languageCode) {
+    'ru' => 'Русский',
+    _ => 'O‘zbekcha',
+  };
+
   String _themeLabel(ThemeMode mode) => switch (mode) {
-    ThemeMode.light => 'Yorug\'',
-    ThemeMode.dark => 'Qorong\'i',
-    ThemeMode.system => 'Tizim',
+    ThemeMode.light => context.l10n.settingsThemeLight,
+    ThemeMode.dark => context.l10n.settingsThemeDark,
+    ThemeMode.system => context.l10n.settingsThemeSystem,
   };
 
   Future<void> _confirmDeleteAccount(BuildContext context) async {
     final confirmed = await showAppConfirmationSheet(
       context,
-      title: 'Hisobni o\'chirish',
-      description:
-          'Barcha hamkorlar, tranzaksiyalar, loyihalar va hisobotlar butunlay o\'chiriladi. Bu amalni qaytarib bo\'lmaydi. Rostdan ham hisobingizni o\'chirmoqchimisiz?',
-      confirmLabel: 'Ha, o\'chirish',
+      title: context.l10n.authDeleteAccount,
+      description: context.l10n.authDeleteAccountConfirmBody,
+      confirmLabel: context.l10n.commonYesDelete,
       destructive: true,
     );
     if (!confirmed || !context.mounted) return;
@@ -301,7 +318,7 @@ class _SettingsPageState extends State<SettingsPage> {
       await authCubit.logout();
       if (context.mounted) {
         context.go(RoutePaths.phone);
-        AppSnackbar.success(context, 'Hisobingiz muvaffaqiyatli o\'chirildi');
+        AppSnackbar.success(context, context.l10n.authAccountDeleted);
       }
     } else {
       result.when(

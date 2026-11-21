@@ -9,6 +9,7 @@ import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/staff_models.dart';
 import '../../data/staff_repository.dart';
 import '../widgets/permission_group_list.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Xodim ruxsatlarini tahrirlash — saqlashda tokenlari o'chiriladi
 /// (MOBILE_APP_TZ.md 15.2: "ogohlantirish ko'rsatiladi").
@@ -62,17 +63,23 @@ class _StaffEditPageState extends State<StaffEditPage> {
 
   Future<void> _save() async {
     if (_selected.isEmpty) {
-      AppSnackbar.error(context, 'Kamida 1 ta ruxsat tanlanishi kerak');
+      AppSnackbar.error(context, context.l10n.staffMinOnePermission);
       return;
     }
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Ruxsatlarni yangilash'),
-        content: const Text('Ruxsat o\'zgartirilganda xodimning barcha tokenlari o\'chiriladi va u qayta login qilishi kerak bo\'ladi.'),
+        title: Text(context.l10n.staffUpdatePermissions),
+        content: Text(context.l10n.staffUpdatePermissionsWarning),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Bekor qilish')),
-          TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Davom etish')),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(context.l10n.commonCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(context.l10n.commonContinue),
+          ),
         ],
       ),
     );
@@ -89,7 +96,7 @@ class _StaffEditPageState extends State<StaffEditPage> {
     result.when(
       success: (_) {
         getIt<DataRefreshBus>().notifyStaffChanged();
-        AppSnackbar.success(context, 'Saqlandi');
+        AppSnackbar.success(context, context.l10n.commonSaved);
         Navigator.of(context).pop();
       },
       failure: (f) => AppSnackbar.error(context, f.message),
@@ -113,7 +120,11 @@ class _StaffEditPageState extends State<StaffEditPage> {
                     onToggle: _toggle,
                     onToggleCategory: _toggleCategory,
                   ),
-                  AppButton.primary(label: 'Saqlash', isLoading: _saving, onPressed: _save),
+                  AppButton.primary(
+                    label: context.l10n.commonSave,
+                    isLoading: _saving,
+                    onPressed: _save,
+                  ),
                 ],
               ),
             ),

@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../../theme/app_colors.dart';
 import '../../icons/app_icons.dart';
+import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 
 /// Bottom navigatsiya ustida suzib turadigan zamonaviy iOS uslubidagi harakat tugmasi.
 /// Bottom navbar bilan to'qnashmasligi uchun pastdan avtomatik bo'shliqqa ega.
@@ -78,15 +80,11 @@ class _AppFloatingActionState extends State<AppFloatingAction>
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                colors.primary,
-                Color.lerp(colors.primary, const Color(0xFF1D4ED8), 0.3) ??
-                    colors.primary,
-              ],
+              colors: [colors.primary, colors.primaryStrong],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(AppRadius.large),
             boxShadow: [
               BoxShadow(
                 color: colors.primary.withValues(alpha: 0.35),
@@ -100,19 +98,19 @@ class _AppFloatingActionState extends State<AppFloatingAction>
               ),
             ],
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.25),
+              color: context.colors.onPrimary.withValues(alpha: 0.25),
               width: 0.8,
             ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(widget.icon, color: Colors.white, size: 18),
-              const SizedBox(width: 8),
+              Icon(widget.icon, color: context.colors.onPrimary, size: 18),
+              const SizedBox(width: AppSpacing.xs),
               Text(
                 widget.label,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: context.colors.onPrimary,
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
                   letterSpacing: -0.2,

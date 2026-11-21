@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_spacing.dart';
 
 /// Standart matn maydoni — Label + Input + helper/error
 /// (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 35-36).
@@ -55,7 +56,7 @@ class AppTextField extends StatelessWidget {
       children: [
         if (label != null) ...[
           Text(label!, style: Theme.of(context).textTheme.labelLarge),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.xs),
         ],
         TextField(
           controller: controller,

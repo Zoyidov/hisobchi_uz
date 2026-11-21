@@ -17,13 +17,9 @@ class _TutorialsSection extends StatelessWidget {
       }
     }
     if (!opened && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Qo‘llanmani ochib bo‘lmadi. Keyinroq qayta urinib ko‘ring.',
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.tutorialOpenError)));
     }
   }
 
@@ -40,7 +36,7 @@ class _TutorialsSection extends StatelessWidget {
       collapsedShape: const Border(),
       leading: Icon(AppIcons.playCircle, color: context.colors.primary),
       title: Text(
-        'Qo‘llanmalar (${tutorials.length})',
+        context.l10n.tutorialsCount(tutorials.length),
         style: _DashboardStyle.section(context),
       ),
       children: [

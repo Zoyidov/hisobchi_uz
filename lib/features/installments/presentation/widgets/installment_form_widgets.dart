@@ -6,6 +6,9 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters/date_formatter.dart';
 import '../../../../core/utils/formatters/money_formatter.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Shared visual language for the three installment creation steps.
 class InstallmentSectionCard extends StatelessWidget {
@@ -42,7 +45,7 @@ class InstallmentSectionCard extends StatelessWidget {
         padding: padding,
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
           border: Border.all(
             color: accent ?? context.colors.border,
             width: accent == null ? 1 : 1.5,
@@ -108,13 +111,13 @@ class InstallmentAmountInput extends StatefulWidget {
     required this.currency,
     required this.onChanged,
     this.large = false,
-    this.semanticLabel = 'Summa',
+    this.semanticLabel,
   });
   final Decimal? value;
   final String currency;
   final ValueChanged<Decimal?> onChanged;
   final bool large;
-  final String semanticLabel;
+  final String? semanticLabel;
   @override
   State<InstallmentAmountInput> createState() => _InstallmentAmountInputState();
 }
@@ -145,11 +148,11 @@ class _InstallmentAmountInputState extends State<InstallmentAmountInput> {
     children: [
       if (widget.large) ...[
         Icon(AppIcons.wallet, size: 22, color: context.colors.primary),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpacing.sm),
       ],
       Expanded(
         child: Semantics(
-          label: widget.semanticLabel,
+          label: widget.semanticLabel ?? context.l10n.walletAmountLabel,
           child: TextField(
             controller: _controller,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -174,7 +177,7 @@ class _InstallmentAmountInputState extends State<InstallmentAmountInput> {
           ),
         ),
       ),
-      const SizedBox(width: 8),
+      const SizedBox(width: AppSpacing.xs),
       Text(
         widget.currency,
         style: TextStyle(
@@ -194,9 +197,9 @@ class InstallmentDateButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Material(
     color: context.colors.surfaceSecondary,
-    borderRadius: BorderRadius.circular(10),
+    borderRadius: BorderRadius.circular(AppRadius.small),
     child: InkWell(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(AppRadius.small),
       onTap: onChanged == null
           ? null
           : () async {
@@ -216,7 +219,7 @@ class InstallmentDateButton extends StatelessWidget {
         child: Row(
           children: [
             Icon(AppIcons.calendar, size: 16, color: context.colors.primary),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.xs),
             Flexible(
               child: Text(
                 AppDateFormatter.display(date),
@@ -252,14 +255,14 @@ class InstallmentInfoBox extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: tint.withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(color: tint.withValues(alpha: 0.2)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, size: 21, color: tint),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,13 +344,13 @@ class _InstallmentPaymentCardState extends State<InstallmentPaymentCard> {
     Widget amountField() => Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const InstallmentFieldLabel('Summa'),
+        InstallmentFieldLabel(context.l10n.walletAmountLabel),
         const SizedBox(height: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             color: colors.surfaceSecondary,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppRadius.small),
           ),
           child: widget.onAmountChanged != null
               ? InstallmentAmountInput(
@@ -355,8 +358,8 @@ class _InstallmentPaymentCardState extends State<InstallmentPaymentCard> {
                   currency: widget.currency,
                   onChanged: widget.onAmountChanged!,
                   semanticLabel: widget.isAdvance
-                      ? 'Avans summasi'
-                      : '${widget.number}-qism summasi',
+                      ? context.l10n.installmentAdvanceAmount
+                      : context.l10n.installmentPartAmount(widget.number),
                 )
               : Padding(
                   padding: const EdgeInsets.symmetric(vertical: 14),
@@ -374,7 +377,7 @@ class _InstallmentPaymentCardState extends State<InstallmentPaymentCard> {
     Widget dateField() => Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const InstallmentFieldLabel('To‘lov sanasi'),
+        InstallmentFieldLabel(context.l10n.installmentPaymentDate),
         const SizedBox(height: 6),
         InstallmentDateButton(
           date: widget.date,
@@ -396,10 +399,12 @@ class _InstallmentPaymentCardState extends State<InstallmentPaymentCard> {
                 ),
                 decoration: BoxDecoration(
                   color: tint.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Text(
-                  widget.isAdvance ? 'AVANS' : '${widget.number}',
+                  widget.isAdvance
+                      ? context.l10n.installmentAdvanceBadge
+                      : '${widget.number}',
                   style: TextStyle(
                     color: tint,
                     fontWeight: FontWeight.w800,
@@ -411,7 +416,7 @@ class _InstallmentPaymentCardState extends State<InstallmentPaymentCard> {
               Expanded(
                 child: Text(
                   widget.isAdvance
-                      ? 'Boshlang‘ich to‘lov'
+                      ? context.l10n.installmentAdvance
                       : '${widget.number}-qism',
                   style: const TextStyle(
                     fontSize: 15,
@@ -421,7 +426,7 @@ class _InstallmentPaymentCardState extends State<InstallmentPaymentCard> {
               ),
               if (widget.onDelete != null)
                 IconButton(
-                  tooltip: 'Qismni olib tashlash',
+                  tooltip: context.l10n.installmentRemovePart,
                   onPressed: widget.onDelete,
                   icon: Icon(
                     AppIcons.removeCircle,
@@ -440,7 +445,7 @@ class _InstallmentPaymentCardState extends State<InstallmentPaymentCard> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     amountField(),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.sm),
                     dateField(),
                   ],
                 );
@@ -449,31 +454,31 @@ class _InstallmentPaymentCardState extends State<InstallmentPaymentCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(child: amountField()),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.sm),
                   Expanded(child: dateField()),
                 ],
               );
             },
           ),
           if (widget.onNoteChanged != null) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm),
             TextField(
               controller: _noteController,
               onChanged: widget.onNoteChanged,
               maxLines: null,
               style: const TextStyle(fontSize: 13),
               decoration: InputDecoration(
-                hintText: 'Izoh (ixtiyoriy)',
+                hintText: context.l10n.commonNoteOptional,
                 prefixIcon: const Icon(AppIcons.notes, size: 18),
                 filled: true,
                 fillColor: colors.surfaceSecondary,
                 contentPadding: const EdgeInsets.all(12),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.small),
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.small),
                   borderSide: BorderSide.none,
                 ),
               ),

@@ -19,6 +19,9 @@ import '../../data/partner_models.dart';
 import '../../data/partners_repository.dart';
 import '../cubit/partner_form_cubit.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Hamkor yaratish/tahrirlash (MOBILE_APP_TZ.md 8.3).
 class PartnerFormPage extends StatelessWidget {
@@ -85,7 +88,7 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
         backgroundColor: colors.surface,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          _isEditing ? 'Hamkorni tahrirlash' : 'Hamkor qo‘shish',
+          _isEditing ? context.l10n.partnersEdit : context.l10n.partnersAdd,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w700,
             letterSpacing: -.4,
@@ -96,7 +99,7 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
         child: BlocConsumer<PartnerFormCubit, PartnerFormState>(
           listener: (context, state) {
             if (state is PartnerFormSuccess) {
-              AppSnackbar.success(context, 'Saqlandi');
+              AppSnackbar.success(context, context.l10n.commonSaved);
               context.pop(state.partner);
             } else if (state is PartnerFormValidationError) {
               setState(() => _errors = state.fieldErrors);
@@ -129,7 +132,9 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                                   padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
                                     color: colors.primaryContainer,
-                                    borderRadius: BorderRadius.circular(20),
+                                    borderRadius: BorderRadius.circular(
+                                      AppRadius.card,
+                                    ),
                                     border: Border.all(
                                       color: colors.primary.withValues(
                                         alpha: .1,
@@ -169,7 +174,7 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                                           children: [
                                             Text(
                                               value.text.trim().isEmpty
-                                                  ? 'Yangi hamkor'
+                                                  ? context.l10n.partnerNew
                                                   : value.text.trim(),
                                               maxLines: 2,
                                               overflow: TextOverflow.ellipsis,
@@ -181,11 +186,17 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                                                     letterSpacing: -.3,
                                                   ),
                                             ),
-                                            const SizedBox(height: 4),
+                                            const SizedBox(
+                                              height: AppSpacing.xxs,
+                                            ),
                                             Text(
                                               _isEditing
-                                                  ? 'Ma’lumotlarni yangilash'
-                                                  : 'Hamkor ma’lumotlarini kiriting',
+                                                  ? context
+                                                        .l10n
+                                                        .partnerUpdateData
+                                                  : context
+                                                        .l10n
+                                                        .partnerEnterData,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodySmall
@@ -200,12 +211,16 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 24),
-                              _fieldLabel(context, 'Ism', required: true),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: AppSpacing.xl),
+                              _fieldLabel(
+                                context,
+                                context.l10n.partnersNameField,
+                                required: true,
+                              ),
+                              const SizedBox(height: AppSpacing.xs),
                               AppTextField(
                                 controller: _nameController,
-                                hint: 'Hamkorning ismi yoki tashkilot nomi',
+                                hint: context.l10n.partnerNameHint,
                                 prefixIcon: Icon(
                                   AppIcons.user,
                                   color: colors.textTertiary,
@@ -217,8 +232,12 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                                 onChanged: (_) => _clearError('name'),
                               ),
                               const SizedBox(height: 18),
-                              _fieldLabel(context, 'Telefon', required: true),
-                              const SizedBox(height: 8),
+                              _fieldLabel(
+                                context,
+                                context.l10n.partnersPhoneField,
+                                required: true,
+                              ),
+                              const SizedBox(height: AppSpacing.xs),
                               AppPhoneField(
                                 controller: _phoneController,
                                 errorText: _errors['phone'],
@@ -227,22 +246,22 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                               const SizedBox(height: 18),
                               _fieldLabel(
                                 context,
-                                'Qo‘shimcha telefon',
+                                context.l10n.partnersAdditionalPhoneField,
                                 optional: true,
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: AppSpacing.xs),
                               AppPhoneField(
                                 controller: _additionalPhoneController,
                               ),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: AppSpacing.xl),
                               Divider(height: 1, color: colors.divider),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: AppSpacing.lg),
                               Row(
                                 children: [
                                   Expanded(
                                     child: _fieldLabel(
                                       context,
-                                      'Asosiy valyuta',
+                                      context.l10n.partnersMainCurrency,
                                     ),
                                   ),
                                   Icon(
@@ -283,7 +302,9 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                                                 : colors.surface,
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(14),
+                                                  BorderRadius.circular(
+                                                    AppRadius.medium,
+                                                  ),
                                               side: BorderSide(
                                                 color:
                                                     _currencyTypeId ==
@@ -351,10 +372,12 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                                   );
                                 },
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: AppSpacing.lg),
                               Container(
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(14),
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.medium,
+                                  ),
                                   border: Border.all(color: colors.border),
                                 ),
                                 child: ExpansionTile(
@@ -367,14 +390,14 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                                     size: 21,
                                   ),
                                   title: Text(
-                                    'Fayl biriktirish',
+                                    context.l10n.fileAttach,
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleSmall
                                         ?.copyWith(fontWeight: FontWeight.w600),
                                   ),
                                   subtitle: Text(
-                                    'Ixtiyoriy',
+                                    context.l10n.commonOptional,
                                     style: Theme.of(context)
                                         .textTheme
                                         .labelSmall
@@ -411,8 +434,8 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
                       ),
                       child: AppButton.primary(
                         label: _isEditing
-                            ? 'O‘zgarishlarni saqlash'
-                            : 'Hamkorni qo‘shish',
+                            ? context.l10n.commonSaveChanges
+                            : context.l10n.partnersAddButton,
                         icon: Icon(
                           _isEditing ? AppIcons.check : AppIcons.add,
                           size: 20,
@@ -452,9 +475,9 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
       ),
       if (required) Text(' *', style: TextStyle(color: context.colors.primary)),
       if (optional) ...[
-        const SizedBox(width: 8),
+        const SizedBox(width: AppSpacing.xs),
         Text(
-          'Ixtiyoriy',
+          context.l10n.commonOptional,
           style: Theme.of(
             context,
           ).textTheme.labelSmall?.copyWith(color: context.colors.textTertiary),
@@ -465,7 +488,7 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
 
   void _submit(BuildContext context) {
     if (_filesUploading) {
-      AppSnackbar.error(context, 'Fayl yuklanishini kuting, keyin saqlang.');
+      AppSnackbar.error(context, context.l10n.fileWaitThenSave);
       return;
     }
     final phoneError = Validators.phone(_phoneController.text);
@@ -492,19 +515,19 @@ class _PartnerFormViewState extends State<_PartnerFormView> {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Limit tugagan'),
+        title: Text(context.l10n.partnerLimitReached),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Yopish'),
+            child: Text(context.l10n.commonClose),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
               context.push(RoutePaths.profileSubscription);
             },
-            child: const Text('Tariflarni ko\'rish'),
+            child: Text(context.l10n.commonViewPlans),
           ),
         ],
       ),

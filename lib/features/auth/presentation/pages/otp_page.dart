@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,6 +15,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/feedback/app_snackbar.dart';
 import '../cubit/otp_cubit.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// OTP tasdiqlash — Senior Level FinTech 4-xonali avtomatik tasdiqlash ekrani.
 class OtpPage extends StatelessWidget {
@@ -188,7 +188,9 @@ class _OtpViewState extends State<_OtpView>
                                     children: [
                                       InkWell(
                                         onTap: () => context.pop(),
-                                        borderRadius: BorderRadius.circular(14),
+                                        borderRadius: BorderRadius.circular(
+                                          AppRadius.medium,
+                                        ),
                                         child: Container(
                                           width: 44,
                                           height: 44,
@@ -228,7 +230,7 @@ class _OtpViewState extends State<_OtpView>
                                           ),
                                         ),
                                         child: Text(
-                                          'XAVFSIZLIK QADAMI',
+                                          context.l10n.authOtpBadge,
                                           style: TextStyle(
                                             color: colors.primary,
                                             fontSize: 10.5,
@@ -290,10 +292,10 @@ class _OtpViewState extends State<_OtpView>
                                               ),
                                             ],
                                           ),
-                                          child: const Icon(
+                                          child: Icon(
                                             AppIcons.message,
                                             size: 32,
-                                            color: Colors.white,
+                                            color: context.colors.onPrimary,
                                           ),
                                         ),
                                       ],
@@ -304,7 +306,7 @@ class _OtpViewState extends State<_OtpView>
 
                                   // Headings
                                   Text(
-                                    'Tasdiqlash kodi 🔐',
+                                    context.l10n.authOtpHeading,
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineLarge
@@ -314,9 +316,9 @@ class _OtpViewState extends State<_OtpView>
                                           letterSpacing: -0.5,
                                         ),
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: AppSpacing.xs),
                                   Text(
-                                    'Quyidagi telefon raqamiga yuborilgan 4 xonali SMS kodni kiriting:',
+                                    context.l10n.authOtpSubtitle,
                                     style: TextStyle(
                                       color: colors.textSecondary,
                                       fontSize: 14.5,
@@ -339,7 +341,9 @@ class _OtpViewState extends State<_OtpView>
                                             .withValues(
                                               alpha: isDark ? 0.6 : 0.8,
                                             ),
-                                        borderRadius: BorderRadius.circular(14),
+                                        borderRadius: BorderRadius.circular(
+                                          AppRadius.medium,
+                                        ),
                                         border: Border.all(
                                           color: colors.borderSubtle,
                                           width: 1,
@@ -352,7 +356,7 @@ class _OtpViewState extends State<_OtpView>
                                             '🇺🇿',
                                             style: TextStyle(fontSize: 17),
                                           ),
-                                          const SizedBox(width: 8),
+                                          const SizedBox(width: AppSpacing.xs),
                                           Text(
                                             PhoneFormatter.toDisplay(
                                               widget.phone,
@@ -377,7 +381,7 @@ class _OtpViewState extends State<_OtpView>
                                                     vertical: 2,
                                                   ),
                                               child: Text(
-                                                'O\'zgartirish',
+                                                context.l10n.commonChange,
                                                 style: TextStyle(
                                                   color: colors.primary,
                                                   fontSize: 12.5,
@@ -415,7 +419,9 @@ class _OtpViewState extends State<_OtpView>
                                       ),
                                       pinTheme: PinTheme(
                                         shape: PinCodeFieldShape.box,
-                                        borderRadius: BorderRadius.circular(18),
+                                        borderRadius: BorderRadius.circular(
+                                          AppRadius.xl,
+                                        ),
                                         fieldHeight: 64,
                                         fieldWidth: 62,
                                         borderWidth: 1.8,
@@ -465,7 +471,7 @@ class _OtpViewState extends State<_OtpView>
                                               ),
                                               const SizedBox(width: 10),
                                               Text(
-                                                'Kod tekshirilmoqda...',
+                                                context.l10n.authOtpVerifying,
                                                 style: TextStyle(
                                                   color: colors.textSecondary,
                                                   fontSize: 14,
@@ -499,7 +505,9 @@ class _OtpViewState extends State<_OtpView>
                                                 ),
                                                 const SizedBox(width: 6),
                                                 Text(
-                                                  'Kodni qayta yuborish: ',
+                                                  context
+                                                      .l10n
+                                                      .authOtpResendInPrefix,
                                                   style: TextStyle(
                                                     color: colors.textSecondary,
                                                     fontSize: 13,
@@ -523,7 +531,9 @@ class _OtpViewState extends State<_OtpView>
                                         : AppButtonPressable(
                                             child: InkWell(
                                               borderRadius:
-                                                  BorderRadius.circular(999),
+                                                  BorderRadius.circular(
+                                                    AppRadius.pill,
+                                                  ),
                                               onTap: () {
                                                 HapticFeedback.mediumImpact();
                                                 context
@@ -559,9 +569,13 @@ class _OtpViewState extends State<_OtpView>
                                                       size: 16,
                                                       color: colors.primary,
                                                     ),
-                                                    const SizedBox(width: 8),
+                                                    const SizedBox(
+                                                      width: AppSpacing.xs,
+                                                    ),
                                                     Text(
-                                                      'Kodni qayta yuborish',
+                                                      context
+                                                          .l10n
+                                                          .authOtpResend,
                                                       style: TextStyle(
                                                         color: colors.primary,
                                                         fontSize: 13.5,
@@ -603,7 +617,7 @@ class _OtpViewState extends State<_OtpView>
                                           ),
                                           const SizedBox(width: 6),
                                           Text(
-                                            'SMS kod hech kimga berilmasin',
+                                            context.l10n.authOtpDoNotShare,
                                             style: TextStyle(
                                               fontSize: 11.5,
                                               fontWeight: FontWeight.w500,

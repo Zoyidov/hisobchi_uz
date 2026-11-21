@@ -10,6 +10,8 @@ import '../../../../core/widgets/media/app_avatar.dart';
 import '../../../../core/widgets/typography/money_text.dart';
 import '../../data/partner_models.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// `PartnerCard` — business component (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 24,
 /// MOBILE_APP_TZ.md 8.2). 0 bo'lgan valyuta ko'rsatilmaydi.
@@ -39,8 +41,8 @@ class PartnerCard extends StatelessWidget {
                       color: colors.textTertiary,
                     ),
                   ),
-                  const AppStatusChip(
-                    label: 'O\'chirilgan',
+                  AppStatusChip(
+                    label: context.l10n.commonDeleted,
                     tone: AppStatusChipTone.neutral,
                   ),
                 ],
@@ -57,15 +59,15 @@ class PartnerCard extends StatelessWidget {
       PartnerBalanceStatus.closed => AppStatusChipTone.neutral,
     };
     final statusLabel = switch (partner.status) {
-      PartnerBalanceStatus.creditor => 'Haqdor',
-      PartnerBalanceStatus.debtor => 'Qarzdor',
-      PartnerBalanceStatus.closed => 'Yopiq',
+      PartnerBalanceStatus.creditor => context.l10n.partnersCreditor,
+      PartnerBalanceStatus.debtor => context.l10n.partnersDebtor,
+      PartnerBalanceStatus.closed => context.l10n.partnersClosedShort,
     };
 
     return AppCard(
       onTap: onTap,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(AppRadius.card),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -88,7 +90,7 @@ class PartnerCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.xs),
                     AppStatusChip(label: statusLabel, tone: tone),
                   ],
                 ),
@@ -123,7 +125,7 @@ class PartnerCard extends StatelessWidget {
                 ),
                 if (partner.installmentRemainingUzs > Decimal.zero ||
                     partner.installmentRemainingUsd > Decimal.zero) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.xs),
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
@@ -131,7 +133,7 @@ class PartnerCard extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: colors.info.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -139,7 +141,7 @@ class PartnerCard extends StatelessWidget {
                         Icon(AppIcons.calendar, size: 12, color: colors.info),
                         const SizedBox(width: 5),
                         Text(
-                          'Bo\'lib to\'lash: ',
+                          context.l10n.partnerInstallmentPrefix,
                           style: TextStyle(
                             color: colors.info,
                             fontSize: 11,
@@ -160,7 +162,7 @@ class PartnerCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppSpacing.xxs),
           Icon(AppIcons.chevronRight, color: colors.textTertiary, size: 20),
         ],
       ),

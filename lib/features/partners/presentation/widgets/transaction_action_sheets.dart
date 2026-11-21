@@ -7,6 +7,8 @@ import '../../../../core/widgets/sheets/app_bottom_sheet.dart';
 import '../../../../core/widgets/typography/money_text.dart';
 import '../../data/partner_models.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 enum TransactionAction { edit, cancel, delete }
 
@@ -20,7 +22,9 @@ Future<TransactionAction?> showTransactionActionSheet(
 }) {
   return showAppBottomSheet<TransactionAction>(
     context,
-    title: wallet.isExpense ? 'Chiqim' : 'Kirim',
+    title: wallet.isExpense
+        ? context.l10n.commonExpense
+        : context.l10n.commonIncome,
     heightFactor: 0.4,
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -38,14 +42,14 @@ Future<TransactionAction?> showTransactionActionSheet(
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const AppEditIcon(),
-              title: const Text('Tahrirlash'),
+              title: Text(context.l10n.commonEdit),
               onTap: () => Navigator.of(context).pop(TransactionAction.edit),
             ),
           if (canCancel && !wallet.isCancelled)
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: Icon(AppIcons.cancel, color: context.colors.warning),
-              title: const Text('Bekor qilish'),
+              title: Text(context.l10n.commonCancel),
               onTap: () => Navigator.of(context).pop(TransactionAction.cancel),
             ),
           if (isOwner)
@@ -53,7 +57,7 @@ Future<TransactionAction?> showTransactionActionSheet(
               contentPadding: EdgeInsets.zero,
               leading: Icon(AppIcons.delete, color: context.colors.error),
               title: Text(
-                'O\'chirish',
+                context.l10n.commonDelete,
                 style: TextStyle(color: context.colors.error),
               ),
               onTap: () => Navigator.of(context).pop(TransactionAction.delete),
@@ -91,11 +95,11 @@ class _CancelTransactionSheetContentState
   late final TextEditingController _controller;
   String? _selectedPreset;
 
-  static const _presets = [
-    'Xatolik bilan kiritildi',
-    'Mijoz to\'lovni rad etdi',
-    'Summa noto\'g\'ri ko\'rsatilgan',
-    'Takroriy (dublikat) yozuv',
+  List<String> get _presets => [
+    context.l10n.walletReasonEnteredByMistake,
+    context.l10n.walletReasonClientRejected,
+    context.l10n.walletReasonWrongAmount,
+    context.l10n.walletReasonDuplicate,
   ];
 
   @override
@@ -124,14 +128,15 @@ class _CancelTransactionSheetContentState
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isValid = _controller.text.trim().length >= 3;
     final wallet = widget.wallet;
 
     return Container(
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppRadius.large),
+        ),
       ),
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.md,
@@ -144,7 +149,7 @@ class _CancelTransactionSheetContentState
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.sm),
               // Drag Handle
               Center(
                 child: Container(
@@ -152,7 +157,7 @@ class _CancelTransactionSheetContentState
                   height: 5,
                   decoration: BoxDecoration(
                     color: colors.border.withValues(alpha: 0.8),
-                    borderRadius: BorderRadius.circular(3),
+                    borderRadius: BorderRadius.circular(AppRadius.xxs),
                   ),
                 ),
               ),
@@ -167,7 +172,7 @@ class _CancelTransactionSheetContentState
                     height: 44,
                     decoration: BoxDecoration(
                       color: colors.error.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(AppRadius.medium),
                     ),
                     child: Icon(
                       AppIcons.warning,
@@ -181,7 +186,7 @@ class _CancelTransactionSheetContentState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Tranzaksiyani bekor qilish',
+                          context.l10n.walletCancelTransaction,
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(
                                 fontWeight: FontWeight.w700,
@@ -190,7 +195,7 @@ class _CancelTransactionSheetContentState
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Ushbu amal hamkor balansini qayta hisoblaydi',
+                          context.l10n.walletCancelRecalc,
                           style: TextStyle(
                             fontSize: 12,
                             color: colors.textSecondary,
@@ -229,7 +234,7 @@ class _CancelTransactionSheetContentState
                   ),
                   decoration: BoxDecoration(
                     color: colors.surfaceSecondary.withValues(alpha: 0.6),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppRadius.medium),
                     border: Border.all(
                       color: colors.border.withValues(alpha: 0.5),
                     ),
@@ -250,10 +255,12 @@ class _CancelTransactionSheetContentState
                                           ? colors.error
                                           : colors.success)
                                       .withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
                             child: Text(
-                              wallet.isExpense ? 'Chiqim' : 'Kirim',
+                              wallet.isExpense
+                                  ? context.l10n.commonExpense
+                                  : context.l10n.commonIncome,
                               style: TextStyle(
                                 color: wallet.isExpense
                                     ? colors.error
@@ -263,7 +270,7 @@ class _CancelTransactionSheetContentState
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppSpacing.xs),
                           Text(
                             '#${wallet.id}',
                             style: TextStyle(
@@ -292,7 +299,7 @@ class _CancelTransactionSheetContentState
 
               // Preset Quick-Pick Chips
               Text(
-                'Tezkor sababni tanlang:',
+                context.l10n.walletQuickReason,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -307,7 +314,7 @@ class _CancelTransactionSheetContentState
                   final isSelected =
                       _selectedPreset == preset && _controller.text == preset;
                   return InkWell(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.small),
                     onTap: () => _applyPreset(preset),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -318,7 +325,7 @@ class _CancelTransactionSheetContentState
                         color: isSelected
                             ? colors.primary.withValues(alpha: 0.15)
                             : colors.surfaceSecondary.withValues(alpha: 0.7),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppRadius.small),
                         border: Border.all(
                           color: isSelected
                               ? colors.primary
@@ -346,7 +353,7 @@ class _CancelTransactionSheetContentState
 
               // Custom Input Box
               Text(
-                'Izoh yoki aniq sabab:',
+                context.l10n.walletReasonOrNote,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -356,10 +363,8 @@ class _CancelTransactionSheetContentState
               const SizedBox(height: 6),
               Container(
                 decoration: BoxDecoration(
-                  color: isDark
-                      ? colors.surfaceSecondary
-                      : const Color(0xFFF1F5F9),
-                  borderRadius: BorderRadius.circular(14),
+                  color: colors.surfaceSecondary,
+                  borderRadius: BorderRadius.circular(AppRadius.medium),
                 ),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 14,
@@ -375,8 +380,7 @@ class _CancelTransactionSheetContentState
                     border: InputBorder.none,
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
-                    hintText:
-                        'Bekor qilish sababini yozing (kamida 3 belgi)...',
+                    hintText: context.l10n.walletCancelReasonHintLong,
                     hintStyle: TextStyle(
                       fontSize: 13,
                       color: colors.textTertiary,
@@ -390,10 +394,12 @@ class _CancelTransactionSheetContentState
                 padding: const EdgeInsets.only(top: 4, left: 4),
                 child: Text(
                   _controller.text.trim().isEmpty
-                      ? 'Kamida 3 ta belgi talab qilinadi'
+                      ? context.l10n.walletReasonMin3
                       : (_controller.text.trim().length < 3
-                            ? 'Yana ${3 - _controller.text.trim().length} ta belgi kiriting'
-                            : '✓ Sabab yetarli'),
+                            ? context.l10n.walletReasonMoreChars(
+                                3 - _controller.text.trim().length,
+                              )
+                            : context.l10n.walletReasonEnough),
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
@@ -412,14 +418,14 @@ class _CancelTransactionSheetContentState
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(AppRadius.medium),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         side: BorderSide(color: colors.border),
                       ),
                       onPressed: () => Navigator.of(context).pop(),
                       child: Text(
-                        'Ortga',
+                        context.l10n.commonBack,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
@@ -437,9 +443,9 @@ class _CancelTransactionSheetContentState
                         disabledBackgroundColor: colors.error.withValues(
                           alpha: 0.35,
                         ),
-                        foregroundColor: Colors.white,
+                        foregroundColor: context.colors.onPrimary,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(AppRadius.medium),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         elevation: 0,
@@ -450,8 +456,8 @@ class _CancelTransactionSheetContentState
                             ).pop(_controller.text.trim())
                           : null,
                       icon: const Icon(AppIcons.cancel, size: 18),
-                      label: const Text(
-                        'Bekor qilish',
+                      label: Text(
+                        context.l10n.commonCancel,
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
@@ -484,7 +490,9 @@ Future<bool?> showDeleteTransactionDialog(
 
       return Dialog(
         backgroundColor: colors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.large),
+        ),
         insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         child: Container(
           constraints: const BoxConstraints(maxWidth: 360),
@@ -506,11 +514,11 @@ Future<bool?> showDeleteTransactionDialog(
                 ),
                 child: Icon(AppIcons.delete, color: colors.error, size: 32),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // Title
               Text(
-                'Tranzaksiyani o\'chirish',
+                context.l10n.walletDeleteTransaction,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w800,
@@ -522,7 +530,7 @@ Future<bool?> showDeleteTransactionDialog(
 
               // Subtitle
               Text(
-                'Rostdan ham ushbu tranzaksiyani butunlay o\'chirib tashlamoqchimisiz?',
+                context.l10n.walletDeleteConfirm,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13,
@@ -530,17 +538,15 @@ Future<bool?> showDeleteTransactionDialog(
                   height: 1.35,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // Transaction Preview Card
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: isDark
-                      ? colors.surfaceSecondary
-                      : const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(16),
+                  color: isDark ? colors.surfaceSecondary : colors.background,
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
                   border: Border.all(
                     color: colors.border.withValues(alpha: 0.6),
                   ),
@@ -558,10 +564,12 @@ Future<bool?> showDeleteTransactionDialog(
                           decoration: BoxDecoration(
                             color: (isExpense ? colors.error : colors.success)
                                 .withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                           ),
                           child: Text(
-                            isExpense ? 'Chiqim' : 'Kirim',
+                            isExpense
+                                ? context.l10n.commonExpense
+                                : context.l10n.commonIncome,
                             style: TextStyle(
                               color: isExpense ? colors.error : colors.success,
                               fontSize: 11,
@@ -580,7 +588,7 @@ Future<bool?> showDeleteTransactionDialog(
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.xs),
                     MoneyText(
                       wallet.summa,
                       currencyTypeId: wallet.currencyTypeId,
@@ -589,7 +597,7 @@ Future<bool?> showDeleteTransactionDialog(
                       colorOverride: isExpense ? colors.error : colors.success,
                     ),
                     if (wallet.partnerName.isNotEmpty) ...[
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.xxs),
                       Text(
                         wallet.partnerName,
                         style: TextStyle(
@@ -613,7 +621,7 @@ Future<bool?> showDeleteTransactionDialog(
                 ),
                 decoration: BoxDecoration(
                   color: colors.warning.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.small),
                   border: Border.all(
                     color: colors.warning.withValues(alpha: 0.25),
                   ),
@@ -621,10 +629,10 @@ Future<bool?> showDeleteTransactionDialog(
                 child: Row(
                   children: [
                     Icon(AppIcons.info, size: 16, color: colors.warning),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.xs),
                     Expanded(
                       child: Text(
-                        'Bu amal hisob-kitob balansini o\'zgartiradi va uni ortga qaytarib bo\'lmaydi.',
+                        context.l10n.walletDeleteWarning,
                         style: TextStyle(
                           fontSize: 11,
                           height: 1.3,
@@ -637,7 +645,7 @@ Future<bool?> showDeleteTransactionDialog(
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.lg),
 
               // Action Buttons (Stacked for maximum clarity and safety)
               SizedBox(
@@ -645,34 +653,34 @@ Future<bool?> showDeleteTransactionDialog(
                 child: FilledButton.icon(
                   style: FilledButton.styleFrom(
                     backgroundColor: colors.error,
-                    foregroundColor: Colors.white,
+                    foregroundColor: context.colors.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 13),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(AppRadius.medium),
                     ),
                     elevation: 0,
                   ),
                   onPressed: () => Navigator.of(context).pop(true),
                   icon: const Icon(AppIcons.delete, size: 18),
-                  label: const Text(
-                    'Ha, o\'chirilsin',
+                  label: Text(
+                    context.l10n.walletDeleteYes,
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.xs),
               SizedBox(
                 width: double.infinity,
                 child: TextButton(
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(AppRadius.medium),
                     ),
                   ),
                   onPressed: () => Navigator.of(context).pop(false),
                   child: Text(
-                    'Yo\'q, bekor qilish',
+                    context.l10n.walletDeleteNo,
                     style: TextStyle(
                       color: colors.textSecondary,
                       fontWeight: FontWeight.w600,

@@ -20,6 +20,8 @@ import '../widgets/summary_grid.dart';
 import 'partner_debt_detail_page.dart';
 import 'partner_history_wallets_page.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Hamkor bo'yicha to'liq hisobot ekrani (ReportClientShowPage standarti)
 /// 2 ta asosiy tab:
@@ -124,14 +126,13 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
     );
   }
 
-  void _handleDebtAgingTap(String title, String currency) {
-    final type = switch (title) {
-      "Muddati o'tgan" => 'qarz_expired',
-      "Bugun" => 'qarz_today',
-      "Yaqinlashmoqda" => 'qarz_3_days',
-      _ => '',
-    };
-
+  /// [type] — backend filtri (`qarz_expired` / `qarz_today` / `qarz_3_days`),
+  /// [title] — foydalanuvchiga ko'rsatiladigan sarlavha.
+  void _handleDebtAgingTap({
+    required String type,
+    required String title,
+    required String currency,
+  }) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -173,7 +174,7 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
       appBar: AppBar(
         title: Text(
           widget.partnerName.trim().isEmpty
-              ? 'Hamkor hisoboti'
+              ? context.l10n.reportPartnerTitle
               : widget.partnerName,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w800,
@@ -185,7 +186,7 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
             PopupMenuButton<int>(
               offset: const Offset(0, 48),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
               ),
               color: colors.surface,
               icon: Icon(AppIcons.more, color: colors.textPrimary),
@@ -203,7 +204,7 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
                       Icon(AppIcons.download, color: colors.primary, size: 20),
                       const SizedBox(width: 10),
                       Text(
-                        'Excel hisobot',
+                        context.l10n.reportExcel,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
@@ -249,14 +250,14 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
         height: 40,
         decoration: BoxDecoration(
           color: colors.surfaceSecondary,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         padding: const EdgeInsets.all(3),
         child: TabBar(
           controller: _mainTabController,
           indicator: BoxDecoration(
             color: colors.primary,
-            borderRadius: BorderRadius.circular(9),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
             boxShadow: [
               BoxShadow(
                 color: colors.primary.withValues(alpha: 0.25),
@@ -265,7 +266,7 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
               ),
             ],
           ),
-          labelColor: Colors.white,
+          labelColor: context.colors.onPrimary,
           unselectedLabelColor: colors.textSecondary,
           labelStyle: const TextStyle(
             fontSize: 13,
@@ -277,9 +278,9 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
           ),
           dividerColor: Colors.transparent,
           indicatorSize: TabBarIndicatorSize.tab,
-          tabs: const [
-            Tab(text: 'Hisob kitob'),
-            Tab(text: 'Muddatli to\'lov'),
+          tabs: [
+            Tab(text: context.l10n.reportTabSettlements),
+            Tab(text: context.l10n.reportTabInstallment),
           ],
         ),
       ),
@@ -295,7 +296,7 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
 
     if (_error != null && _report == null) {
       return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
+        title: context.l10n.errorLoadShort,
         description: _error,
         onRetry: _load,
       );
@@ -337,14 +338,14 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
         height: 44,
         decoration: BoxDecoration(
           color: colors.surfaceSecondary,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(color: colors.border.withValues(alpha: 0.5)),
         ),
         child: Row(
           children: [
-            _buildCurrencyTabItem('UZS Hisob', 0),
+            _buildCurrencyTabItem(context.l10n.reportAccountUzs, 0),
             Container(width: 1, height: 20, color: colors.border),
-            _buildCurrencyTabItem('USD Hisob', 1),
+            _buildCurrencyTabItem(context.l10n.reportAccountUsd, 1),
           ],
         ),
       ),
@@ -364,7 +365,7 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
           margin: const EdgeInsets.all(3),
           decoration: BoxDecoration(
             color: isSelected ? colors.surface : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppRadius.small),
             boxShadow: isSelected
                 ? [
                     BoxShadow(
@@ -436,11 +437,21 @@ class _PartnerDetailReportPageState extends State<PartnerDetailReportPage>
                     overdueCount: report.qarzExpired,
                     todayCount: report.qarzToday,
                     upcomingCount: report.qarz3Days,
-                    onOverdueTap: () =>
-                        _handleDebtAgingTap("Muddati o'tgan", currency),
-                    onTodayTap: () => _handleDebtAgingTap("Bugun", currency),
-                    onUpcomingTap: () =>
-                        _handleDebtAgingTap("Yaqinlashmoqda", currency),
+                    onOverdueTap: () => _handleDebtAgingTap(
+                      type: 'qarz_expired',
+                      title: context.l10n.dashboardOverdueLabel,
+                      currency: currency,
+                    ),
+                    onTodayTap: () => _handleDebtAgingTap(
+                      type: 'qarz_today',
+                      title: context.l10n.dateToday,
+                      currency: currency,
+                    ),
+                    onUpcomingTap: () => _handleDebtAgingTap(
+                      type: 'qarz_3_days',
+                      title: context.l10n.reportUpcoming,
+                      currency: currency,
+                    ),
                   ),
                 ),
                 _buildAnimatedItem(

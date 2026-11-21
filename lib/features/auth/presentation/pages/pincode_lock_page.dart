@@ -12,6 +12,7 @@ import '../auth_navigation.dart';
 import '../cubit/pincode_lock_cubit.dart';
 import '../widgets/pincode_widgets.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// PIN bilan qulflash ekrani — 5 xato urinishdan keyin parolga majburiy
 /// o'tkaziladi (MOBILE_APP_TZ.md 5.8).
@@ -111,21 +112,22 @@ class _PincodeLockViewState extends State<_PincodeLockView> {
         final user = context.watch<UserCubit>().currentUserOrNull;
         final firstName = user?.name.trim().split(RegExp(r'\s+')).firstOrNull;
         final title = (firstName != null && firstName.isNotEmpty)
-            ? 'Salom, $firstName!'
-            : 'Xush kelibsiz!';
+            ? context.l10n.authHello(firstName)
+            : context.l10n.authWelcome;
 
         String? errorMessage;
         if (state is PincodeLockWrong) {
-          errorMessage =
-              'Noto\'g\'ri PIN. Qolgan urinishlar: ${state.remainingAttempts}';
+          errorMessage = context.l10n.authPinWrongAttempts(
+            state.remainingAttempts,
+          );
         }
 
         return PincodeScreenLayout(
-          topLabel: 'Xavfsiz kirish',
+          topLabel: context.l10n.authSecureEntry,
           onExit: _onExitOrForgotPin,
           exitIcon: AppIcons.logout,
           title: title,
-          subtitle: 'PIN-kodingizni kiriting',
+          subtitle: context.l10n.authPincodeEnter,
           errorMessage: errorMessage,
           code: _code,
           onDigit: _onDigit,
@@ -133,7 +135,7 @@ class _PincodeLockViewState extends State<_PincodeLockView> {
           onLongPressBackspace: _onLongPressBackspace,
           onBiometrics: () => context.read<PincodeLockCubit>().tryBiometrics(),
           showBiometrics: true,
-          pillButtonLabel: 'PIN-kodni unutdingizmi?',
+          pillButtonLabel: context.l10n.authPincodeForgot,
           onPillButtonTap: _onExitOrForgotPin,
           capsulesKey: _capsulesKey,
           isError: state is PincodeLockWrong,

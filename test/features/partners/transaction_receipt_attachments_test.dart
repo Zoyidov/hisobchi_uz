@@ -5,6 +5,7 @@ import 'package:hisobchi_uz/core/theme/app_colors.dart';
 import 'package:hisobchi_uz/core/widgets/media/app_file_preview.dart';
 import 'package:hisobchi_uz/features/partners/data/partner_models.dart';
 import 'package:hisobchi_uz/features/partners/presentation/widgets/transaction_receipt_sheet.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 void main() {
   testWidgets('wallet files are parsed and shown in the transaction receipt', (
@@ -34,6 +35,9 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('uz'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: ThemeData(extensions: const [AppColorsExtension.light]),
         home: Builder(
           builder: (context) => Scaffold(

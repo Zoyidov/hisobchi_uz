@@ -20,6 +20,8 @@ import '../../../partners/presentation/widgets/export_excel_helper.dart';
 import '../../../../core/constants/app_permission.dart';
 import '../../../../core/widgets/navigation/permission_guard.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Global partner dashboard, matching ReportClientMainPage.
 class PartnerReportsPage extends StatefulWidget {
@@ -37,27 +39,27 @@ class _PartnerReportsPageState extends State<PartnerReportsPage> {
       centerTitle: true,
       backgroundColor: context.colors.surface,
       title: Text(
-        'Hamkorlar hisoboti',
+        context.l10n.reportPartnersTitle,
         style: Theme.of(
           context,
         ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
       ),
       actions: [
         PopupMenuButton<String>(
-          tooltip: 'Hisobot amallari',
+          tooltip: context.l10n.reportActions,
           onSelected: (_) => downloadAndShareExcel(
             context,
             download: () => getIt<PartnersRepository>().exportPartnersExcel(),
             fileName: 'hamkorlar_hisoboti.xlsx',
           ),
-          itemBuilder: (_) => const [
+          itemBuilder: (_) => [
             PopupMenuItem(
               value: 'excel',
               child: Row(
                 children: [
                   Icon(AppIcons.download, size: 20),
-                  SizedBox(width: 8),
-                  Text('Excel hisobot'),
+                  SizedBox(width: AppSpacing.xs),
+                  Text(context.l10n.reportExcel),
                 ],
               ),
             ),
@@ -87,7 +89,7 @@ class _CurrencySwitch extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     decoration: BoxDecoration(
       color: context.colors.surfaceSecondary,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadius.md),
     ),
     child: Row(
       children: [
@@ -103,7 +105,7 @@ class _CurrencySwitch extends StatelessWidget {
                     margin: const EdgeInsets.symmetric(horizontal: 1),
                     decoration: BoxDecoration(
                       color: context.colors.border,
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(AppRadius.hairline),
                     ),
                   ),
               ],
@@ -114,14 +116,16 @@ class _CurrencySwitch extends StatelessWidget {
               button: true,
               child: InkWell(
                 onTap: () => onChanged(id),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.md),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     vertical: 15,
                     horizontal: 4,
                   ),
                   child: Text(
-                    id == 1 ? 'UZS Hisob' : 'USD Hisob',
+                    id == 1
+                        ? context.l10n.reportAccountUzs
+                        : context.l10n.reportAccountUsd,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 15,
@@ -231,7 +235,7 @@ class _SummaryTabState extends State<_SummaryTab> {
   Widget build(BuildContext context) {
     if (_error != null) {
       return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
+        title: context.l10n.errorLoadShort,
         description: _error,
         onRetry: _load,
       );
@@ -247,7 +251,7 @@ class _SummaryTabState extends State<_SummaryTab> {
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
           _ReportBalance(report: report, currency: currencyLabel),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           LayoutBuilder(
             builder: (context, constraints) {
               final width = (constraints.maxWidth - 16) / 3;
@@ -258,14 +262,14 @@ class _SummaryTabState extends State<_SummaryTab> {
                   SizedBox(
                     width: width,
                     child: _ReportMetric(
-                      label: 'Operatsiyalar',
+                      label: context.l10n.reportOperations,
                       count: report.operationsCount,
                       icon: AppIcons.exchange,
                       color: context.colors.warning,
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(
                           builder: (_) => PartnerReportOperationsPage(
-                            title: 'Operatsiyalar',
+                            title: context.l10n.reportOperations,
                             currencyTypeId: widget.currencyTypeId,
                             fetcher: (page) => getIt<ReportsRepository>()
                                 .getPartnersMainOperations(
@@ -280,14 +284,14 @@ class _SummaryTabState extends State<_SummaryTab> {
                   SizedBox(
                     width: width,
                     child: _ReportMetric(
-                      label: 'Qarzdorlar',
+                      label: context.l10n.partnersStatusDebtor,
                       count: report.debtorsCount,
                       icon: AppIcons.arrowUp,
                       color: context.colors.error,
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(
                           builder: (_) => ReportDetailListPage(
-                            title: 'Qarzdorlar',
+                            title: context.l10n.partnersStatusDebtor,
                             fetcher: (page) => getIt<ReportsRepository>()
                                 .getPartnersSummaryDetails(
                                   type: 'qarzdor',
@@ -303,14 +307,14 @@ class _SummaryTabState extends State<_SummaryTab> {
                   SizedBox(
                     width: width,
                     child: _ReportMetric(
-                      label: 'Haqdorlar',
+                      label: context.l10n.partnersStatusCreditor,
                       count: report.creditorsCount,
                       icon: AppIcons.arrowDown,
                       color: context.colors.success,
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(
                           builder: (_) => ReportDetailListPage(
-                            title: 'Haqdorlar',
+                            title: context.l10n.partnersStatusCreditor,
                             fetcher: (page) => getIt<ReportsRepository>()
                                 .getPartnersSummaryDetails(
                                   type: 'xaqdor',
@@ -327,48 +331,47 @@ class _SummaryTabState extends State<_SummaryTab> {
               );
             },
           ),
-          const SizedBox(height: 20),
-          const Text(
-            'Hisobot turlari',
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            context.l10n.reportTypes,
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.xs),
           _MainReportEntry(
-            title: 'Qarz muddatlari hisoboti',
-            subtitle: 'Muddati o‘tgan, bugun va kelgusi qarzlar',
+            title: context.l10n.reportDebtTerms,
+            subtitle: context.l10n.reportDebtTermsSubtitle,
             icon: AppIcons.clock,
             color: context.colors.warning,
             onTap: () => _openSection(
-              'Qarz muddatlari hisoboti',
+              context.l10n.reportDebtTerms,
               (currency) => _WarrantyTab(currencyTypeId: currency),
             ),
           ),
           _MainReportEntry(
-            title: 'Xodimlar hisoboti',
-            subtitle: 'Xodimlar bo‘yicha barcha hisobotlar',
+            title: context.l10n.reportStaff,
+            subtitle: context.l10n.reportStaffSubtitle,
             icon: AppIcons.partners,
             color: context.colors.primary,
             onTap: () => _openSection(
-              'Xodimlar hisoboti',
+              context.l10n.reportStaff,
               (currency) => _WorkersTab(currencyTypeId: currency),
             ),
           ),
           _MainReportEntry(
-            title: 'Muddat hisoboti',
-            subtitle: 'Davr bo‘yicha kirim va chiqim',
+            title: context.l10n.reportPeriod,
+            subtitle: context.l10n.reportPeriodSubtitle,
             icon: AppIcons.calendarRange,
             color: context.colors.info,
             onTap: () => _openSection(
-              'Muddat hisoboti',
+              context.l10n.reportPeriod,
               (currency) => _PeriodTab(currencyTypeId: currency),
             ),
           ),
           PermissionGuard(
             permission: AppPermission.reportInstallmentsView,
             child: _MainReportEntry(
-              title: 'Muddatli to‘lov hisoboti',
-              subtitle:
-                  'Rejalar, undirish, oylik dinamika va muammoli mijozlar',
+              title: context.l10n.reportInstallmentTitle,
+              subtitle: context.l10n.reportInstallmentShortSubtitle,
               icon: AppIcons.receipt,
               color: context.colors.accentViolet,
               onTap: () => Navigator.of(context).push(
@@ -378,7 +381,7 @@ class _SummaryTabState extends State<_SummaryTab> {
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xl),
         ],
       ),
     );
@@ -464,7 +467,7 @@ class _PeriodTabState extends State<_PeriodTab> {
   Widget build(BuildContext context) {
     if (_error != null) {
       return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
+        title: context.l10n.errorLoadShort,
         description: _error,
         onRetry: _load,
       );
@@ -489,18 +492,18 @@ class _PeriodTabState extends State<_PeriodTab> {
           ),
           const SizedBox(height: AppSpacing.md),
           _ReportFlow(
-            onTap: () => _openOperations('debt', 'Kirim'),
+            onTap: () => _openOperations('debt', context.l10n.commonIncome),
             amount: summary.debt,
-            label: 'Kirim',
+            label: context.l10n.commonIncome,
             currency: currencyKey,
             color: context.colors.success,
             icon: AppIcons.income,
           ),
           const SizedBox(height: 10),
           _ReportFlow(
-            onTap: () => _openOperations('credit', 'Chiqim'),
+            onTap: () => _openOperations('credit', context.l10n.commonExpense),
             amount: summary.credit,
-            label: 'Chiqim',
+            label: context.l10n.commonExpense,
             currency: currencyKey,
             color: context.colors.error,
             icon: AppIcons.expense,
@@ -546,7 +549,7 @@ class _WarrantyTabState extends State<_WarrantyTab> {
   Widget build(BuildContext context) {
     if (_error != null) {
       return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
+        title: context.l10n.errorLoadShort,
         description: _error,
         onRetry: _load,
       );
@@ -564,7 +567,7 @@ class _WarrantyTabState extends State<_WarrantyTab> {
         children: [
           _warrantyCard(
             context,
-            'Muddati o\'tgan',
+            context.l10n.dashboardOverdueLabel,
             summary.expired,
             context.colors.error,
             'qarz_expired',
@@ -572,7 +575,7 @@ class _WarrantyTabState extends State<_WarrantyTab> {
           const SizedBox(height: AppSpacing.sm),
           _warrantyCard(
             context,
-            'Bugun',
+            context.l10n.dateToday,
             summary.today,
             context.colors.warning,
             'qarz_today',
@@ -580,7 +583,7 @@ class _WarrantyTabState extends State<_WarrantyTab> {
           const SizedBox(height: AppSpacing.sm),
           _warrantyCard(
             context,
-            '3 kun ichida',
+            context.l10n.dueIn3Days,
             summary.in3Days,
             context.colors.success,
             'qarz_3_days',
@@ -686,8 +689,8 @@ class _WorkersTabState extends State<_WorkersTab> {
         firstDate: DateTime(2000),
         lastDate: today,
         initialDateRange: _range,
-        helpText: 'Hisobot davrini tanlang',
-        saveText: 'Tanlash',
+        helpText: context.l10n.reportSelectPeriod,
+        saveText: context.l10n.commonSelect,
       );
       if (!mounted || range == null) return;
     } else if (value > 0) {
@@ -718,10 +721,10 @@ class _WorkersTabState extends State<_WorkersTab> {
             children: [
               for (final (index, label) in [
                 'Barchasi',
-                'Bugun',
-                'Bu hafta',
-                'Bu oy',
-                'Sana tanlash',
+                context.l10n.dateToday,
+                context.l10n.dateThisWeek,
+                context.l10n.dateFilterThisMonth,
+                context.l10n.walletPickDate,
               ].indexed)
                 Padding(
                   padding: const EdgeInsets.only(right: 8),
@@ -741,15 +744,15 @@ class _WorkersTabState extends State<_WorkersTab> {
               children: [
                 _ReportFlow(
                   amount: total.debt,
-                  label: 'Jami kirim',
+                  label: context.l10n.reportTotalIncome,
                   currency: currency,
                   color: context.colors.success,
                   icon: AppIcons.income,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.xs),
                 _ReportFlow(
                   amount: total.credit,
-                  label: 'Jami chiqim',
+                  label: context.l10n.reportTotalExpense,
                   currency: currency,
                   color: context.colors.error,
                   icon: AppIcons.expense,
@@ -768,7 +771,7 @@ class _WorkersTabState extends State<_WorkersTab> {
         Expanded(
           child: _error != null
               ? AppErrorState(
-                  title: "Xodimlar hisobotini yuklab bo‘lmadi",
+                  title: context.l10n.reportStaffLoadError,
                   description: _error,
                   onRetry: _load,
                 )
@@ -781,23 +784,23 @@ class _WorkersTabState extends State<_WorkersTab> {
                     padding: const EdgeInsets.all(16),
                     children: [
                       if (items.isEmpty)
-                        const AppEmptyState(
-                          title: "Bu davrda operatsiyalar yo‘q",
+                        AppEmptyState(
+                          title: context.l10n.reportNoOperationsPeriod,
                           icon: AppIcons.partners,
                         )
                       else ...[
                         Text(
-                          'Xodimlar · ${items.length}',
+                          context.l10n.reportStaffCount(items.length),
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.sm),
                         for (final worker in items)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: AppCard(
                               hasShadow: false,
                               padding: const EdgeInsets.all(16),
-                              borderRadius: BorderRadius.circular(18),
+                              borderRadius: BorderRadius.circular(AppRadius.xl),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
@@ -811,7 +814,7 @@ class _WorkersTabState extends State<_WorkersTab> {
                                           color: context.colors.primary,
                                         ),
                                       ),
-                                      const SizedBox(width: 12),
+                                      const SizedBox(width: AppSpacing.sm),
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
@@ -842,9 +845,11 @@ class _WorkersTabState extends State<_WorkersTab> {
                                           ],
                                         ),
                                       ),
-                                      const SizedBox(width: 8),
+                                      const SizedBox(width: AppSpacing.xs),
                                       Text(
-                                        '${worker.operationsCount} ta',
+                                        context.l10n.commonCountShort(
+                                          worker.operationsCount,
+                                        ),
                                         style: Theme.of(
                                           context,
                                         ).textTheme.labelMedium,
@@ -854,12 +859,12 @@ class _WorkersTabState extends State<_WorkersTab> {
                                   const SizedBox(height: 14),
                                   for (final (label, amount, color) in [
                                     (
-                                      'Kirim',
+                                      context.l10n.commonIncome,
                                       worker.debt,
                                       context.colors.success,
                                     ),
                                     (
-                                      'Chiqim',
+                                      context.l10n.commonExpense,
                                       worker.credit,
                                       context.colors.error,
                                     ),
@@ -879,7 +884,7 @@ class _WorkersTabState extends State<_WorkersTab> {
                                                       .textSecondary,
                                                 ),
                                           ),
-                                          const SizedBox(width: 16),
+                                          const SizedBox(width: AppSpacing.md),
                                           Expanded(
                                             child: Text(
                                               MoneyFormatter.format(
@@ -921,9 +926,9 @@ class _ReportBalance extends StatelessWidget {
   Widget build(BuildContext context) {
     final corrected = -report.balance;
     final subtitle = corrected < Decimal.zero
-        ? 'Sizning qarzingiz'
+        ? context.l10n.reportYourDebt
         : corrected > Decimal.zero
-        ? 'Mijozlar qarzi'
+        ? context.l10n.reportClientsDebt
         : null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -932,14 +937,14 @@ class _ReportBalance extends StatelessWidget {
           builder: (context, constraints) {
             final income = _ReportFlow(
               amount: report.debt,
-              label: 'Kirim',
+              label: context.l10n.commonIncome,
               currency: currency,
               color: context.colors.success,
               icon: AppIcons.income,
             );
             final expense = _ReportFlow(
               amount: report.credit,
-              label: 'Chiqim',
+              label: context.l10n.commonExpense,
               currency: currency,
               color: context.colors.error,
               icon: AppIcons.expense,
@@ -947,51 +952,63 @@ class _ReportBalance extends StatelessWidget {
             if (constraints.maxWidth < 300 ||
                 MediaQuery.textScalerOf(context).scale(14) > 19) {
               return Column(
-                children: [income, const SizedBox(height: 12), expense],
+                children: [
+                  income,
+                  const SizedBox(height: AppSpacing.sm),
+                  expense,
+                ],
               );
             }
             return Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(child: income),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(child: expense),
               ],
             );
           },
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.sm),
         Container(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
             color: context.colors.primary,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
                 children: [
-                  const Icon(AppIcons.wallet, size: 22, color: Colors.white),
+                  Icon(
+                    AppIcons.wallet,
+                    size: 22,
+                    color: context.colors.onPrimary,
+                  ),
                   const SizedBox(width: 10),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Qoldiq',
+                      context.l10n.reportBalanceRest,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: context.colors.onPrimary,
                       ),
                     ),
                   ),
-                  const Icon(AppIcons.partners, size: 16, color: Colors.white),
+                  Icon(
+                    AppIcons.partners,
+                    size: 16,
+                    color: context.colors.onPrimary,
+                  ),
                   const SizedBox(width: 5),
                   Text(
-                    '${report.partnersCount} ta',
-                    style: const TextStyle(
+                    context.l10n.commonCountShort(report.partnersCount),
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      color: context.colors.onPrimary,
                     ),
                   ),
                 ],
@@ -1002,7 +1019,7 @@ class _ReportBalance extends StatelessWidget {
                   subtitle,
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white.withValues(alpha: .85),
+                    color: context.colors.onPrimary.withValues(alpha: .85),
                   ),
                 ),
               ],
@@ -1010,10 +1027,10 @@ class _ReportBalance extends StatelessWidget {
               Text(
                 MoneyFormatter.format(corrected, currencyLabel: currency),
                 textAlign: TextAlign.right,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
-                  color: Colors.white,
+                  color: context.colors.onPrimary,
                 ),
               ),
             ],
@@ -1042,10 +1059,10 @@ class _ReportFlow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Material(
     color: color,
-    borderRadius: BorderRadius.circular(16),
+    borderRadius: BorderRadius.circular(AppRadius.lg),
     child: InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppRadius.lg),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
@@ -1053,37 +1070,37 @@ class _ReportFlow extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, color: Colors.white, size: 18),
-                const SizedBox(width: 8),
+                Icon(icon, color: context.colors.onPrimary, size: 18),
+                const SizedBox(width: AppSpacing.xs),
                 Expanded(
                   child: Text(
                     label,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      color: context.colors.onPrimary,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               MoneyFormatter.groupDigits(amount),
               textAlign: TextAlign.right,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
-                color: Colors.white,
+                color: context.colors.onPrimary,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xxs),
             Text(
               currency,
               textAlign: TextAlign.right,
               style: TextStyle(
                 fontSize: 11,
-                color: Colors.white.withValues(alpha: .8),
+                color: context.colors.onPrimary.withValues(alpha: .8),
               ),
             ),
           ],
@@ -1118,7 +1135,7 @@ class _MainReportEntry extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: color.withValues(alpha: .1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Icon(icon, size: 26, color: color),
           ),
@@ -1134,7 +1151,7 @@ class _MainReportEntry extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xxs),
                 Text(
                   subtitle,
                   style: TextStyle(
@@ -1146,7 +1163,7 @@ class _MainReportEntry extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.xs),
           Icon(
             AppIcons.chevronRight,
             color: context.colors.textTertiary,
@@ -1182,14 +1199,14 @@ class _ReportMetric extends StatelessWidget {
       height: 30,
       decoration: BoxDecoration(
         color: accent.withValues(alpha: .1),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadius.small),
       ),
       child: Icon(icon, size: 17, color: accent),
     );
     return AppCard(
       hasShadow: false,
       padding: const EdgeInsets.all(12),
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(AppRadius.xl),
       onTap: onTap,
       child: compactRow
           ? Row(
@@ -1212,7 +1229,7 @@ class _ReportMetric extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: AppSpacing.xxs),
                 Icon(
                   AppIcons.chevronRight,
                   color: context.colors.textTertiary,
@@ -1231,11 +1248,11 @@ class _ReportMetric extends StatelessWidget {
                     color: context.colors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.xs),
                 Row(
                   children: [
                     symbol,
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.xs),
                     Expanded(
                       child: Text(
                         '$count',
@@ -1260,7 +1277,10 @@ class _SummarySkeleton extends StatelessWidget {
   Widget build(BuildContext context) => ListView(
     padding: const EdgeInsets.all(16),
     children: [
-      AppSkeletonBox(height: 110, borderRadius: BorderRadius.circular(22)),
+      AppSkeletonBox(
+        height: 110,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+      ),
       const SizedBox(height: 10),
       Row(
         children: [
@@ -1270,13 +1290,13 @@ class _SummarySkeleton extends StatelessWidget {
                 padding: EdgeInsets.only(right: i == 0 ? 10 : 0),
                 child: AppSkeletonBox(
                   height: 90,
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
                 ),
               ),
             ),
         ],
       ),
-      const SizedBox(height: 20),
+      const SizedBox(height: AppSpacing.lg),
       const Align(
         alignment: Alignment.centerLeft,
         child: AppSkeletonBox(width: 140, height: 16),
@@ -1290,7 +1310,7 @@ class _SummarySkeleton extends StatelessWidget {
                 padding: EdgeInsets.only(right: i < 2 ? 8 : 0),
                 child: AppSkeletonBox(
                   height: 110,
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
                 ),
               ),
             ),

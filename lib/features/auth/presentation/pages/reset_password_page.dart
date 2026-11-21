@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +14,7 @@ import '../../../../core/widgets/feedback/app_snackbar.dart';
 import '../auth_navigation.dart';
 import '../cubit/reset_password_cubit.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Yangi parol o'rnatish — Senior Level FinTech Reset Password ekrani.
 class ResetPasswordPage extends StatelessWidget {
@@ -219,7 +219,9 @@ class _ResetPasswordViewState extends State<_ResetPasswordView>
                                     children: [
                                       InkWell(
                                         onTap: () => context.pop(),
-                                        borderRadius: BorderRadius.circular(14),
+                                        borderRadius: BorderRadius.circular(
+                                          AppRadius.medium,
+                                        ),
                                         child: Container(
                                           width: 44,
                                           height: 44,
@@ -258,7 +260,7 @@ class _ResetPasswordViewState extends State<_ResetPasswordView>
                                           ),
                                         ),
                                         child: Text(
-                                          'PAROLNI TIKLASH',
+                                          context.l10n.authResetBadge,
                                           style: TextStyle(
                                             color: colors.primary,
                                             fontSize: 10.5,
@@ -320,10 +322,10 @@ class _ResetPasswordViewState extends State<_ResetPasswordView>
                                               ),
                                             ],
                                           ),
-                                          child: const Icon(
+                                          child: Icon(
                                             AppIcons.key,
                                             size: 32,
-                                            color: Colors.white,
+                                            color: context.colors.onPrimary,
                                           ),
                                         ),
                                       ],
@@ -334,7 +336,7 @@ class _ResetPasswordViewState extends State<_ResetPasswordView>
 
                                   // Headings
                                   Text(
-                                    'Yangi parol o\'rnatish 🔑',
+                                    context.l10n.authResetHeading,
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineLarge
@@ -344,9 +346,9 @@ class _ResetPasswordViewState extends State<_ResetPasswordView>
                                           letterSpacing: -0.5,
                                         ),
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: AppSpacing.xs),
                                   Text(
-                                    'Hisobingiz xavfsizligi uchun yangi ishonchli parol kiriting.',
+                                    context.l10n.authResetSubtitle,
                                     style: TextStyle(
                                       color: colors.textSecondary,
                                       fontSize: 14.5,
@@ -359,11 +361,11 @@ class _ResetPasswordViewState extends State<_ResetPasswordView>
                                   // New Password Input
                                   _buildInputField(
                                     context: context,
-                                    label: 'Yangi parol',
+                                    label: context.l10n.authNewPasswordLabel,
                                     controller: _passwordController,
                                     focusNode: _passwordFocusNode,
                                     icon: AppIcons.lock,
-                                    hintText: 'Kamida 6 ta belgi',
+                                    hintText: context.l10n.authPasswordMinHint,
                                     obscureText: _obscurePassword,
                                     errorText: _passwordError,
                                     suffixIcon: IconButton(
@@ -386,11 +388,13 @@ class _ResetPasswordViewState extends State<_ResetPasswordView>
                                   // Confirm Password Input
                                   _buildInputField(
                                     context: context,
-                                    label: 'Parolni tasdiqlang',
+                                    label:
+                                        context.l10n.authPasswordConfirmLabel,
                                     controller: _confirmController,
                                     focusNode: _confirmFocusNode,
                                     icon: AppIcons.restore,
-                                    hintText: 'Parolni qayta kiriting',
+                                    hintText:
+                                        context.l10n.authPasswordRepeatHint,
                                     obscureText: _obscureConfirm,
                                     errorText: _confirmError,
                                     suffixIcon: IconButton(
@@ -429,7 +433,9 @@ class _ResetPasswordViewState extends State<_ResetPasswordView>
                                           begin: Alignment.topLeft,
                                           end: Alignment.bottomRight,
                                         ),
-                                        borderRadius: BorderRadius.circular(16),
+                                        borderRadius: BorderRadius.circular(
+                                          AppRadius.lg,
+                                        ),
                                         boxShadow: [
                                           BoxShadow(
                                             color: colors.primary.withValues(
@@ -453,14 +459,16 @@ class _ResetPasswordViewState extends State<_ResetPasswordView>
                                                 milliseconds: 200,
                                               ),
                                               child: isLoading
-                                                  ? const SizedBox(
+                                                  ? SizedBox(
                                                       width: 22,
                                                       height: 22,
                                                       child: CircularProgressIndicator(
                                                         strokeWidth: 2.4,
                                                         valueColor:
                                                             AlwaysStoppedAnimation(
-                                                              Colors.white,
+                                                              context
+                                                                  .colors
+                                                                  .onPrimary,
                                                             ),
                                                       ),
                                                     )
@@ -468,22 +476,30 @@ class _ResetPasswordViewState extends State<_ResetPasswordView>
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
                                                               .center,
-                                                      children: const [
+                                                      children: [
                                                         Text(
-                                                          'Saqlash va kirish',
+                                                          context
+                                                              .l10n
+                                                              .authSaveAndLogin,
                                                           style: TextStyle(
                                                             fontSize: 16,
                                                             fontWeight:
                                                                 FontWeight.w700,
-                                                            color: Colors.white,
+                                                            color: context
+                                                                .colors
+                                                                .onPrimary,
                                                             letterSpacing: 0.2,
                                                           ),
                                                         ),
-                                                        SizedBox(width: 8),
+                                                        SizedBox(
+                                                          width: AppSpacing.xs,
+                                                        ),
                                                         Icon(
                                                           AppIcons.forward,
                                                           size: 19,
-                                                          color: Colors.white,
+                                                          color: context
+                                                              .colors
+                                                              .onPrimary,
                                                         ),
                                                       ],
                                                     ),
@@ -521,7 +537,7 @@ class _ResetPasswordViewState extends State<_ResetPasswordView>
                                           ),
                                           const SizedBox(width: 6),
                                           Text(
-                                            '256-bit shifrlangan • Barcha ma\'lumotlar xavfsiz',
+                                            context.l10n.authSecureFooterAll,
                                             style: TextStyle(
                                               fontSize: 11.5,
                                               fontWeight: FontWeight.w500,
@@ -594,7 +610,7 @@ class _ResetPasswordViewState extends State<_ResetPasswordView>
             color: isDark
                 ? colors.surfaceSecondary.withValues(alpha: 0.65)
                 : colors.surface,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
             border: Border.all(
               color: hasError
                   ? colors.error
@@ -625,7 +641,7 @@ class _ResetPasswordViewState extends State<_ResetPasswordView>
                     ? colors.primary
                     : colors.textTertiary,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: TextField(
                   controller: controller,

@@ -24,6 +24,8 @@ import '../widgets/project_workers_tab.dart';
 import '../widgets/project_status_sheet.dart';
 import 'project_form_page.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Loyiha kartochkasi — 4 tabli ekran (MOBILE_APP_TZ.md 10.4).
 class ProjectDetailPage extends StatelessWidget {
@@ -92,7 +94,7 @@ class _Loaded extends StatelessWidget {
           PermissionGuard(
             permission: AppPermission.projectsEdit,
             child: IconButton(
-              tooltip: 'Loyiha holatini o‘zgartirish',
+              tooltip: context.l10n.projectChangeStatus,
               icon: const Icon(AppIcons.tune, size: 22),
               onPressed: () => _changeStatus(context, project),
             ),
@@ -105,7 +107,7 @@ class _Loaded extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 color: context.colors.surfaceSecondary,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(AppRadius.medium),
               ),
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -122,20 +124,20 @@ class _Loaded extends StatelessWidget {
                     indicatorPadding: const EdgeInsets.all(4),
                     indicator: BoxDecoration(
                       color: context.colors.primary,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppRadius.small),
                     ),
-                    labelColor: Colors.white,
+                    labelColor: context.colors.onPrimary,
                     unselectedLabelColor: context.colors.textSecondary,
                     labelStyle: Theme.of(context).textTheme.labelSmall
                         ?.copyWith(fontWeight: FontWeight.w700),
                     labelPadding: EdgeInsets.symmetric(
                       horizontal: scrollable ? 12 : 4,
                     ),
-                    tabs: const [
-                      Tab(text: 'Xarajatlar'),
-                      Tab(text: 'Daromadlar'),
-                      Tab(text: 'Ishchilar'),
-                      Tab(text: 'Shartnomalar'),
+                    tabs: [
+                      Tab(text: context.l10n.projectTabCosts),
+                      Tab(text: context.l10n.projectTabIncomes),
+                      Tab(text: context.l10n.docWorkers),
+                      Tab(text: context.l10n.projectTabContracts),
                     ],
                   );
                 },
@@ -157,7 +159,7 @@ class _Loaded extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
                     border: Border.all(color: Theme.of(context).dividerColor),
                   ),
                   child: Row(
@@ -170,7 +172,7 @@ class _Loaded extends StatelessWidget {
                             size: 16,
                             color: Theme.of(context).colorScheme.primary,
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppSpacing.xs),
                           Text(
                             project.projectOwner,
                             style: Theme.of(context).textTheme.bodyMedium
@@ -183,15 +185,17 @@ class _Loaded extends StatelessWidget {
                   ),
                 ),
                 if (project.files.isNotEmpty) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.xs),
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       icon: const Icon(AppIcons.gallery, size: 19),
-                      label: Text('Loyiha fayllari (${project.files.length})'),
+                      label: Text(
+                        context.l10n.projectFilesCount(project.files.length),
+                      ),
                       onPressed: () => showAppBottomSheet<void>(
                         context,
-                        title: 'Loyiha fayllari',
+                        title: context.l10n.projectFiles,
                         heightFactor: .7,
                         child: SingleChildScrollView(
                           padding: const EdgeInsets.all(16),
@@ -228,7 +232,7 @@ Future<void> _changeStatus(BuildContext context, Project project) async {
   final cubit = context.read<ProjectDetailCubit>();
   final saved = await showProjectStatusSheet(context, project: project);
   if (saved == true && context.mounted && !cubit.isClosed) {
-    AppSnackbar.success(context, 'Loyiha holati yangilandi');
+    AppSnackbar.success(context, context.l10n.projectStatusUpdated);
     await cubit.refresh();
   }
 }
@@ -240,7 +244,7 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chip = AppStatusChip(
-      label: project.status.label,
+      label: project.status.label(context.l10n),
       tone: switch (project.status) {
         ProjectStatus.inProgress => AppStatusChipTone.info,
         ProjectStatus.frozen => AppStatusChipTone.warning,
@@ -251,9 +255,9 @@ class _StatusBadge extends StatelessWidget {
       permission: AppPermission.projectsEdit,
       fallback: chip,
       child: Tooltip(
-        message: 'Loyiha holatini o‘zgartirish',
+        message: context.l10n.projectChangeStatus,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
           onTap: () => _changeStatus(context, project),
           child: chip,
         ),

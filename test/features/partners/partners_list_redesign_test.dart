@@ -18,6 +18,7 @@ import 'package:hisobchi_uz/core/storage/secure_storage_service.dart';
 import 'package:hisobchi_uz/core/theme/app_theme.dart';
 import 'package:hisobchi_uz/features/partners/data/partners_repository.dart';
 import 'package:hisobchi_uz/features/partners/presentation/pages/partners_list_page.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 class _Auth implements AuthRepository {
   @override
@@ -147,6 +148,9 @@ Future<GoRouter> mount(
         BlocProvider(create: (_) => OwnerContextCubit(SecureStorageService())),
       ],
       child: MaterialApp.router(
+        locale: const Locale('uz'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: dark ? AppTheme.dark() : AppTheme.light(),
         routerConfig: router,
         builder: (context, child) => MediaQuery(

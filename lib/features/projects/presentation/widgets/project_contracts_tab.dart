@@ -21,6 +21,8 @@ import '../../data/projects_repository.dart';
 import '../cubit/project_subtabs_cubit.dart';
 import 'work_type_selection_sheet.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Tab A: Shartnomalar (MOBILE_APP_TZ.md 10.4-A).
 class ProjectContractsTab extends StatelessWidget {
@@ -55,8 +57,8 @@ class _View extends StatelessWidget {
               ),
               ListLoaded(:final items) =>
                 items.isEmpty
-                    ? const AppEmptyState(
-                        title: 'Shartnomalar yo\'q',
+                    ? AppEmptyState(
+                        title: context.l10n.contractsEmpty,
                         icon: AppIcons.file,
                       )
                     : RefreshIndicator(
@@ -84,7 +86,9 @@ class _View extends StatelessWidget {
                                       color: context.colors.primary.withValues(
                                         alpha: 0.12,
                                       ),
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(
+                                        AppRadius.md,
+                                      ),
                                     ),
                                     child: Icon(
                                       AppIcons.file,
@@ -122,7 +126,7 @@ class _View extends StatelessWidget {
                                               ),
                                             ),
                                           ),
-                                        const SizedBox(height: 4),
+                                        const SizedBox(height: AppSpacing.xxs),
                                         MoneyText(
                                           c.summa,
                                           size: MoneySize.list,
@@ -166,7 +170,7 @@ Future<void> _showContractForm(BuildContext context, int projectId) async {
 
   await showAppBottomSheet<void>(
     context,
-    title: 'Shartnoma qo\'shish',
+    title: context.l10n.contractAdd,
     heightFactor: 0.75,
     child: _ContractFormLifetime(
       resources: [
@@ -199,11 +203,15 @@ Future<void> _showContractForm(BuildContext context, int projectId) async {
                     }
                   },
                   child: InputDecorator(
-                    decoration: const InputDecoration(labelText: 'Ish turi'),
+                    decoration: InputDecoration(
+                      labelText: context.l10n.docWorkType,
+                    ),
                     child: Row(
                       children: [
                         Expanded(
-                          child: Text(workTypeName ?? 'Ish turini tanlang'),
+                          child: Text(
+                            workTypeName ?? context.l10n.workTypeSelect,
+                          ),
                         ),
                         const Icon(AppIcons.chevronDown, size: 20),
                       ],
@@ -215,8 +223,8 @@ Future<void> _showContractForm(BuildContext context, int projectId) async {
                   valueListenable: descriptionError,
                   builder: (context, error, _) => AppTextField(
                     controller: descriptionController,
-                    label: 'Tavsif *',
-                    hint: 'Bajariladigan ishni qisqacha yozing',
+                    label: context.l10n.commonDescriptionRequired,
+                    hint: context.l10n.contractDescriptionHint,
                     errorText: error,
                     onChanged: (_) => descriptionError.value = null,
                     maxLines: 3,
@@ -241,30 +249,32 @@ Future<void> _showContractForm(BuildContext context, int projectId) async {
     stickyAction: ValueListenableBuilder<bool>(
       valueListenable: saving,
       builder: (sheetContext, isSaving, _) => AppButton.primary(
-        label: isSaving ? 'Saqlanmoqda…' : 'Saqlash',
+        label: isSaving ? context.l10n.commonSaving : context.l10n.commonSave,
         isLoading: isSaving,
         onPressed: () async {
           if (filesUploading) {
-            AppSnackbar.error(
-              sheetContext,
-              'Fayl yuklanishini kuting, keyin saqlang.',
-            );
+            AppSnackbar.error(sheetContext, context.l10n.fileWaitThenSave);
             return;
           }
           if (saving.value) return;
           if (descriptionController.text.trim().isEmpty) {
-            descriptionError.value =
-                'Tavsif majburiy. Bajariladigan ishni yozing.';
+            descriptionError.value = context.l10n.contractDescriptionRequired;
             return;
           }
           descriptionError.value = null;
           if (workTypeId == null || amountController.text.isEmpty) {
-            AppSnackbar.error(sheetContext, 'Ish turi va summani kiriting');
+            AppSnackbar.error(
+              sheetContext,
+              context.l10n.contractEnterWorkTypeAmount,
+            );
             return;
           }
           final amount = Decimal.tryParse(amountController.text);
           if (amount == null || amount <= Decimal.zero) {
-            AppSnackbar.error(sheetContext, 'Summa 0 dan katta bo‘lishi kerak');
+            AppSnackbar.error(
+              sheetContext,
+              context.l10n.validationAmountPositive,
+            );
             return;
           }
           saving.value = true;

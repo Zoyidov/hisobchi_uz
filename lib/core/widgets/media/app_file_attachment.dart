@@ -14,6 +14,7 @@ import '../../theme/app_spacing.dart';
 import '../feedback/app_snackbar.dart';
 import '../sheets/app_bottom_sheet.dart';
 import '../../icons/app_icons.dart';
+import '../../localization/app_localization_extension.dart';
 
 const _maxFileSizeBytes = 5 * 1024 * 1024;
 const _allowedExtensions = [
@@ -61,17 +62,11 @@ class _AppFileAttachmentState extends State<AppFileAttachment> {
       await _pickAndUpload();
     } on PlatformException catch (_) {
       if (mounted) {
-        AppSnackbar.error(
-          context,
-          'Kamera yoki galereyani ochib bo‘lmadi. Qurilma ruxsatlarini tekshiring.',
-        );
+        AppSnackbar.error(context, context.l10n.fileCameraGalleryError);
       }
     } catch (_) {
       if (mounted) {
-        AppSnackbar.error(
-          context,
-          'Faylni ochib bo‘lmadi. Qayta urinib ko‘ring.',
-        );
+        AppSnackbar.error(context, context.l10n.fileOpenError);
       }
     }
   }
@@ -79,7 +74,7 @@ class _AppFileAttachmentState extends State<AppFileAttachment> {
   Future<void> _pickAndUpload() async {
     final choice = await showAppBottomSheet<String>(
       context,
-      title: 'Fayl biriktirish',
+      title: context.l10n.fileAttach,
       heightFactor: MediaQuery.textScalerOf(context).scale(14) > 20
           ? 0.6
           : 0.35,
@@ -89,17 +84,17 @@ class _AppFileAttachmentState extends State<AppFileAttachment> {
         children: [
           ListTile(
             leading: const Icon(AppIcons.camera),
-            title: const Text('Kamera'),
+            title: Text(context.l10n.fileCamera),
             onTap: () => Navigator.pop(context, 'camera'),
           ),
           ListTile(
             leading: const Icon(AppIcons.gallery),
-            title: const Text('Galereya'),
+            title: Text(context.l10n.fileGallery),
             onTap: () => Navigator.pop(context, 'gallery'),
           ),
           ListTile(
             leading: const Icon(AppIcons.file),
-            title: const Text('Fayl'),
+            title: Text(context.l10n.fileFile),
             onTap: () => Navigator.pop(context, 'file'),
           ),
         ],
@@ -132,10 +127,7 @@ class _AppFileAttachmentState extends State<AppFileAttachment> {
   Future<void> _upload(File file) async {
     if (await file.length() > _maxFileSizeBytes) {
       if (mounted) {
-        AppSnackbar.error(
-          context,
-          'Fayl hajmi 5 MB dan katta bo\'lmasligi kerak',
-        );
+        AppSnackbar.error(context, context.l10n.fileTooLarge);
       }
       return;
     }
@@ -198,11 +190,11 @@ class _AppFileAttachmentState extends State<AppFileAttachment> {
           backgroundColor: Colors.black,
           appBar: AppBar(
             backgroundColor: Colors.black,
-            foregroundColor: Colors.white,
-            title: Text(file.name ?? 'Rasm'),
+            foregroundColor: context.colors.onPrimary,
+            title: Text(file.name ?? context.l10n.fileImage),
             actions: [
               IconButton(
-                tooltip: 'Rasmni olib tashlash',
+                tooltip: context.l10n.fileRemoveImage,
                 icon: const Icon(AppIcons.delete),
                 onPressed: () {
                   if (mounted) _remove(file);
@@ -216,13 +208,17 @@ class _AppFileAttachmentState extends State<AppFileAttachment> {
               child: local != null
                   ? Image.file(
                       local,
-                      errorBuilder: (_, _, _) =>
-                          const Icon(AppIcons.brokenImage, color: Colors.white),
+                      errorBuilder: (_, _, _) => Icon(
+                        AppIcons.brokenImage,
+                        color: context.colors.onPrimary,
+                      ),
                     )
                   : Image.network(
                       file.url,
-                      errorBuilder: (_, _, _) =>
-                          const Icon(AppIcons.brokenImage, color: Colors.white),
+                      errorBuilder: (_, _, _) => Icon(
+                        AppIcons.brokenImage,
+                        color: context.colors.onPrimary,
+                      ),
                     ),
             ),
           ),
@@ -257,7 +253,7 @@ class _AppFileAttachmentState extends State<AppFileAttachment> {
                     _localFiles[f.id] != null &&
                         _isImage(_localFiles[f.id]!.path)
                     ? ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(AppRadius.xxs),
                         child: Image.file(
                           _localFiles[f.id]!,
                           width: 24,
@@ -287,7 +283,7 @@ class _AppFileAttachmentState extends State<AppFileAttachment> {
             for (final name in _failedFiles.keys)
               InputChip(
                 onPressed: () => _upload(_failedFiles[name]!),
-                label: Text('$name · Qayta urinish'),
+                label: Text(context.l10n.fileRetryUpload(name)),
                 backgroundColor: colors.error.withValues(alpha: 0.1),
                 avatar: Icon(AppIcons.error, size: 16, color: colors.error),
                 onDeleted: () => setState(() => _failedFiles.remove(name)),
@@ -311,7 +307,7 @@ class _AppFileAttachmentState extends State<AppFileAttachment> {
                 const SizedBox(width: 6),
                 Flexible(
                   child: Text(
-                    'Fayl biriktirish',
+                    context.l10n.fileAttach,
                     style: TextStyle(
                       color: colors.primary,
                       fontWeight: FontWeight.w600,

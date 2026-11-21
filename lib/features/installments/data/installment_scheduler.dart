@@ -1,6 +1,7 @@
 import 'package:decimal/decimal.dart';
 
 import 'installment_models.dart';
+import '../../../core/localization/app_localization_extension.dart';
 
 /// `equal` grafigini server bilan **bir xil** algoritm bo'yicha hisoblaydi:
 /// har oy +1 oy, oxirgi qism yaxlitlash farqini oladi (MOBILE_APP_TZ.md 9.1, 9.4,
@@ -79,10 +80,14 @@ abstract final class InstallmentScheduler {
       if (remaining <= Decimal.zero) break;
       final due = item.remaining;
       if (remaining >= due) {
-        descriptions.add('${item.itemNumber}-qismni to\'liq yopadi');
+        descriptions.add(
+          AppL10n.current.installmentClosesPartFully(item.itemNumber),
+        );
         remaining -= due;
       } else {
-        descriptions.add('${item.itemNumber}-qismni qisman yopadi');
+        descriptions.add(
+          AppL10n.current.installmentClosesPartPartially(item.itemNumber),
+        );
         remaining = Decimal.zero;
       }
     }

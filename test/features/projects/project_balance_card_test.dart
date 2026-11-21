@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hisobchi_uz/core/theme/app_colors.dart';
 import 'package:hisobchi_uz/features/projects/data/project_models.dart';
 import 'package:hisobchi_uz/features/projects/presentation/widgets/project_balance_card.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 void main() {
   testWidgets('currency selection displays the matching project account', (
@@ -11,6 +12,9 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('uz'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: ThemeData(extensions: const [AppColorsExtension.light]),
         home: Scaffold(
           body: Padding(

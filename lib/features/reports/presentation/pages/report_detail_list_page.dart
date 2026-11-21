@@ -11,6 +11,7 @@ import '../../../../core/widgets/typography/money_text.dart';
 import '../../data/partner_report_models.dart';
 import 'partner_detail_report_page.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class _DetailCubit extends PagedListCubit<PartnerReportDetailItem> {
   _DetailCubit(this._fetcher);
@@ -58,7 +59,7 @@ class ReportDetailListPage extends StatelessWidget {
                   onRefresh: cubit.refresh,
                   onRetry: cubit.loadFirst,
                   emptyIcon: AppIcons.partners,
-                  emptyTitle: 'Ma\'lumot topilmadi',
+                  emptyTitle: context.l10n.emptyGenericTitle,
                   padding: const EdgeInsets.all(AppSpacing.md),
                   itemBuilder: (context, item, index) => AppCard(
                     onTap: item.partnerId <= 0
@@ -75,7 +76,7 @@ class ReportDetailListPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(child: Text(item.partnerName)),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: AppSpacing.sm),
                         Flexible(
                           child: MoneyText(
                             item.balance,

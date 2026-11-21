@@ -17,11 +17,20 @@ class _PartnerListCard extends StatelessWidget {
         ? phoneDigits.substring(3)
         : phoneDigits;
     final (label, accent) = partner.isDeleted
-        ? ('O‘chirilgan', colors.textTertiary)
+        ? (context.l10n.commonDeleted, colors.textTertiary)
         : switch (partner.status) {
-            PartnerBalanceStatus.creditor => ('Haqdor', colors.success),
-            PartnerBalanceStatus.debtor => ('Qarzdor', colors.error),
-            PartnerBalanceStatus.closed => ('Yopiq', colors.textSecondary),
+            PartnerBalanceStatus.creditor => (
+              context.l10n.partnersCreditor,
+              colors.success,
+            ),
+            PartnerBalanceStatus.debtor => (
+              context.l10n.partnersDebtor,
+              colors.error,
+            ),
+            PartnerBalanceStatus.closed => (
+              context.l10n.partnersClosedShort,
+              colors.textSecondary,
+            ),
           };
     final hasBalance =
         partner.balanceUzs != Decimal.zero ||
@@ -38,9 +47,9 @@ class _PartnerListCard extends StatelessWidget {
         .join()
         .toUpperCase();
     final menu = partner.isDeleted
-        ? const SizedBox(width: 12)
+        ? const SizedBox(width: AppSpacing.sm)
         : PopupMenuButton<String>(
-            tooltip: 'Mijoz amallari',
+            tooltip: context.l10n.partnersClientActions,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 224, maxWidth: 280),
             color: colors.surface,
@@ -51,7 +60,7 @@ class _PartnerListCard extends StatelessWidget {
             offset: const Offset(-8, 4),
             menuPadding: const EdgeInsets.all(6),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(AppRadius.xl),
               side: BorderSide(color: colors.borderSubtle),
             ),
             icon: Icon(AppIcons.more, size: 19, color: colors.textTertiary),
@@ -68,7 +77,7 @@ class _PartnerListCard extends StatelessWidget {
                 height: 52,
                 child: _PartnerMenuAction(
                   icon: AppIcons.call,
-                  label: 'Qo‘ng‘iroq qilish',
+                  label: context.l10n.commonCallAction,
                   color: colors.success,
                 ),
               ),
@@ -77,7 +86,7 @@ class _PartnerListCard extends StatelessWidget {
                 height: 52,
                 child: _PartnerMenuAction(
                   icon: AppIcons.message,
-                  label: 'SMS yozish',
+                  label: context.l10n.commonWriteSms,
                   color: colors.info,
                 ),
               ),
@@ -87,7 +96,7 @@ class _PartnerListCard extends StatelessWidget {
                 height: 52,
                 child: _PartnerMenuAction(
                   icon: AppIcons.user,
-                  label: 'Tafsilotlarni ochish',
+                  label: context.l10n.commonOpenDetails,
                   color: colors.primary,
                 ),
               ),
@@ -101,7 +110,7 @@ class _PartnerListCard extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: colors.primaryContainer,
-            borderRadius: BorderRadius.circular(11),
+            borderRadius: BorderRadius.circular(AppRadius.small),
           ),
           child: Text(
             initials.isEmpty ? '?' : initials,
@@ -127,7 +136,7 @@ class _PartnerListCard extends StatelessWidget {
                   letterSpacing: -.2,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xxs),
               Text(
                 PhoneFormatter.toDisplay(phone).replaceFirst('+998 ', ''),
                 maxLines: 1,
@@ -185,7 +194,7 @@ class _PartnerListCard extends StatelessWidget {
           ? colors.surfaceSecondary
           : colors.surface,
       border: Border.all(color: colors.border.withValues(alpha: .65)),
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppRadius.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -205,14 +214,14 @@ class _PartnerListCard extends StatelessWidget {
                         SizedBox(width: 44, height: 44, child: menu),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.xs),
                     Padding(
                       padding: const EdgeInsets.only(right: 10),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           status,
-                          const SizedBox(width: 12),
+                          const SizedBox(width: AppSpacing.sm),
                           Expanded(child: amounts),
                         ],
                       ),
@@ -228,7 +237,11 @@ class _PartnerListCard extends StatelessWidget {
                     flex: 5,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [amounts, const SizedBox(height: 4), status],
+                      children: [
+                        amounts,
+                        const SizedBox(height: AppSpacing.xxs),
+                        status,
+                      ],
                     ),
                   ),
                   SizedBox(width: 44, height: 44, child: menu),
@@ -256,7 +269,7 @@ class _PartnerListCard extends StatelessWidget {
                       const SizedBox(width: 5),
                       Expanded(
                         child: Text(
-                          'Bo‘lib to‘lash',
+                          context.l10n.commonInstallment,
                           style: Theme.of(context).textTheme.labelSmall
                               ?.copyWith(
                                 fontSize: 10,
@@ -264,7 +277,7 @@ class _PartnerListCard extends StatelessWidget {
                               ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.xs),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -304,9 +317,9 @@ class _PartnerListCard extends StatelessWidget {
         phone.isNotEmpty &&
         await launchUrl(Uri(scheme: scheme, path: '+$phone'));
     if (!opened && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Telefon ilovasini ochib bo‘lmadi')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.commonPhoneAppError)));
     }
   }
 }
@@ -329,7 +342,7 @@ class _PartnerMenuAction extends StatelessWidget {
         height: 34,
         decoration: BoxDecoration(
           color: color.withValues(alpha: .09),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppRadius.small),
         ),
         child: Icon(icon, color: color, size: 18),
       ),
@@ -343,7 +356,7 @@ class _PartnerMenuAction extends StatelessWidget {
           ),
         ),
       ),
-      const SizedBox(width: 8),
+      const SizedBox(width: AppSpacing.xs),
       Icon(AppIcons.chevronRight, size: 16, color: context.colors.textTertiary),
     ],
   );
@@ -390,7 +403,7 @@ class _PartnerPaginationSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Semantics(
-    label: 'Mijozlar yuklanmoqda',
+    label: context.l10n.partnersClientsLoading,
     child: Column(
       children: [
         for (var i = 0; i < 2; i++)
@@ -403,7 +416,7 @@ class _PartnerPaginationSkeleton extends StatelessWidget {
                   context.colors.surfaceSecondary.withValues(alpha: .55),
                   context.colors.surface,
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
                 border: Border.all(color: context.colors.borderSubtle),
               ),
               child: const Row(
@@ -411,7 +424,9 @@ class _PartnerPaginationSkeleton extends StatelessWidget {
                   AppSkeletonBox(
                     width: 36,
                     height: 36,
-                    borderRadius: BorderRadius.all(Radius.circular(18)),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(AppRadius.xl),
+                    ),
                   ),
                   SizedBox(width: 10),
                   Expanded(
@@ -431,7 +446,7 @@ class _PartnerPaginationSkeleton extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(width: 20),
+                  SizedBox(width: AppSpacing.lg),
                   Expanded(
                     flex: 5,
                     child: Column(

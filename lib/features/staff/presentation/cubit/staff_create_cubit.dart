@@ -6,6 +6,7 @@ import '../../../../core/errors/failure.dart';
 import '../../../../core/events/data_refresh_bus.dart';
 import '../../data/staff_models.dart';
 import '../../data/staff_repository.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class StaffCreateState extends Equatable {
   const StaffCreateState({
@@ -52,7 +53,16 @@ class StaffCreateState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [step, phone, verifyToken, permissionGroups, selectedPermissions, isLoading, error, success];
+  List<Object?> get props => [
+    step,
+    phone,
+    verifyToken,
+    permissionGroups,
+    selectedPermissions,
+    isLoading,
+    error,
+    success,
+  ];
 }
 
 /// Xodim qo'shish — 3 qadam (MOBILE_APP_TZ.md 15.1).
@@ -64,7 +74,10 @@ class StaffCreateCubit extends Cubit<StaffCreateState> {
   Future<void> loadPermissionGroups() async {
     final result = await _repository.getPermissionGroups();
     if (isClosed) return;
-    result.when(success: (groups) => emit(state.copyWith(permissionGroups: groups)), failure: (_) {});
+    result.when(
+      success: (groups) => emit(state.copyWith(permissionGroups: groups)),
+      failure: (_) {},
+    );
   }
 
   Future<void> submitPhone(String phone) async {
@@ -79,10 +92,14 @@ class StaffCreateCubit extends Cubit<StaffCreateState> {
 
   Future<void> submitOtp(String code) async {
     emit(state.copyWith(isLoading: true, clearError: true));
-    final result = await _repository.verifyOtp(phone: state.phone, otpCode: code);
+    final result = await _repository.verifyOtp(
+      phone: state.phone,
+      otpCode: code,
+    );
     if (isClosed) return;
     result.when(
-      success: (token) => emit(state.copyWith(isLoading: false, step: 2, verifyToken: token)),
+      success: (token) =>
+          emit(state.copyWith(isLoading: false, step: 2, verifyToken: token)),
       failure: (f) => emit(state.copyWith(isLoading: false, error: f)),
     );
   }
@@ -109,9 +126,16 @@ class StaffCreateCubit extends Cubit<StaffCreateState> {
     emit(state.copyWith(selectedPermissions: updated));
   }
 
-  Future<void> submitDetails({required String name, required String password}) async {
+  Future<void> submitDetails({
+    required String name,
+    required String password,
+  }) async {
     if (state.selectedPermissions.isEmpty) {
-      emit(state.copyWith(error: const BusinessFailure('Kamida 1 ta ruxsat tanlanishi kerak')));
+      emit(
+        state.copyWith(
+          error: BusinessFailure(AppL10n.current.staffMinOnePermission),
+        ),
+      );
       return;
     }
     emit(state.copyWith(isLoading: true, clearError: true));

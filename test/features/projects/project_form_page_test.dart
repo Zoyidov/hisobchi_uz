@@ -12,6 +12,7 @@ import 'package:hisobchi_uz/core/widgets/inputs/app_text_field.dart';
 import 'package:hisobchi_uz/features/projects/data/project_models.dart';
 import 'package:hisobchi_uz/features/projects/data/projects_repository.dart';
 import 'package:hisobchi_uz/features/projects/presentation/pages/project_form_page.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 class _Repository implements ProjectsRepository {
   int calls = 0;
@@ -69,6 +70,9 @@ void main() {
         addTearDown(getIt.reset);
         await tester.pumpWidget(
           MaterialApp(
+            locale: const Locale('uz'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             theme: ThemeData(extensions: const [AppColorsExtension.light]),
             home: ProjectFormPage(
               editing: editing

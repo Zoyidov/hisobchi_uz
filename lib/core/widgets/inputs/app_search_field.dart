@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '../../constants/app_durations.dart';
 import '../../theme/app_colors.dart';
 import '../../icons/app_icons.dart';
+import '../../theme/app_radius.dart';
+import '../../localization/app_localization_extension.dart';
 
 /// Debounce bilan qidiruv maydoni (MOBILE_APP_TZ.md 8.2,
 /// E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 39).
@@ -12,12 +14,14 @@ class AppSearchField extends StatefulWidget {
   const AppSearchField({
     super.key,
     required this.onChanged,
-    this.hint = 'Qidirish...',
+    this.hint,
     this.controller,
   });
 
   final ValueChanged<String> onChanged;
-  final String hint;
+
+  /// Bo'sh bo'lsa — `l10n.commonSearch`.
+  final String? hint;
   final TextEditingController? controller;
 
   @override
@@ -62,7 +66,7 @@ class _AppSearchFieldState extends State<AppSearchField> {
         context,
       ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
       decoration: InputDecoration(
-        hintText: widget.hint,
+        hintText: widget.hint ?? context.l10n.commonSearch,
         hintStyle: Theme.of(
           context,
         ).textTheme.bodyMedium?.copyWith(color: colors.textTertiary),
@@ -110,15 +114,15 @@ class _AppSearchFieldState extends State<AppSearchField> {
           horizontal: 16,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
           borderSide: BorderSide(color: colors.border.withValues(alpha: 0.7)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
           borderSide: BorderSide(color: colors.border.withValues(alpha: 0.7)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
           borderSide: BorderSide(color: colors.primary, width: 1.5),
         ),
       ),

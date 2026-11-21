@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../theme/app_colors.dart';
 import '../../utils/formatters/money_formatter.dart';
+import '../../theme/app_radius.dart';
 
 /// Katta shriftli summa maydoni — avtomatik uch xonali guruhlash, raqamli
 /// klaviatura (MOBILE_APP_TZ.md 8.7, E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 37).
@@ -65,7 +66,7 @@ class _AppMoneyFieldState extends State<AppMoneyField> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
             color: colors.surfaceSecondary.withValues(alpha: 0.6),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
             border: Border.all(
               color: widget.errorText != null
                   ? colors.error
@@ -109,7 +110,7 @@ class _AppMoneyFieldState extends State<AppMoneyField> {
                   ),
                   decoration: BoxDecoration(
                     color: colors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.small),
                   ),
                   child: Text(
                     widget.currencyLabel,

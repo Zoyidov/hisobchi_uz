@@ -19,6 +19,8 @@ import '../../data/document_models.dart';
 import '../../data/documents_repository.dart';
 import '../cubit/cost_type_cubit.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Xarajat turlari (MOBILE_APP_TZ.md 11-bo'lim).
 class CostTypesPage extends StatelessWidget {
@@ -40,7 +42,7 @@ class _View extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Xarajat turlari'),
+        title: Text(context.l10n.docCostTypes),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: AppSpacing.sm),
@@ -52,13 +54,13 @@ class _View extends StatelessWidget {
                 ),
                 minimumSize: const Size(0, 36),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppRadius.medium),
                 ),
               ),
               onPressed: () => _openForm(context),
               icon: const Icon(AppIcons.add, size: 15),
-              label: const Text(
-                'Qo\'shish',
+              label: Text(
+                context.l10n.commonAdd,
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
               ),
             ),
@@ -76,8 +78,8 @@ class _View extends StatelessWidget {
             CostTypeLoaded(:final items) =>
               items.isEmpty
                   ? AppEmptyState(
-                      title: 'Xarajat turi topilmadi',
-                      actionLabel: 'Xarajat turi qo\'shish',
+                      title: context.l10n.docCostTypeNotFound,
+                      actionLabel: context.l10n.docCostTypeAdd,
                       onAction: () => _openForm(context),
                     )
                   : RefreshIndicator(
@@ -102,7 +104,7 @@ class _View extends StatelessWidget {
         heroTag: 'cost_types_create_fab',
         onPressed: () => _openForm(context),
         icon: AppIcons.add,
-        label: 'Xarajat turi qo\'shish',
+        label: context.l10n.docCostTypeAdd,
       ),
     );
   }
@@ -145,18 +147,18 @@ class _Tile extends StatelessWidget {
                     spacing: 6,
                     children: [
                       if (item.isWorkerJoin)
-                        const AppStatusChip(
-                          label: 'Ishchi biriktiriladi',
+                        AppStatusChip(
+                          label: context.l10n.docWorkerAssigned,
                           tone: AppStatusChipTone.info,
                         ),
                       if (item.isSystem)
-                        const AppStatusChip(
-                          label: 'Tizim',
+                        AppStatusChip(
+                          label: context.l10n.docSystem,
                           tone: AppStatusChipTone.neutral,
                         ),
                       if (item.isDeleted)
-                        const AppStatusChip(
-                          label: 'O\'chirilgan',
+                        AppStatusChip(
+                          label: context.l10n.commonDeleted,
                           tone: AppStatusChipTone.neutral,
                         ),
                     ],
@@ -167,7 +169,7 @@ class _Tile extends StatelessWidget {
           ),
           if (item.isDeleted)
             AppButton.text(
-              label: 'Tiklash',
+              label: context.l10n.commonRestore,
               onPressed: () =>
                   context.read<CostTypeCubit>().submitRestore(item.id),
             )
@@ -177,8 +179,8 @@ class _Tile extends StatelessWidget {
               onPressed: () async {
                 final confirmed = await showAppConfirmationSheet(
                   context,
-                  title: 'Xarajat turi o\'chirilsinmi?',
-                  description: 'Bu amalni keyin qaytarib bo\'lmaydi.',
+                  title: context.l10n.docCostTypeDeleteConfirm,
+                  description: context.l10n.commonIrreversible,
                 );
                 if (confirmed && context.mounted) {
                   final error = await context
@@ -207,26 +209,29 @@ void _showCostTypeForm(BuildContext context, {CostType? editing}) {
   showAppBottomSheet<void>(
     context,
     title: editing == null
-        ? 'Xarajat turi qo\'shish'
-        : 'Xarajat turini tahrirlash',
+        ? context.l10n.docCostTypeAdd
+        : context.l10n.docCostTypeEdit,
     child: StatefulBuilder(
       builder: (context, setState) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AppTextField(controller: nameController, label: 'Nomi'),
+            AppTextField(
+              controller: nameController,
+              label: context.l10n.commonName,
+            ),
             const SizedBox(height: AppSpacing.md),
             AppTextField(
               controller: descriptionController,
-              label: 'Tavsif (ixtiyoriy)',
+              label: context.l10n.commonDescriptionOptional,
               maxLines: 2,
               minLines: 1,
             ),
             const SizedBox(height: AppSpacing.md),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Ishchi biriktiriladi'),
+              title: Text(context.l10n.docWorkerAssigned),
               value: isWorkerJoin,
               onChanged: (v) => setState(() => isWorkerJoin = v),
             ),
@@ -236,7 +241,7 @@ void _showCostTypeForm(BuildContext context, {CostType? editing}) {
     ),
     stickyAction: Builder(
       builder: (sheetContext) => AppButton.primary(
-        label: 'Saqlash',
+        label: context.l10n.commonSave,
         onPressed: () async {
           final name = nameController.text.trim();
           if (name.isEmpty) return;

@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../data/staff_models.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Ruxsatlar — kategoriyalar bo'yicha guruhlangan checkbox ro'yxati, har bir
 /// kategoriyada "Barchasini tanlash" (MOBILE_APP_TZ.md 15.1).
@@ -31,10 +32,16 @@ class PermissionGroupList extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(group.category, style: Theme.of(context).textTheme.titleSmall),
+              Text(
+                group.category,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
               AppButton.text(
-                label: 'Barchasini tanlash',
-                onPressed: () => onToggleCategory(group, !group.items.every((i) => selected.contains(i.key))),
+                label: context.l10n.commonSelectAll,
+                onPressed: () => onToggleCategory(
+                  group,
+                  !group.items.every((i) => selected.contains(i.key)),
+                ),
               ),
             ],
           ),
@@ -51,7 +58,10 @@ class PermissionGroupList extends StatelessWidget {
         if (groups.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
-            child: Text('Ruxsatlar ro\'yxati yuklanmoqda...', style: TextStyle(color: colors.textSecondary)),
+            child: Text(
+              context.l10n.staffPermissionsLoading,
+              style: TextStyle(color: colors.textSecondary),
+            ),
           ),
       ],
     );

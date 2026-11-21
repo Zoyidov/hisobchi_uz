@@ -6,6 +6,8 @@ import '../../../../core/widgets/cards/app_card.dart';
 import '../../../../core/widgets/chips/app_status_chip.dart';
 import '../../data/project_models.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// `ProjectCard` — business component (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 27,
 /// MOBILE_APP_TZ.md 10.2).
@@ -41,7 +43,7 @@ class ProjectCard extends StatelessWidget {
     return AppCard(
       onTap: onTap,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(AppRadius.card),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -52,7 +54,7 @@ class ProjectCard extends StatelessWidget {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: statusColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
             ),
             child: image == null
                 ? Icon(AppIcons.project, color: statusColor, size: 22)
@@ -83,15 +85,18 @@ class ProjectCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    AppStatusChip(label: project.status.label, tone: tone),
+                    const SizedBox(width: AppSpacing.xs),
+                    AppStatusChip(
+                      label: project.status.label(context.l10n),
+                      tone: tone,
+                    ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xxs),
                 Row(
                   children: [
                     Icon(AppIcons.user, size: 14, color: colors.textSecondary),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: AppSpacing.xxs),
                     Expanded(
                       child: Text(
                         project.projectOwner,
@@ -109,7 +114,7 @@ class ProjectCard extends StatelessWidget {
                 Row(
                   children: [
                     Icon(AppIcons.call, size: 13, color: colors.textTertiary),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: AppSpacing.xxs),
                     Text(
                       project.phone,
                       style: TextStyle(
@@ -120,7 +125,7 @@ class ProjectCard extends StatelessWidget {
                   ],
                 ),
                 if (project.address != null && project.address!.isNotEmpty) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xxs),
                   Row(
                     children: [
                       Icon(
@@ -128,7 +133,7 @@ class ProjectCard extends StatelessWidget {
                         size: 13,
                         color: colors.textTertiary,
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: AppSpacing.xxs),
                       Expanded(
                         child: Text(
                           project.address!,
@@ -146,7 +151,7 @@ class ProjectCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppSpacing.xxs),
           Icon(AppIcons.chevronRight, color: colors.textTertiary, size: 20),
         ],
       ),

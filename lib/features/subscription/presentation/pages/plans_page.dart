@@ -14,6 +14,8 @@ import '../../data/subscription_repository.dart';
 import '../widgets/payment_flow_sheet.dart';
 import '../widgets/payment_provider_sheet.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Tariflar (MOBILE_APP_TZ.md 13.3).
 class PlansPage extends StatefulWidget {
@@ -56,7 +58,7 @@ class _PlansPageState extends State<PlansPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tariflar')),
+      appBar: AppBar(title: Text(context.l10n.subscriptionBannerPlans)),
       body: _buildBody(context),
     );
   }
@@ -64,7 +66,7 @@ class _PlansPageState extends State<PlansPage> {
   Widget _buildBody(BuildContext context) {
     if (_error != null) {
       return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
+        title: context.l10n.errorLoadShort,
         description: _error,
         onRetry: _load,
       );
@@ -77,7 +79,7 @@ class _PlansPageState extends State<PlansPage> {
         AppSegmentedControl<BillingCycle>(
           value: _cycle,
           segments: BillingCycle.values
-              .map((c) => AppSegment(value: c, label: c.label))
+              .map((c) => AppSegment(value: c, label: c.label(context.l10n)))
               .toList(),
           onChanged: (v) => setState(() => _cycle = v),
         ),
@@ -133,7 +135,7 @@ class _PlansPageState extends State<PlansPage> {
                     ),
                     decoration: BoxDecoration(
                       color: colors.primary.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppRadius.small),
                       border: Border.all(
                         color: colors.primary.withValues(alpha: 0.25),
                       ),
@@ -142,9 +144,9 @@ class _PlansPageState extends State<PlansPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(AppIcons.success, size: 14, color: colors.primary),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: AppSpacing.xxs),
                         Text(
-                          'Joriy tarifingiz',
+                          context.l10n.subscriptionYourCurrentPlan,
                           style: TextStyle(
                             color: colors.primary,
                             fontWeight: FontWeight.w600,
@@ -157,7 +159,7 @@ class _PlansPageState extends State<PlansPage> {
               ],
             ),
             if (price != null) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.xs),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 textBaseline: TextBaseline.alphabetic,
@@ -170,7 +172,7 @@ class _PlansPageState extends State<PlansPage> {
                     ),
                   ),
                   if (price.discount != null && price.discount! > 0) ...[
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.xs),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -178,7 +180,7 @@ class _PlansPageState extends State<PlansPage> {
                       ),
                       decoration: BoxDecoration(
                         color: colors.error.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                       child: Text(
                         '-${price.discount}%',
@@ -192,7 +194,7 @@ class _PlansPageState extends State<PlansPage> {
                   ],
                   if (price.description1 != null &&
                       price.description1!.trim().isNotEmpty) ...[
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.xs),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -200,7 +202,7 @@ class _PlansPageState extends State<PlansPage> {
                       ),
                       decoration: BoxDecoration(
                         color: colors.primary.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                       child: Text(
                         price.description1!,
@@ -231,19 +233,27 @@ class _PlansPageState extends State<PlansPage> {
                 _featureChip(
                   context,
                   AppIcons.partners,
-                  '${plan.customersLabel} Hamkor',
+                  context.l10n.planFeaturePartners(
+                    plan.customersLabel(context.l10n),
+                  ),
                 ),
                 _featureChip(
                   context,
                   AppIcons.project,
-                  '${plan.projectsLabel} Loyiha',
+                  context.l10n.planFeatureProjects(
+                    plan.projectsLabel(context.l10n),
+                  ),
                 ),
                 _featureChip(
                   context,
                   AppIcons.worker,
-                  '${plan.usersLabel} Xodim',
+                  context.l10n.planFeatureStaff(plan.usersLabel(context.l10n)),
                 ),
-                _featureChip(context, AppIcons.message, '${plan.smsLabel} SMS'),
+                _featureChip(
+                  context,
+                  AppIcons.message,
+                  context.l10n.planFeatureSms(plan.smsLabel(context.l10n)),
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.lg),
@@ -272,7 +282,9 @@ class _PlansPageState extends State<PlansPage> {
               const SizedBox(height: AppSpacing.xs),
             ],
             AppButton.primary(
-              label: isCurrent ? 'Joriy tarif' : 'Tanlash',
+              label: isCurrent
+                  ? context.l10n.subscriptionCurrentPlan
+                  : context.l10n.commonSelect,
               onPressed: plan.canSubscribe && !isCurrent
                   ? () => _selectPlan(context, plan)
                   : null,
@@ -289,7 +301,7 @@ class _PlansPageState extends State<PlansPage> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: colors.surfaceSecondary,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadius.small),
         border: Border.all(color: colors.borderSubtle),
       ),
       child: Row(
@@ -313,14 +325,14 @@ class _PlansPageState extends State<PlansPage> {
   Future<void> _selectPlan(BuildContext context, PricingPlan plan) async {
     final priceOpt = _priceFor(plan);
     final cycleLabel = switch (_cycle) {
-      BillingCycle.monthly => 'Oylik obuna',
-      BillingCycle.semiAnnual => '6 oylik obuna',
-      BillingCycle.annual => 'Yillik obuna',
+      BillingCycle.monthly => context.l10n.billingMonthlySubscription,
+      BillingCycle.semiAnnual => context.l10n.billingSemiAnnualSubscription,
+      BillingCycle.annual => context.l10n.billingAnnualSubscription,
     };
 
     final provider = await showPaymentProviderSheet(
       context,
-      itemTitle: '${plan.displayName} tarifi',
+      itemTitle: context.l10n.planNamed(plan.displayName),
       formattedPrice: priceOpt?.formatted ?? '',
       itemSubtitle: cycleLabel,
     );
@@ -339,7 +351,7 @@ class _PlansPageState extends State<PlansPage> {
     );
     if (!context.mounted) return;
     if (success) {
-      AppSnackbar.success(context, 'Obuna faollashtirildi');
+      AppSnackbar.success(context, context.l10n.subscriptionActivated);
       _load();
     }
   }

@@ -27,14 +27,14 @@ Future<T?> showAppBottomSheet<T>(
       final sheetBody = Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           Center(
             child: Container(
               width: 44,
               height: 5,
               decoration: BoxDecoration(
                 color: colors.border.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(3),
+                borderRadius: BorderRadius.circular(AppRadius.xxs),
               ),
             ),
           ),
@@ -60,7 +60,7 @@ Future<T?> showAppBottomSheet<T>(
                         ),
                       ),
                       if (subtitle != null) ...[
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.xxs),
                         Text(
                           subtitle,
                           style: Theme.of(context).textTheme.bodyMedium

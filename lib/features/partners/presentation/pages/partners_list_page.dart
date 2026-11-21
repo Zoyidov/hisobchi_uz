@@ -23,6 +23,9 @@ import '../cubit/partners_cubit.dart';
 import '../widgets/export_excel_helper.dart';
 import '../widgets/partner_filter_sort_sheets.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 part '../widgets/partner_list_card.dart';
 
@@ -74,7 +77,7 @@ class _PartnersListView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Mijozlar',
+                        context.l10n.partnersClientsTitle,
                         style: Theme.of(context).textTheme.headlineMedium
                             ?.copyWith(
                               fontSize: 26,
@@ -84,7 +87,7 @@ class _PartnersListView extends StatelessWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        'Mijozlaringiz va hisob-kitoblar',
+                        context.l10n.partnersClientsSubtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -99,14 +102,16 @@ class _PartnersListView extends StatelessWidget {
                         padding: const EdgeInsets.only(right: 16),
                         child: Center(
                           child: IconButton.filled(
-                            tooltip: 'Yangi mijoz qo‘shish',
+                            tooltip: context.l10n.partnersAddClient,
                             style: IconButton.styleFrom(
                               backgroundColor: colors.primary,
-                              foregroundColor: Colors.white,
+                              foregroundColor: context.colors.onPrimary,
                               fixedSize: const Size(44, 44),
                               padding: const EdgeInsets.all(10),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.md,
+                                ),
                               ),
                             ),
                             onPressed: () => _create(context),
@@ -124,12 +129,12 @@ class _PartnersListView extends StatelessWidget {
                         Expanded(
                           child: AppSearchField(
                             onChanged: cubit.updateSearch,
-                            hint: 'Ism yoki telefon',
+                            hint: context.l10n.partnersSearchNamePhone,
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: AppSpacing.xs),
                         IconButton.filledTonal(
-                          tooltip: 'Excel hisobotni yuklab olish',
+                          tooltip: context.l10n.partnersExportExcel,
                           style: IconButton.styleFrom(
                             backgroundColor: colors.success.withValues(
                               alpha: .1,
@@ -137,7 +142,7 @@ class _PartnersListView extends StatelessWidget {
                             foregroundColor: colors.success,
                             minimumSize: const Size(44, 48),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.md),
                             ),
                           ),
                           onPressed: () => downloadAndShareExcel(
@@ -148,14 +153,16 @@ class _PartnersListView extends StatelessWidget {
                           ),
                           icon: const Icon(AppIcons.download, size: 22),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: AppSpacing.xs),
                         IconButton.filledTonal(
-                          tooltip: 'Saralash: ${_sortLabel(cubit.sort)}',
+                          tooltip: context.l10n.partnersSortTooltip(
+                            _sortLabel(context.l10n, cubit.sort),
+                          ),
                           style: IconButton.styleFrom(
                             backgroundColor: colors.surfaceSecondary,
                             minimumSize: const Size(44, 48),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.md),
                             ),
                           ),
                           onPressed: () async {
@@ -194,7 +201,7 @@ class _PartnersListView extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             itemCount: PartnerStatusFilter.values.length,
                             separatorBuilder: (_, _) =>
-                                const SizedBox(width: 8),
+                                const SizedBox(width: AppSpacing.xs),
                             itemBuilder: (context, index) {
                               final filter = PartnerStatusFilter.values[index];
                               final selected = cubit.status == filter;
@@ -210,14 +217,14 @@ class _PartnersListView extends StatelessWidget {
                                           ? 17
                                           : 8,
                                       color: selected
-                                          ? Colors.white
+                                          ? context.colors.onPrimary
                                           : filter ==
                                                 PartnerStatusFilter.creditor
                                           ? colors.success
                                           : colors.error,
                                     ),
                                     const SizedBox(width: 7),
-                                    Text(_filterLabel(filter)),
+                                    Text(_filterLabel(context.l10n, filter)),
                                   ],
                                 ),
                                 selected: selected,
@@ -236,14 +243,16 @@ class _PartnersListView extends StatelessWidget {
                                     .labelMedium
                                     ?.copyWith(
                                       color: selected
-                                          ? Colors.white
+                                          ? context.colors.onPrimary
                                           : colors.textSecondary,
                                       fontWeight: selected
                                           ? FontWeight.w600
                                           : FontWeight.w500,
                                     ),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.md,
+                                  ),
                                 ),
                                 onSelected: (_) {
                                   if (!selected) cubit.updateStatus(filter);
@@ -268,12 +277,12 @@ class _PartnersListView extends StatelessWidget {
                     onRefresh: cubit.refresh,
                     onRetry: cubit.loadFirst,
                     emptyIcon: narrowed ? AppIcons.search : AppIcons.partners,
-                    emptyTitle: 'Mijozlar topilmadi',
+                    emptyTitle: context.l10n.partnersClientsEmpty,
                     emptyDescription: narrowed
-                        ? 'Qidiruvni yoki tanlangan filtrni o‘zgartirib ko‘ring.'
-                        : 'Hamkor qo‘shib, hisob-kitoblarni yuritishni boshlang.',
+                        ? context.l10n.partnersEmptyFiltered
+                        : context.l10n.partnersEmptyStart,
                     emptyAction: !narrowed && canCreate
-                        ? 'Hamkor qo‘shish'
+                        ? context.l10n.partnersAdd
                         : null,
                     onEmptyAction: !narrowed && canCreate
                         ? () => _create(context)
@@ -319,17 +328,18 @@ class _PartnerFilterHeader extends SliverPersistentHeaderDelegate {
       oldDelegate.height != height || oldDelegate.child != child;
 }
 
-String _filterLabel(PartnerStatusFilter filter) => switch (filter) {
-  PartnerStatusFilter.all => 'Barchasi',
-  PartnerStatusFilter.creditor => 'Haqdorlar',
-  PartnerStatusFilter.debtor => 'Qarzdorlar',
-  PartnerStatusFilter.overdueDebtor => 'Muddati o‘tgan',
-};
+String _filterLabel(AppLocalizations l10n, PartnerStatusFilter filter) =>
+    switch (filter) {
+      PartnerStatusFilter.all => l10n.commonAll,
+      PartnerStatusFilter.creditor => l10n.partnersStatusCreditor,
+      PartnerStatusFilter.debtor => l10n.partnersStatusDebtor,
+      PartnerStatusFilter.overdueDebtor => l10n.dashboardOverdueLabel,
+    };
 
-String _sortLabel(PartnerSort sort) => switch (sort) {
-  PartnerSort.lastActivity => 'Oxirgi faollik',
-  PartnerSort.debtorUzs => 'Qarzdor · UZS',
-  PartnerSort.debtorUsd => 'Qarzdor · USD',
-  PartnerSort.creditorUzs => 'Haqdor · UZS',
-  PartnerSort.creditorUsd => 'Haqdor · USD',
+String _sortLabel(AppLocalizations l10n, PartnerSort sort) => switch (sort) {
+  PartnerSort.lastActivity => l10n.partnersSortLastActivity,
+  PartnerSort.debtorUzs => l10n.partnersSortDebtorUzsDot,
+  PartnerSort.debtorUsd => l10n.partnersSortDebtorUsdDot,
+  PartnerSort.creditorUzs => l10n.partnersSortCreditorUzsDot,
+  PartnerSort.creditorUsd => l10n.partnersSortCreditorUsdDot,
 };

@@ -17,6 +17,9 @@ import '../../../projects/presentation/widgets/project_incomes_tab.dart';
 import '../../data/project_report_models.dart';
 import '../../data/reports_repository.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class ProjectReportsPage extends StatefulWidget {
   const ProjectReportsPage({super.key});
@@ -34,7 +37,7 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
   Future<void> _pickProject() async {
     final selected = await showAppBottomSheet<Project>(
       context,
-      title: 'Loyihani tanlang',
+      title: context.l10n.projectSelect,
       heightFactor: .8,
       child: const _ProjectPicker(),
     );
@@ -71,7 +74,11 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
       MaterialPageRoute<void>(
         builder: (_) => Scaffold(
           appBar: AppBar(
-            title: Text(category == null ? 'Kirim' : category.costTypeName),
+            title: Text(
+              category == null
+                  ? context.l10n.commonIncome
+                  : category.costTypeName,
+            ),
           ),
           body: SafeArea(
             child: category == null
@@ -92,7 +99,7 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
     appBar: AppBar(
       centerTitle: true,
       title: Text(
-        'Moliya hisoboti',
+        context.l10n.reportFinance,
         style: Theme.of(
           context,
         ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -112,7 +119,7 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
                 children: [
                   Expanded(
                     child: Text(
-                      _project?.projectName ?? 'Loyihani tanlang',
+                      _project?.projectName ?? context.l10n.projectSelect,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -132,9 +139,9 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
   );
   Widget _body(BuildContext context) {
     if (_project == null) {
-      return const AppEmptyState(
-        title: 'Loyiha tanlanmagan',
-        description: 'Moliya hisobotini ko‘rish uchun loyihani tanlang',
+      return AppEmptyState(
+        title: context.l10n.projectNotSelected,
+        description: context.l10n.projectSelectForFinance,
         icon: AppIcons.project,
       );
     }
@@ -151,7 +158,7 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
         children: [
           _FinanceCard(
-            label: 'Qoldiq',
+            label: context.l10n.reportBalanceRest,
             icon: report.balanceUzs < Decimal.zero
                 ? AppIcons.chartDown
                 : AppIcons.chartUp,
@@ -160,20 +167,20 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
             tint: colors.primary,
             filled: true,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           _FinanceCard(
-            label: 'Kirim',
+            label: context.l10n.commonIncome,
             icon: AppIcons.income,
             uzs: report.incomeUzs,
             usd: report.incomeUsd,
             tint: colors.success,
             onTap: () => _openEntries(),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           AppCard(
             hasShadow: false,
             padding: const EdgeInsets.all(18),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.card),
             border: Border.all(
               color: colors.error.withValues(alpha: .3),
               width: 1.2,
@@ -182,7 +189,7 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _FinanceHeader(
-                  label: 'Chiqim',
+                  label: context.l10n.commonExpense,
                   icon: AppIcons.expense,
                   uzs: report.costsUzs,
                   usd: report.costsUsd,
@@ -198,10 +205,10 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
                       size: 17,
                       color: colors.textSecondary,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.xs),
                     Expanded(
                       child: Text(
-                        'Kategoriyalar bo‘yicha',
+                        context.l10n.reportByCategories,
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -231,7 +238,7 @@ class _ProjectReportsPageState extends State<ProjectReportsPage> {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          'Xarajatlar mavjud emas',
+                          context.l10n.reportNoExpenses,
                           style: TextStyle(
                             fontSize: 13,
                             color: colors.textSecondary,
@@ -288,7 +295,7 @@ class _FinanceCard extends StatelessWidget {
   Widget build(BuildContext context) => AppCard(
     hasShadow: false,
     padding: const EdgeInsets.all(18),
-    borderRadius: BorderRadius.circular(20),
+    borderRadius: BorderRadius.circular(AppRadius.card),
     color: filled ? tint : context.colors.surface,
     border: Border.all(color: tint.withValues(alpha: .3), width: 1.2),
     onTap: onTap,
@@ -323,7 +330,7 @@ class _FinanceHeader extends StatelessWidget {
   final bool actionable;
   @override
   Widget build(BuildContext context) {
-    final foreground = filled ? Colors.white : tint;
+    final foreground = filled ? context.colors.onPrimary : tint;
     final heading = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -331,9 +338,9 @@ class _FinanceHeader extends StatelessWidget {
           padding: const EdgeInsets.all(9),
           decoration: BoxDecoration(
             color: filled
-                ? Colors.white.withValues(alpha: .16)
+                ? context.colors.onPrimary.withValues(alpha: .16)
                 : tint.withValues(alpha: .1),
-            borderRadius: BorderRadius.circular(11),
+            borderRadius: BorderRadius.circular(AppRadius.small),
           ),
           child: Icon(icon, size: 21, color: foreground),
         ),
@@ -344,7 +351,9 @@ class _FinanceHeader extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: filled ? Colors.white : context.colors.textPrimary,
+              color: filled
+                  ? context.colors.onPrimary
+                  : context.colors.textPrimary,
             ),
           ),
         ),
@@ -389,10 +398,10 @@ class _FinanceHeader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(flex: 4, child: heading),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.sm),
             Expanded(flex: 6, child: amounts),
             if (actionable) ...[
-              const SizedBox(width: 4),
+              const SizedBox(width: AppSpacing.xxs),
               Icon(
                 AppIcons.chevronRight,
                 color: context.colors.textTertiary,
@@ -420,10 +429,10 @@ class _CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Material(
     color: context.colors.primary.withValues(alpha: .05),
-    borderRadius: BorderRadius.circular(12),
+    borderRadius: BorderRadius.circular(AppRadius.md),
     child: InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadius.md),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
@@ -497,12 +506,12 @@ class _CurrencyShare extends StatelessWidget {
             color: context.colors.primary,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.xs),
         Row(
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
+                borderRadius: BorderRadius.circular(AppRadius.xxs),
                 child: LinearProgressIndicator(
                   value: share,
                   minHeight: 6,
@@ -589,8 +598,8 @@ class _ProjectPickerState extends State<_ProjectPicker> {
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
         child: TextField(
           controller: _controller,
-          decoration: const InputDecoration(
-            hintText: 'Loyihani qidirish',
+          decoration: InputDecoration(
+            hintText: context.l10n.projectSearch,
             prefixIcon: Icon(AppIcons.search),
           ),
           onChanged: (_) {
@@ -614,10 +623,10 @@ class _ProjectPickerState extends State<_ProjectPicker> {
             : ListView(
                 children: [
                   if (_items.isEmpty)
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.all(24),
                       child: Text(
-                        'Loyihalar topilmadi',
+                        context.l10n.projectsEmpty,
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -632,7 +641,7 @@ class _ProjectPickerState extends State<_ProjectPicker> {
                   if (_items.isNotEmpty && _error != null)
                     TextButton(
                       onPressed: () => _load(),
-                      child: const Text('Qayta urinish'),
+                      child: Text(context.l10n.commonRetry),
                     ),
                   if (_hasMore && _error == null)
                     Center(
@@ -643,7 +652,7 @@ class _ProjectPickerState extends State<_ProjectPicker> {
                             )
                           : TextButton(
                               onPressed: () => _load(),
-                              child: const Text('Yana yuklash'),
+                              child: Text(context.l10n.commonLoadMore),
                             ),
                     ),
                 ],

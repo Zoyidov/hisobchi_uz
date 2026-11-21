@@ -11,6 +11,7 @@ import 'package:hisobchi_uz/core/theme/app_theme.dart';
 import 'package:hisobchi_uz/features/installments/data/installments_repository.dart';
 import 'package:hisobchi_uz/features/installments/presentation/pages/installment_wizard_page.dart';
 import 'package:hisobchi_uz/features/partners/data/partner_models.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 final partner = Partner(
   id: 7,
@@ -42,6 +43,9 @@ Future<void> mount(
   addTearDown(getIt.reset);
   await tester.pumpWidget(
     MaterialApp(
+      locale: const Locale('uz'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: dark ? AppTheme.dark() : AppTheme.light(),
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(

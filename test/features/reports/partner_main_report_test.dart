@@ -15,6 +15,9 @@ import 'package:hisobchi_uz/core/theme/app_theme.dart';
 import 'package:hisobchi_uz/features/partners/data/partners_repository.dart';
 import 'package:hisobchi_uz/features/reports/data/reports_repository.dart';
 import 'package:hisobchi_uz/features/reports/presentation/pages/partner_reports_page.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
+
+import '../../helpers/localized_finders.dart';
 
 class _Auth implements AuthRepository {
   @override
@@ -205,6 +208,9 @@ void main() {
               ),
             ],
             child: MaterialApp(
+              locale: const Locale('uz'),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
               theme: dark ? AppTheme.dark() : AppTheme.light(),
               home: const RepaintBoundary(
                 key: ValueKey('main-preview'),
@@ -242,30 +248,30 @@ void main() {
         await open('Operatsiyalar');
         expect(requests.last.queryParameters['type'], 'oparation');
         expect(requests.last.queryParameters['currency_type_id'], 2);
-        await tester.pageBack();
+        await tapBack(tester);
         await tester.pumpAndSettle();
         await open('Qarzdorlar');
         expect(requests.last.path, endsWith('/summary-details-section-two'));
         expect(requests.last.queryParameters['type'], 'qarzdor');
-        await tester.pageBack();
+        await tapBack(tester);
         await tester.pumpAndSettle();
         await open('Qarz muddatlari hisoboti');
         await tester.tap(find.text('Bugun'));
         await tester.pumpAndSettle();
         expect(requests.last.path, endsWith('/warranty-periods-details'));
         expect(requests.last.queryParameters['type'], 'qarz_today');
-        await tester.pageBack();
+        await tapBack(tester);
         await tester.pumpAndSettle();
-        await tester.pageBack();
+        await tapBack(tester);
         await tester.pumpAndSettle();
         await open('Muddat hisoboti');
         await tester.tap(find.text('Kirim'));
         await tester.pumpAndSettle();
         expect(requests.last.path, endsWith('/periods-operations'));
         expect(requests.last.queryParameters['type'], 'debt');
-        await tester.pageBack();
+        await tapBack(tester);
         await tester.pumpAndSettle();
-        await tester.pageBack();
+        await tapBack(tester);
         await tester.pumpAndSettle();
         await open('Xodimlar hisoboti');
         expect(requests.any((r) => r.path.endsWith('/workers')), isTrue);

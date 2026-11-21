@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class DebtAgingGrid extends StatelessWidget {
   final int overdueCount;
@@ -38,7 +41,7 @@ class DebtAgingGrid extends StatelessWidget {
                 padding: const EdgeInsets.all(7),
                 decoration: BoxDecoration(
                   color: colors.surfaceSecondary,
-                  borderRadius: BorderRadius.circular(9),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Icon(
                   AppIcons.clock,
@@ -46,9 +49,9 @@ class DebtAgingGrid extends StatelessWidget {
                   size: 16,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.xs),
               Text(
-                'Qarzlar ro\'yxati',
+                context.l10n.reportDebtsList,
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
@@ -66,33 +69,33 @@ class DebtAgingGrid extends StatelessWidget {
               Expanded(
                 child: _buildDeadlineCard(
                   context: context,
-                  title: 'Muddati o\'tgan',
+                  title: context.l10n.dashboardOverdueLabel,
                   count: overdueCount,
                   icon: AppIcons.error,
-                  color: const Color(0xFFEF4444),
+                  color: context.colors.error,
                   onTap: onOverdueTap,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.xs),
               Expanded(
                 child: _buildDeadlineCard(
                   context: context,
-                  title: 'Bugun',
+                  title: context.l10n.dateToday,
                   count: todayCount,
                   icon: AppIcons.warning,
-                  color: const Color(0xFFF59E0B),
+                  color: context.colors.warning,
                   onTap: onTodayTap,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.xs),
               Expanded(
                 child: _buildDeadlineCard(
                   context: context,
-                  title: 'Yaqinlashmoqda',
-                  subtitle: '(3 kun)',
+                  title: context.l10n.reportUpcoming,
+                  subtitle: context.l10n.reportIn3DaysParen,
                   count: upcomingCount,
                   icon: AppIcons.clock,
-                  color: const Color(0xFF3B82F6),
+                  color: context.colors.primary,
                   onTap: onUpcomingTap,
                 ),
               ),
@@ -116,15 +119,15 @@ class DebtAgingGrid extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Material(
-      color: isDark ? colors.surfaceSecondary : Colors.white,
-      borderRadius: BorderRadius.circular(16),
+      color: isDark ? colors.surfaceSecondary : colors.surface,
+      borderRadius: BorderRadius.circular(AppRadius.lg),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
             border: Border.all(color: colors.border.withValues(alpha: 0.6)),
             boxShadow: [
               BoxShadow(
@@ -157,7 +160,7 @@ class DebtAgingGrid extends StatelessWidget {
                   ),
                 )
               else
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.sm),
               const SizedBox(height: 10),
               Row(
                 children: [
@@ -169,7 +172,7 @@ class DebtAgingGrid extends StatelessWidget {
                     ),
                     child: Icon(icon, color: color, size: 14),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.xs),
                   Text(
                     '$count',
                     style: TextStyle(

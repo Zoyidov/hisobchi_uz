@@ -9,6 +9,7 @@ import 'package:hisobchi_uz/core/widgets/buttons/app_button.dart';
 import 'package:hisobchi_uz/features/projects/data/project_models.dart';
 import 'package:hisobchi_uz/features/projects/data/projects_repository.dart';
 import 'package:hisobchi_uz/features/projects/presentation/widgets/project_status_sheet.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 class _Repository implements ProjectsRepository {
   final requests =
@@ -38,6 +39,9 @@ void main() {
       bool? saved;
       await tester.pumpWidget(
         MaterialApp(
+          locale: const Locale('uz'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           theme: ThemeData(extensions: const [AppColorsExtension.light]),
           home: Builder(
             builder: (context) => Scaffold(

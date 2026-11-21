@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../constants/storage_keys.dart';
 import '../storage/local_cache_service.dart';
+import 'app_localization_extension.dart';
 
 /// Ilova tili — faqat `uz` va `ru` (E_HISOB_FLUTTER_UI_UX_TZ.md 64-bo'lim).
 class LocaleCubit extends Cubit<Locale> {
@@ -17,6 +18,12 @@ class LocaleCubit extends Cubit<Locale> {
   void _restore() {
     final saved = _cache.getString(StorageKeys.locale);
     if (saved == 'ru') emit(const Locale('ru'));
+  }
+
+  @override
+  void onChange(Change<Locale> change) {
+    super.onChange(change);
+    AppL10n.update(change.nextState);
   }
 
   Future<void> setLocale(Locale locale) async {

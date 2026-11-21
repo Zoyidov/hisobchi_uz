@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../data/partner_report_models.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class MonthlyBarChart extends StatelessWidget {
   final List<MonthlyStat> stats;
@@ -23,25 +26,25 @@ class MonthlyBarChart extends StatelessWidget {
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: context.colors.surface,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppRadius.card),
           border: Border.all(color: context.colors.border),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Oylik statistika',
+            Text(
+              context.l10n.reportMonthlyStats,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.lg),
             Text(
-              'Hozircha ma’lumot yo‘q',
+              context.l10n.reportNoDataYet,
               style: TextStyle(
                 fontSize: 13,
                 color: context.colors.textSecondary,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm),
           ],
         ),
       );
@@ -54,8 +57,8 @@ class MonthlyBarChart extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: isDark ? colors.surfaceSecondary : Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        color: isDark ? colors.surfaceSecondary : colors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.card),
         border: Border.all(color: colors.border.withValues(alpha: 0.6)),
         boxShadow: [
           BoxShadow(
@@ -69,7 +72,7 @@ class MonthlyBarChart extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Oylik statistika',
+            context.l10n.reportMonthlyStats,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
@@ -79,14 +82,14 @@ class MonthlyBarChart extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            'So\'nggi ${stats.length} oy ($currency)',
+            context.l10n.reportLastMonths(stats.length, currency),
             style: TextStyle(
               fontSize: 12,
               color: colors.textSecondary,
               fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.lg),
           SizedBox(
             height: 220,
             child: BarChart(
@@ -97,12 +100,12 @@ class MonthlyBarChart extends StatelessWidget {
                   touchTooltipData: BarTouchTooltipData(
                     tooltipRoundedRadius: 8,
                     tooltipMargin: 6,
-                    getTooltipColor: (_) => const Color(0xFF1E293B),
+                    getTooltipColor: (_) => colors.inverseSurface,
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       return BarTooltipItem(
                         _formatNumber(rod.toY),
-                        const TextStyle(
-                          color: Colors.white,
+                        TextStyle(
+                          color: colors.onInverseSurface,
                           fontWeight: FontWeight.bold,
                           fontSize: 11,
                         ),
@@ -115,14 +118,16 @@ class MonthlyBarChart extends StatelessWidget {
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      getTitlesWidget: _getBottomTitles,
+                      getTitlesWidget: (value, meta) =>
+                          _getBottomTitles(value, meta, colors),
                       reservedSize: 30,
                     ),
                   ),
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      getTitlesWidget: _getLeftTitles,
+                      getTitlesWidget: (value, meta) =>
+                          _getLeftTitles(value, meta, colors),
                       reservedSize: 42,
                     ),
                   ),
@@ -162,20 +167,20 @@ class MonthlyBarChart extends StatelessWidget {
                     barRods: [
                       BarChartRodData(
                         toY: stat.incomeDouble,
-                        color: const Color(0xFF22C55E),
+                        color: colors.success,
                         width: 14,
                         borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(5),
-                          topRight: Radius.circular(5),
+                          topLeft: Radius.circular(AppRadius.xxs),
+                          topRight: Radius.circular(AppRadius.xxs),
                         ),
                       ),
                       BarChartRodData(
                         toY: stat.expenseDouble,
-                        color: const Color(0xFFEF4444),
+                        color: colors.error,
                         width: 14,
                         borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(5),
-                          topRight: Radius.circular(5),
+                          topLeft: Radius.circular(AppRadius.xxs),
+                          topRight: Radius.circular(AppRadius.xxs),
                         ),
                       ),
                     ],
@@ -188,9 +193,9 @@ class MonthlyBarChart extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildLegend('Kirim', const Color(0xFF22C55E)),
-              const SizedBox(width: 24),
-              _buildLegend('Chiqim', const Color(0xFFEF4444)),
+              _buildLegend(context.l10n.commonIncome, colors.success, colors),
+              const SizedBox(width: AppSpacing.xl),
+              _buildLegend(context.l10n.commonExpense, colors.error, colors),
             ],
           ),
         ],
@@ -209,7 +214,7 @@ class MonthlyBarChart extends StatelessWidget {
     }
   }
 
-  Widget _buildLegend(String label, Color color) {
+  Widget _buildLegend(String label, Color color, AppColorsExtension colors) {
     return Row(
       children: [
         Container(
@@ -217,15 +222,15 @@ class MonthlyBarChart extends StatelessWidget {
           height: 12,
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(3),
+            borderRadius: BorderRadius.circular(AppRadius.xxs),
           ),
         ),
         const SizedBox(width: 6),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
-            color: Color(0xFF64748B),
+            color: colors.textSecondary,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -233,9 +238,13 @@ class MonthlyBarChart extends StatelessWidget {
     );
   }
 
-  Widget _getBottomTitles(double value, TitleMeta meta) {
-    const style = TextStyle(
-      color: Color(0xFF94A3B8),
+  Widget _getBottomTitles(
+    double value,
+    TitleMeta meta,
+    AppColorsExtension colors,
+  ) {
+    final style = TextStyle(
+      color: colors.textTertiary,
       fontWeight: FontWeight.w600,
       fontSize: 10.5,
     );
@@ -250,11 +259,15 @@ class MonthlyBarChart extends StatelessWidget {
     return const SizedBox.shrink();
   }
 
-  Widget _getLeftTitles(double value, TitleMeta meta) {
+  Widget _getLeftTitles(
+    double value,
+    TitleMeta meta,
+    AppColorsExtension colors,
+  ) {
     if (value == meta.max) return const SizedBox.shrink();
 
-    const style = TextStyle(
-      color: Color(0xFF94A3B8),
+    final style = TextStyle(
+      color: colors.textTertiary,
       fontWeight: FontWeight.w600,
       fontSize: 10,
     );

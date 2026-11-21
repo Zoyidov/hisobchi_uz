@@ -7,13 +7,16 @@ import '../../../../core/widgets/sheets/app_bottom_sheet.dart';
 import '../../data/project_models.dart';
 import '../../data/projects_repository.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 Future<bool?> showProjectStatusSheet(
   BuildContext context, {
   required Project project,
 }) => showAppBottomSheet<bool>(
   context,
-  title: 'Loyiha holati',
+  title: context.l10n.projectStatusTitle,
   subtitle: project.projectName,
   heightFactor: .75,
   child: _StatusSelection(project: project),
@@ -65,7 +68,9 @@ class _StatusSelectionState extends State<_StatusSelection> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Joriy holat: ${widget.project.status.label}',
+                    context.l10n.projectCurrentStatus(
+                      widget.project.status.label(context.l10n),
+                    ),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: colors.textSecondary,
                     ),
@@ -91,7 +96,7 @@ class _StatusSelectionState extends State<_StatusSelection> {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: colors.errorContainer,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
                       ),
                       child: Text(
                         _error!,
@@ -110,7 +115,9 @@ class _StatusSelectionState extends State<_StatusSelection> {
               border: Border(top: BorderSide(color: colors.borderSubtle)),
             ),
             child: AppButton.primary(
-              label: _saving ? 'Yangilanmoqda…' : 'Holatni saqlash',
+              label: _saving
+                  ? context.l10n.commonUpdating
+                  : context.l10n.projectSaveStatus,
               isLoading: _saving,
               onPressed: _selected == widget.project.status ? null : _save,
             ),
@@ -140,17 +147,17 @@ class _StatusOption extends StatelessWidget {
       ProjectStatus.inProgress => (
         colors.primary,
         AppIcons.play,
-        'Loyiha bo‘yicha ishlar davom etmoqda',
+        context.l10n.projectStatusInProgressHint,
       ),
       ProjectStatus.frozen => (
         colors.warning,
         AppIcons.pause,
-        'Ishlar vaqtincha to‘xtatilgan',
+        context.l10n.projectStatusFrozenHint,
       ),
       ProjectStatus.completed => (
         colors.success,
         AppIcons.check,
-        'Loyiha bo‘yicha ishlar yakunlangan',
+        context.l10n.projectStatusCompletedHint,
       ),
     };
     return Semantics(
@@ -161,7 +168,7 @@ class _StatusOption extends StatelessWidget {
             ? Color.alphaBlend(accent.withValues(alpha: .07), colors.surface)
             : colors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(AppRadius.xl),
           side: BorderSide(color: selected ? accent : colors.border),
         ),
         clipBehavior: Clip.antiAlias,
@@ -176,11 +183,11 @@ class _StatusOption extends StatelessWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: accent.withValues(alpha: .12),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                   child: Icon(icon, color: accent, size: 22),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,20 +198,20 @@ class _StatusOption extends StatelessWidget {
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Text(
-                            status.label,
+                            status.label(context.l10n),
                             style: Theme.of(context).textTheme.titleSmall
                                 ?.copyWith(fontWeight: FontWeight.w700),
                           ),
                           if (current)
                             Text(
-                              'Joriy',
+                              context.l10n.projectStatusCurrent,
                               style: Theme.of(
                                 context,
                               ).textTheme.labelSmall?.copyWith(color: accent),
                             ),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.xxs),
                       Text(
                         description,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -215,7 +222,7 @@ class _StatusOption extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.xs),
                 Icon(
                   selected ? AppIcons.success : AppIcons.radioOff,
                   color: selected ? accent : colors.textTertiary,

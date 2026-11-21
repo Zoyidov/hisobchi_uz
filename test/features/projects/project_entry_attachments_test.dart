@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hisobchi_uz/core/domain/entities/app_file.dart';
 import 'package:hisobchi_uz/core/theme/app_colors.dart';
 import 'package:hisobchi_uz/core/widgets/media/app_file_preview.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 void main() {
   testWidgets('signed image URL is used unchanged and opens zoomable preview', (
@@ -11,6 +12,9 @@ void main() {
     const url = 'https://example.com/photo.webp?X-Amz-Signature=test';
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('uz'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: ThemeData(extensions: const [AppColorsExtension.light]),
         home: const Scaffold(
           body: Padding(

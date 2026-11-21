@@ -22,6 +22,8 @@ import '../cubit/project_subtabs_cubit.dart';
 import 'project_entry_detail_sheet.dart';
 import 'project_form_lifetime.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Tab B: Daromadlar (MOBILE_APP_TZ.md 10.4-B).
 class ProjectIncomesTab extends StatelessWidget {
@@ -53,7 +55,7 @@ class _View extends StatelessWidget {
               onLoadMore: context.read<ProjectIncomesCubit>().loadMore,
               onRefresh: context.read<ProjectIncomesCubit>().refresh,
               onRetry: context.read<ProjectIncomesCubit>().loadFirst,
-              emptyTitle: 'Daromadlar yo‘q',
+              emptyTitle: context.l10n.incomesEmpty,
               emptyIcon: AppIcons.chartUp,
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.md,
@@ -72,7 +74,7 @@ class _View extends StatelessWidget {
                         height: 40,
                         decoration: BoxDecoration(
                           color: context.colors.success.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppRadius.md),
                         ),
                         child: Icon(
                           AppIcons.arrowDown,
@@ -108,7 +110,7 @@ class _View extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.xs),
                       Icon(
                         AppIcons.chevronRight,
                         color: context.colors.textTertiary,
@@ -146,7 +148,7 @@ void _showIncomeForm(BuildContext context, int projectId) {
 
   showAppBottomSheet<void>(
     context,
-    title: 'Daromad qo\'shish',
+    title: context.l10n.incomeAdd,
     heightFactor: 0.7,
     child: ProjectFormLifetime(
       resources: [saving, amountController, descriptionController],
@@ -176,7 +178,7 @@ void _showIncomeForm(BuildContext context, int projectId) {
                 const SizedBox(height: AppSpacing.md),
                 AppTextField(
                   controller: descriptionController,
-                  label: 'Izoh (ixtiyoriy)',
+                  label: context.l10n.commonNoteOptional,
                   maxLines: 2,
                   minLines: 1,
                 ),
@@ -196,21 +198,21 @@ void _showIncomeForm(BuildContext context, int projectId) {
     stickyAction: ValueListenableBuilder<bool>(
       valueListenable: saving,
       builder: (sheetContext, isSaving, _) => AppButton.primary(
-        label: isSaving ? 'Saqlanmoqda…' : 'Saqlash',
+        label: isSaving ? context.l10n.commonSaving : context.l10n.commonSave,
         isLoading: isSaving,
         onPressed: () async {
           if (saving.value) return;
           if (filesUploading) {
-            AppSnackbar.error(
-              sheetContext,
-              'Fayl yuklanishini kuting, keyin saqlang.',
-            );
+            AppSnackbar.error(sheetContext, context.l10n.fileWaitThenSave);
             return;
           }
 
           final amount = Decimal.tryParse(amountController.text);
           if (amount == null || amount <= Decimal.zero) {
-            AppSnackbar.error(sheetContext, 'Summa 0 dan katta bo‘lishi kerak');
+            AppSnackbar.error(
+              sheetContext,
+              context.l10n.validationAmountPositive,
+            );
             return;
           }
           saving.value = true;

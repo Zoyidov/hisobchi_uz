@@ -9,6 +9,8 @@ import 'installment_reports_page.dart';
 import 'partner_reports_page.dart';
 import 'project_reports_page.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Hisobotlar bosh sahifasi (MOBILE_APP_TZ.md 12-bo'lim).
 class ReportsHomePage extends StatelessWidget {
@@ -18,7 +20,7 @@ class ReportsHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Scaffold(
-      appBar: AppBar(title: const Text('Hisobotlar')),
+      appBar: AppBar(title: Text(context.l10n.navReports)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.md,
@@ -32,9 +34,8 @@ class ReportsHomePage extends StatelessWidget {
             child: _ReportCard(
               icon: AppIcons.partners,
               color: colors.primary,
-              title: 'Hamkorlar hisoboti',
-              subtitle:
-                  'Umumiy balans, davr bo\'yicha, qarz muddatlari, xodimlar',
+              title: context.l10n.reportPartnersTitle,
+              subtitle: context.l10n.reportPartnersHomeSubtitle,
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (_) => const PartnerReportsPage(),
@@ -46,10 +47,9 @@ class ReportsHomePage extends StatelessWidget {
             permission: AppPermission.reportInstallmentsView,
             child: _ReportCard(
               icon: AppIcons.calendar,
-              color: const Color(0xFF8B5CF6),
-              title: 'Muddatli to‘lov hisoboti',
-              subtitle:
-                  'Umumiy tahlil, kutilayotgan to‘lovlar va undirish dinamikasi',
+              color: context.colors.accentViolet,
+              title: context.l10n.reportInstallmentTitle,
+              subtitle: context.l10n.reportInstallmentHomeSubtitle,
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (_) => const InstallmentReportsPage(),
@@ -62,8 +62,8 @@ class ReportsHomePage extends StatelessWidget {
             child: _ReportCard(
               icon: AppIcons.projectStructure,
               color: colors.warning,
-              title: 'Loyihalar hisoboti',
-              subtitle: 'Loyiha balansi, xarajatlar va daromadlar tahlili',
+              title: context.l10n.reportProjectsTitle,
+              subtitle: context.l10n.reportProjectsSubtitle,
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (_) => const ProjectReportsPage(),
@@ -100,7 +100,7 @@ class _ReportCard extends StatelessWidget {
       child: AppCard(
         onTap: onTap,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         child: Row(
           children: [
             Container(
@@ -109,7 +109,7 @@ class _ReportCard extends StatelessWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
                 border: Border.all(color: color.withValues(alpha: 0.2)),
               ),
               child: Icon(icon, color: color, size: 26),
@@ -125,7 +125,7 @@ class _ReportCard extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xxs),
                   Text(
                     subtitle,
                     style: TextStyle(
@@ -137,7 +137,7 @@ class _ReportCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: AppSpacing.xxs),
             Icon(AppIcons.chevronRight, color: colors.textTertiary, size: 22),
           ],
         ),

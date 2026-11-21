@@ -18,6 +18,7 @@ import 'package:hisobchi_uz/features/auth/data/auth_remote_data_source.dart';
 import 'package:hisobchi_uz/features/auth/data/auth_repository_impl.dart';
 import 'package:hisobchi_uz/features/auth/presentation/cubit/otp_cubit.dart';
 import 'package:hisobchi_uz/features/auth/presentation/cubit/reset_password_cubit.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 class _Storage extends SecureStorageService {
   @override
@@ -123,7 +124,12 @@ void main() {
             BlocProvider.value(value: users),
             BlocProvider.value(value: owner),
           ],
-          child: MaterialApp.router(routerConfig: router),
+          child: MaterialApp.router(
+            locale: const Locale('uz'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: router,
+          ),
         ),
       );
       await tester.tap(find.text('continue'));
@@ -226,7 +232,12 @@ void main() {
             BlocProvider.value(value: users),
             BlocProvider.value(value: owner),
           ],
-          child: MaterialApp.router(routerConfig: router),
+          child: MaterialApp.router(
+            locale: const Locale('uz'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: router,
+          ),
         ),
       );
       await tester.tap(find.text('reopen'));

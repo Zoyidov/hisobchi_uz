@@ -16,6 +16,8 @@ import '../widgets/project_card.dart';
 import 'project_detail_page.dart';
 import 'project_form_page.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Loyihalar ro'yxati (MOBILE_APP_TZ.md 10.2).
 class ProjectsListPage extends StatelessWidget {
@@ -39,7 +41,7 @@ class _View extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Loyihalar'),
+        title: Text(context.l10n.navProjects),
         actions: [
           PermissionGuard(
             permission: AppPermission.projectsCreate,
@@ -53,13 +55,13 @@ class _View extends StatelessWidget {
                   ),
                   minimumSize: const Size(0, 36),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppRadius.medium),
                   ),
                 ),
                 onPressed: () => _openCreate(context),
                 icon: const Icon(AppIcons.add, size: 15),
-                label: const Text(
-                  'Qo\'shish',
+                label: Text(
+                  context.l10n.commonAdd,
                   style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
                 ),
               ),
@@ -78,7 +80,7 @@ class _View extends StatelessWidget {
             ),
             child: AppSearchField(
               onChanged: cubit.updateSearch,
-              hint: 'Loyiha nomi bo\'yicha qidirish',
+              hint: context.l10n.projectSearchHint,
             ),
           ),
           Padding(
@@ -91,7 +93,7 @@ class _View extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(right: AppSpacing.xs),
                     child: AppFilterChip(
-                      label: 'Barchasi',
+                      label: context.l10n.commonAll,
                       selected: cubit.status == null,
                       onTap: () => cubit.updateStatus(null),
                     ),
@@ -100,7 +102,7 @@ class _View extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(right: AppSpacing.xs),
                       child: AppFilterChip(
-                        label: status.label,
+                        label: status.label(context.l10n),
                         selected: cubit.status == status,
                         onTap: () => cubit.updateStatus(status),
                       ),
@@ -125,8 +127,8 @@ class _View extends StatelessWidget {
                   onRefresh: cubit.refresh,
                   onRetry: cubit.loadFirst,
                   emptyIcon: AppIcons.project,
-                  emptyTitle: 'Loyihalar topilmadi',
-                  emptyAction: 'Loyiha qo\'shish',
+                  emptyTitle: context.l10n.projectsEmpty,
+                  emptyAction: context.l10n.projectAdd,
                   onEmptyAction: () => _openCreate(context),
                   itemBuilder: (context, project, index) => ProjectCard(
                     project: project,

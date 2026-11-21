@@ -4,6 +4,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/sheets/app_bottom_sheet.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Senior-darajadagi to'lov provayderini tanlash bottom sheet'i.
 /// Foydalanuvchiga Payme va Click tizimlari orqali to'lovni xavfsiz va qulay
@@ -16,8 +18,8 @@ Future<String?> showPaymentProviderSheet(
 }) {
   return showAppBottomSheet<String>(
     context,
-    title: 'To\'lov usuli',
-    subtitle: 'O\'zingizga qulay to\'lov tizimini tanlang',
+    title: context.l10n.paymentMethod,
+    subtitle: context.l10n.paymentMethodSubtitle,
     child: _PaymentProviderSheetContent(
       itemTitle: itemTitle,
       formattedPrice: formattedPrice,
@@ -54,7 +56,7 @@ class _PaymentProviderSheetContent extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
               color: colors.primary.withValues(alpha: 0.05),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(AppRadius.lg),
               border: Border.all(color: colors.primary.withValues(alpha: 0.15)),
             ),
             child: Row(
@@ -64,7 +66,7 @@ class _PaymentProviderSheetContent extends StatelessWidget {
                   height: 42,
                   decoration: BoxDecoration(
                     color: colors.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
                   child: Icon(
                     AppIcons.receipt,
@@ -72,7 +74,7 @@ class _PaymentProviderSheetContent extends StatelessWidget {
                     size: 22,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,12 +104,12 @@ class _PaymentProviderSheetContent extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.xs),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      'Jami',
+                      context.l10n.commonTotal,
                       style: TextStyle(
                         fontSize: 11,
                         color: colors.textTertiary,
@@ -137,7 +139,7 @@ class _PaymentProviderSheetContent extends StatelessWidget {
             providerId: 'payme',
             name: 'Payme',
             subtitle: 'Uzcard, Humo, Visa, Mastercard',
-            brandColor: const Color(0xFF00CCCC),
+            brandColor: _PaymentBrandColors.payme,
             logoWidget: _PaymeBadge(),
             onTap: () => Navigator.of(context).pop('payme'),
           ),
@@ -148,8 +150,8 @@ class _PaymentProviderSheetContent extends StatelessWidget {
           _ProviderOptionCard(
             providerId: 'click',
             name: 'Click Up',
-            subtitle: 'Click hamyon va bank kartalari',
-            brandColor: const Color(0xFF0073FF),
+            subtitle: context.l10n.paymentClickSubtitle,
+            brandColor: _PaymentBrandColors.click,
             logoWidget: _ClickBadge(),
             onTap: () => Navigator.of(context).pop('click'),
           ),
@@ -163,7 +165,7 @@ class _PaymentProviderSheetContent extends StatelessWidget {
               Icon(AppIcons.shield, size: 14, color: colors.textTertiary),
               const SizedBox(width: 6),
               Text(
-                'To\'lov xavfsizligi kafolatlangan (256-bit SSL)',
+                context.l10n.paymentSecure,
                 style: TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w500,
@@ -204,7 +206,7 @@ class _ProviderOptionCard extends StatelessWidget {
     return Material(
       color: colors.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
         side: BorderSide(
           color: colors.border.withValues(alpha: 0.8),
           width: 1.2,
@@ -243,10 +245,10 @@ class _ProviderOptionCard extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: brandColor.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(AppRadius.xs),
                           ),
                           child: Text(
-                            'Tezkor',
+                            context.l10n.paymentFast,
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
@@ -295,21 +297,21 @@ class _PaymeBadge extends StatelessWidget {
       width: 46,
       height: 46,
       decoration: BoxDecoration(
-        color: const Color(0xFF00CCCC),
-        borderRadius: BorderRadius.circular(13),
+        color: _PaymentBrandColors.payme,
+        borderRadius: BorderRadius.circular(AppRadius.md),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00CCCC).withValues(alpha: 0.28),
+            color: _PaymentBrandColors.payme.withValues(alpha: 0.28),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
         ],
       ),
-      child: const Center(
+      child: Center(
         child: Text(
           'payme',
           style: TextStyle(
-            color: Colors.white,
+            color: context.colors.onPrimary,
             fontWeight: FontWeight.w900,
             fontSize: 11,
             letterSpacing: -0.4,
@@ -327,21 +329,21 @@ class _ClickBadge extends StatelessWidget {
       width: 46,
       height: 46,
       decoration: BoxDecoration(
-        color: const Color(0xFF0073FF),
-        borderRadius: BorderRadius.circular(13),
+        color: _PaymentBrandColors.click,
+        borderRadius: BorderRadius.circular(AppRadius.md),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0073FF).withValues(alpha: 0.28),
+            color: _PaymentBrandColors.click.withValues(alpha: 0.28),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
         ],
       ),
-      child: const Center(
+      child: Center(
         child: Text(
           'click',
           style: TextStyle(
-            color: Colors.white,
+            color: context.colors.onPrimary,
             fontWeight: FontWeight.w900,
             fontSize: 12,
             letterSpacing: -0.4,
@@ -350,4 +352,11 @@ class _ClickBadge extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Uchinchi tomon to'lov tizimlarining rasmiy brend ranglari. Bular ilova
+/// temasiga bog'liq emas (logotip rangi), shuning uchun token emas.
+abstract final class _PaymentBrandColors {
+  static const payme = Color(0xFF00CCCC);
+  static const click = Color(0xFF0073FF);
 }

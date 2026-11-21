@@ -7,6 +7,9 @@ import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/partner_installment_report_models.dart';
 import '../../data/reports_repository.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class PartnerInstallmentReportTab extends StatefulWidget {
   final int partnerId;
@@ -129,13 +132,13 @@ class _PartnerInstallmentReportTabState
             height: 44,
             decoration: BoxDecoration(
               color: colors.surfaceSecondary,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Row(
               children: [
-                _buildCurrencyTabItem('UZS Hisob', 0),
+                _buildCurrencyTabItem(context.l10n.reportAccountUzs, 0),
                 Container(width: 1, height: 20, color: colors.border),
-                _buildCurrencyTabItem('USD Hisob', 1),
+                _buildCurrencyTabItem(context.l10n.reportAccountUsd, 1),
               ],
             ),
           ),
@@ -184,7 +187,7 @@ class _PartnerInstallmentReportTabState
           margin: const EdgeInsets.all(3),
           decoration: BoxDecoration(
             color: isSelected ? colors.surface : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppRadius.small),
             boxShadow: isSelected
                 ? [
                     BoxShadow(
@@ -223,7 +226,7 @@ class _PartnerInstallmentReportTabState
 
     if (error != null) {
       return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
+        title: context.l10n.errorLoadShort,
         description: error,
         onRetry: onRefresh,
       );
@@ -298,7 +301,7 @@ class _PartnerInstallmentReportTabState
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         border: Border.all(color: colors.border.withValues(alpha: 0.6)),
         boxShadow: colors.cardShadow,
       ),
@@ -311,7 +314,7 @@ class _PartnerInstallmentReportTabState
                 padding: const EdgeInsets.all(7),
                 decoration: BoxDecoration(
                   color: colors.primary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(9),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Icon(
                   AppIcons.dashboard,
@@ -319,9 +322,9 @@ class _PartnerInstallmentReportTabState
                   color: colors.primary,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.xs),
               Text(
-                'Umumiy statistika',
+                context.l10n.reportOverallStats,
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
@@ -337,51 +340,51 @@ class _PartnerInstallmentReportTabState
             children: [
               Expanded(
                 child: _buildMetricChip(
-                  label: 'Faol',
+                  label: context.l10n.installmentStatusActive,
                   value: '${stat.activePlans}',
                   color: colors.primary,
                   icon: AppIcons.playCircle,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.xs),
               Expanded(
                 child: _buildMetricChip(
-                  label: 'Tugallangan',
+                  label: context.l10n.dashboardCompleted,
                   value: '${stat.completedPlans}',
-                  color: const Color(0xFF22C55E),
+                  color: context.colors.success,
                   icon: AppIcons.success,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.xs),
               Expanded(
                 child: _buildMetricChip(
-                  label: 'Bekor',
+                  label: context.l10n.reportCancelledShort,
                   value: '${stat.cancelledPlans}',
-                  color: const Color(0xFF94A3B8),
+                  color: context.colors.textTertiary,
                   icon: AppIcons.cancel,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
 
           // Berilgan / To'langan
           Row(
             children: [
               Expanded(
                 child: _buildAmountCard(
-                  label: 'Berilgan',
+                  label: context.l10n.reportGiven,
                   amount: '${_formatPrice(stat.totalGiven)} $currencyLabel',
-                  color: const Color(0xFF6366F1),
+                  color: context.colors.accentIndigo,
                   icon: AppIcons.wallet,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: _buildAmountCard(
-                  label: 'To\'langan',
+                  label: context.l10n.commonPaid,
                   amount: '${_formatPrice(stat.totalPaid)} $currencyLabel',
-                  color: const Color(0xFF22C55E),
+                  color: context.colors.success,
                   icon: AppIcons.success,
                 ),
               ),
@@ -394,10 +397,10 @@ class _PartnerInstallmentReportTabState
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFFF59E0B).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(14),
+              color: context.colors.warning.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
               border: Border.all(
-                color: const Color(0xFFF59E0B).withValues(alpha: 0.25),
+                color: context.colors.warning.withValues(alpha: 0.25),
               ),
             ),
             child: Row(
@@ -405,28 +408,28 @@ class _PartnerInstallmentReportTabState
               children: [
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       AppIcons.hourglass,
-                      color: Color(0xFFD97706),
+                      color: context.colors.warning,
                       size: 18,
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Qolgan',
+                    const SizedBox(width: AppSpacing.xs),
+                    Text(
+                      context.l10n.commonRemaining,
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF92400E),
+                        color: context.colors.onWarningContainer,
                       ),
                     ),
                   ],
                 ),
                 Text(
                   '${_formatPrice(stat.totalRemaining)} $currencyLabel',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF92400E),
+                    color: context.colors.onWarningContainer,
                   ),
                 ),
               ],
@@ -440,27 +443,26 @@ class _PartnerInstallmentReportTabState
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: const Color(0xFFEF4444).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(14),
+                color: context.colors.error.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppRadius.medium),
                 border: Border.all(
-                  color: const Color(0xFFEF4444).withValues(alpha: 0.25),
+                  color: context.colors.error.withValues(alpha: 0.25),
                 ),
               ),
               child: Row(
                 children: [
-                  const Icon(
-                    AppIcons.error,
-                    color: Color(0xFFEF4444),
-                    size: 18,
-                  ),
-                  const SizedBox(width: 8),
+                  Icon(AppIcons.error, color: context.colors.error, size: 18),
+                  const SizedBox(width: AppSpacing.xs),
                   Expanded(
                     child: Text(
-                      'Muddati o\'tgan: ${_formatPrice(stat.overdueAmount)} $currencyLabel',
-                      style: const TextStyle(
+                      context.l10n.reportOverdueAmount(
+                        _formatPrice(stat.overdueAmount),
+                        currencyLabel,
+                      ),
+                      style: TextStyle(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFFEF4444),
+                        color: context.colors.error,
                       ),
                     ),
                   ),
@@ -483,7 +485,7 @@ class _PartnerInstallmentReportTabState
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Column(
@@ -492,7 +494,7 @@ class _PartnerInstallmentReportTabState
           Row(
             children: [
               Icon(icon, size: 13, color: color),
-              const SizedBox(width: 4),
+              const SizedBox(width: AppSpacing.xxs),
               Expanded(
                 child: Text(
                   label,
@@ -507,7 +509,7 @@ class _PartnerInstallmentReportTabState
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xxs),
           Text(
             value,
             style: TextStyle(
@@ -533,7 +535,7 @@ class _PartnerInstallmentReportTabState
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: colors.surfaceSecondary,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppRadius.medium),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -552,7 +554,7 @@ class _PartnerInstallmentReportTabState
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xxs),
           Text(
             amount,
             style: TextStyle(
@@ -579,7 +581,7 @@ class _PartnerInstallmentReportTabState
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         border: Border.all(color: colors.border.withValues(alpha: 0.6)),
         boxShadow: colors.cardShadow,
       ),
@@ -592,7 +594,7 @@ class _PartnerInstallmentReportTabState
                 padding: const EdgeInsets.all(7),
                 decoration: BoxDecoration(
                   color: colors.accentViolet.withValues(alpha: .12),
-                  borderRadius: BorderRadius.circular(9),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Icon(
                   AppIcons.calendar,
@@ -600,10 +602,10 @@ class _PartnerInstallmentReportTabState
                   color: colors.accentViolet,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.xs),
               Expanded(
                 child: Text(
-                  'Muddatli to‘lov rejalari',
+                  context.l10n.reportInstallmentPlans,
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
@@ -612,7 +614,7 @@ class _PartnerInstallmentReportTabState
                 ),
               ),
               if (plans.isNotEmpty) ...[
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.xs),
                 Text(
                   '${plans.length}',
                   style: TextStyle(
@@ -624,13 +626,13 @@ class _PartnerInstallmentReportTabState
               ],
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           if (plans.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Center(
                 child: Text(
-                  'Rejalar mavjud emas',
+                  context.l10n.reportNoPlans,
                   style: TextStyle(
                     color: colors.textSecondary,
                     fontSize: 13,
@@ -657,8 +659,10 @@ class _PartnerInstallmentReportTabState
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: colors.surfaceSecondary,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: plan.statusColor.withValues(alpha: 0.2)),
+        borderRadius: BorderRadius.circular(AppRadius.medium),
+        border: Border.all(
+          color: plan.statusColor(context.colors).withValues(alpha: 0.2),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -667,7 +671,7 @@ class _PartnerInstallmentReportTabState
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Sana: ${plan.createdAt}',
+                context.l10n.reportDate(plan.createdAt),
                 style: TextStyle(
                   fontSize: 11,
                   color: colors.textTertiary,
@@ -677,21 +681,23 @@ class _PartnerInstallmentReportTabState
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: plan.statusBgColor,
-                  borderRadius: BorderRadius.circular(6),
+                  color: plan
+                      .statusColor(context.colors)
+                      .withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.xs),
                 ),
                 child: Text(
                   plan.statusLabel,
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: plan.statusColor,
+                    color: plan.statusColor(context.colors),
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.xs),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -699,7 +705,7 @@ class _PartnerInstallmentReportTabState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Jami summa',
+                    context.l10n.reportTotalAmount,
                     style: TextStyle(fontSize: 10, color: colors.textTertiary),
                   ),
                   Text(
@@ -716,11 +722,11 @@ class _PartnerInstallmentReportTabState
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    'Qismlar',
+                    context.l10n.reportParts,
                     style: TextStyle(fontSize: 10, color: colors.textTertiary),
                   ),
                   Text(
-                    '${plan.itemsCount} ta',
+                    context.l10n.commonCountShort(plan.itemsCount),
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
@@ -731,13 +737,13 @@ class _PartnerInstallmentReportTabState
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.xs),
           ClipRRect(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(AppRadius.xxs),
             child: LinearProgressIndicator(
               value: plan.progress,
               backgroundColor: colors.border.withValues(alpha: 0.5),
-              color: const Color(0xFF22C55E),
+              color: context.colors.success,
               minHeight: 6,
             ),
           ),
@@ -746,15 +752,21 @@ class _PartnerInstallmentReportTabState
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'To\'langan: ${_formatPrice(plan.paidAmount)} $currencyLabel',
-                style: const TextStyle(
+                context.l10n.reportPaidWithCurrency(
+                  _formatPrice(plan.paidAmount),
+                  currencyLabel,
+                ),
+                style: TextStyle(
                   fontSize: 10.5,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF22C55E),
+                  color: context.colors.success,
                 ),
               ),
               Text(
-                'Qolgan: ${_formatPrice(plan.totalRemaining)} $currencyLabel',
+                context.l10n.reportRemainingWithCurrency(
+                  _formatPrice(plan.totalRemaining),
+                  currencyLabel,
+                ),
                 style: TextStyle(
                   fontSize: 10.5,
                   fontWeight: FontWeight.w600,
@@ -779,7 +791,7 @@ class _PartnerInstallmentReportTabState
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         border: Border.all(color: colors.border.withValues(alpha: 0.6)),
         boxShadow: colors.cardShadow,
       ),
@@ -791,18 +803,18 @@ class _PartnerInstallmentReportTabState
               Container(
                 padding: const EdgeInsets.all(7),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF22C55E).withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(9),
+                  color: context.colors.success.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-                child: const Icon(
+                child: Icon(
                   AppIcons.history,
                   size: 16,
-                  color: Color(0xFF22C55E),
+                  color: context.colors.success,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.xs),
               Text(
-                'To\'lovlar tarixi',
+                context.l10n.installmentPaymentHistory,
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
@@ -811,26 +823,26 @@ class _PartnerInstallmentReportTabState
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           ...payments.take(5).map((pm) {
             return Container(
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
                 color: colors.surfaceSecondary,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.md),
               ),
               child: Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF22C55E).withValues(alpha: 0.15),
+                      color: context.colors.success.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       AppIcons.check,
-                      color: Color(0xFF22C55E),
+                      color: context.colors.success,
                       size: 14,
                     ),
                   ),
@@ -886,7 +898,7 @@ class _PartnerInstallmentReportTabState
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         border: Border.all(color: colors.border.withValues(alpha: 0.6)),
         boxShadow: colors.cardShadow,
       ),
@@ -898,18 +910,18 @@ class _PartnerInstallmentReportTabState
               Container(
                 padding: const EdgeInsets.all(7),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF3B82F6).withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(9),
+                  color: context.colors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-                child: const Icon(
+                child: Icon(
                   AppIcons.calendarNote,
                   size: 16,
-                  color: Color(0xFF3B82F6),
+                  color: context.colors.primary,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.xs),
               Text(
-                'To\'lov qismlari grafigi',
+                context.l10n.reportPartsSchedule,
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
@@ -918,31 +930,34 @@ class _PartnerInstallmentReportTabState
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
 
           // Filters row
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _buildItemFilterChip('Barchasi', 'all'),
+                _buildItemFilterChip(context.l10n.commonAll, 'all'),
                 const SizedBox(width: 6),
-                _buildItemFilterChip('Muddati o\'tgan', 'overdue'),
+                _buildItemFilterChip(
+                  context.l10n.dashboardOverdueLabel,
+                  'overdue',
+                ),
                 const SizedBox(width: 6),
-                _buildItemFilterChip('Kutilmoqda', 'pending'),
+                _buildItemFilterChip(context.l10n.reportPending, 'pending'),
                 const SizedBox(width: 6),
-                _buildItemFilterChip('To\'langan', 'paid'),
+                _buildItemFilterChip(context.l10n.commonPaid, 'paid'),
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
 
           if (items.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Center(
                 child: Text(
-                  'Bu bo\'limda ma\'lumot yo\'q',
+                  context.l10n.dueEmpty,
                   style: TextStyle(color: colors.textSecondary, fontSize: 13),
                 ),
               ),
@@ -957,7 +972,7 @@ class _PartnerInstallmentReportTabState
                 ),
                 decoration: BoxDecoration(
                   color: colors.surfaceSecondary,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
                 child: Row(
                   children: [
@@ -965,8 +980,10 @@ class _PartnerInstallmentReportTabState
                       width: 28,
                       height: 28,
                       decoration: BoxDecoration(
-                        color: it.statusBgColor,
-                        borderRadius: BorderRadius.circular(8),
+                        color: it
+                            .statusColor(context.colors)
+                            .withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                       child: Center(
                         child: Text(
@@ -974,7 +991,7 @@ class _PartnerInstallmentReportTabState
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w800,
-                            color: it.statusColor,
+                            color: it.statusColor(context.colors),
                           ),
                         ),
                       ),
@@ -993,7 +1010,7 @@ class _PartnerInstallmentReportTabState
                             ),
                           ),
                           Text(
-                            'Muddat: ${it.dueDate}',
+                            context.l10n.reportDueDate(it.dueDate),
                             style: TextStyle(
                               fontSize: 11,
                               color: colors.textTertiary,
@@ -1008,15 +1025,17 @@ class _PartnerInstallmentReportTabState
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: it.statusBgColor,
-                        borderRadius: BorderRadius.circular(6),
+                        color: it
+                            .statusColor(context.colors)
+                            .withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(AppRadius.xs),
                       ),
                       child: Text(
                         it.statusLabel,
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
-                          color: it.statusColor,
+                          color: it.statusColor(context.colors),
                         ),
                       ),
                     ),
@@ -1039,14 +1058,14 @@ class _PartnerInstallmentReportTabState
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           color: isSelected ? colors.primary : colors.surfaceSecondary,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         child: Text(
           label,
           style: TextStyle(
             fontSize: 11,
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-            color: isSelected ? Colors.white : colors.textSecondary,
+            color: isSelected ? context.colors.onPrimary : colors.textSecondary,
           ),
         ),
       ),
@@ -1064,7 +1083,7 @@ class _PartnerInstallmentReportTabState
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.card),
         border: Border.all(color: colors.border.withValues(alpha: 0.6)),
         boxShadow: colors.cardShadow,
       ),
@@ -1076,18 +1095,18 @@ class _PartnerInstallmentReportTabState
               Container(
                 padding: const EdgeInsets.all(7),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(9),
+                  color: context.colors.accentViolet.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-                child: const Icon(
+                child: Icon(
                   AppIcons.chart,
                   size: 16,
-                  color: Color(0xFF8B5CF6),
+                  color: context.colors.accentViolet,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.xs),
               Text(
-                'Oylik to\'lov dinamikasi',
+                context.l10n.reportMonthlyPaymentDynamics,
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
@@ -1114,7 +1133,7 @@ class _PartnerInstallmentReportTabState
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        d.uzLabel,
+                        d.monthShort(context.l10n),
                         style: TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w700,
@@ -1122,7 +1141,10 @@ class _PartnerInstallmentReportTabState
                         ),
                       ),
                       Text(
-                        'Reja: ${_formatPrice(d.planned)} | Yig\'ildi: ${_formatPrice(d.collected)}',
+                        context.l10n.reportPlanCollected(
+                          _formatPrice(d.planned),
+                          _formatPrice(d.collected),
+                        ),
                         style: TextStyle(
                           fontSize: 10.5,
                           color: colors.textSecondary,
@@ -1130,13 +1152,13 @@ class _PartnerInstallmentReportTabState
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xxs),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(AppRadius.xxs),
                     child: LinearProgressIndicator(
                       value: progress,
                       backgroundColor: colors.surfaceSecondary,
-                      color: const Color(0xFF8B5CF6),
+                      color: context.colors.accentViolet,
                       minHeight: 6,
                     ),
                   ),
@@ -1148,4 +1170,26 @@ class _PartnerInstallmentReportTabState
       ),
     );
   }
+}
+
+/// Bo'lib to'lash rejasi holati → semantik rang (UI qatlami; model rangni
+/// bilmaydi).
+extension _PlanStatusColor on PartnerInstallmentPlanModel {
+  Color statusColor(AppColorsExtension colors) => switch (status) {
+    'active' => colors.accentIndigo,
+    'completed' => colors.success,
+    'cancelled' => colors.textTertiary,
+    _ => colors.textSecondary,
+  };
+}
+
+/// To'lov jadvali elementi holati → semantik rang.
+extension _ItemStatusColor on PartnerInstallmentItemModel {
+  Color statusColor(AppColorsExtension colors) => switch (status) {
+    'paid' => colors.success,
+    'partial' => colors.primary,
+    'near' => colors.warning,
+    'overdue' => colors.error,
+    _ => colors.textTertiary,
+  };
 }

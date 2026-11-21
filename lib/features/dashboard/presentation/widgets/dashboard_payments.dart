@@ -8,7 +8,7 @@ class _PaymentOverview extends StatelessWidget {
     final colors = context.colors;
     final groups = [
       (
-        label: 'Hamkorlar qarzi',
+        label: context.l10n.dashboardPartnersDebt,
         icon: AppIcons.partners,
         values: [summary.qarzExpired, summary.qarzToday, summary.qarz3Days],
         types: [
@@ -18,7 +18,7 @@ class _PaymentOverview extends StatelessWidget {
         ],
       ),
       (
-        label: 'Bo‘lib to‘lash',
+        label: context.l10n.commonInstallment,
         icon: AppIcons.payments,
         values: [
           summary.installmentExpired,
@@ -33,13 +33,20 @@ class _PaymentOverview extends StatelessWidget {
       ),
     ];
     final accents = [colors.error, colors.warning, colors.primary];
-    const labels = ['Muddati o‘tgan', 'Bugun', '3 kun ichida'];
+    final labels = [
+      context.l10n.dashboardOverdueLabel,
+      context.l10n.dueToday,
+      context.l10n.dueIn3Days,
+    ];
     return _DashboardSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('To‘lovlar nazorati', style: _DashboardStyle.section(context)),
-          const SizedBox(height: 12),
+          Text(
+            context.l10n.dashboardPaymentsControl,
+            style: _DashboardStyle.section(context),
+          ),
+          const SizedBox(height: AppSpacing.sm),
           for (var group = 0; group < groups.length; group++) ...[
             if (group > 0)
               Padding(
@@ -49,7 +56,7 @@ class _PaymentOverview extends StatelessWidget {
             Row(
               children: [
                 Icon(groups[group].icon, size: 18, color: colors.textSecondary),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.xs),
                 Expanded(
                   child: Text(
                     groups[group].label,
@@ -61,7 +68,7 @@ class _PaymentOverview extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
             LayoutBuilder(
               builder: (context, constraints) {
                 final stacked =
@@ -83,7 +90,7 @@ class _PaymentOverview extends StatelessWidget {
                           child: Material(
                             color: _DashboardStyle.tint(context, accents[i]),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(AppRadius.md),
                               side: BorderSide(
                                 color: accents[i].withValues(
                                   alpha: _DashboardStyle.dark(context)

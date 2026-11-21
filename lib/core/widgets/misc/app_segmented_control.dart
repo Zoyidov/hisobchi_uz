@@ -29,7 +29,10 @@ class AppSegmentedControl<T> extends StatelessWidget {
     return Container(
       height: 46,
       padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(color: colors.surfaceSecondary, borderRadius: AppRadius.mediumRadius),
+      decoration: BoxDecoration(
+        color: colors.surfaceSecondary,
+        borderRadius: AppRadius.mediumRadius,
+      ),
       child: Row(
         children: segments.map((segment) {
           final selected = segment.value == value;
@@ -41,16 +44,21 @@ class AppSegmentedControl<T> extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: selected ? colors.surface : Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   boxShadow: selected
-                      ? [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 4)]
+                      ? [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.06),
+                            blurRadius: 4,
+                          ),
+                        ]
                       : null,
                 ),
                 child: Text(
                   segment.label,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: selected ? colors.textPrimary : colors.textSecondary,
-                      ),
+                    color: selected ? colors.textPrimary : colors.textSecondary,
+                  ),
                 ),
               ),
             ),

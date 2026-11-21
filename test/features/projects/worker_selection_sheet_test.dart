@@ -8,6 +8,7 @@ import 'package:hisobchi_uz/core/widgets/inputs/app_phone_field.dart';
 import 'package:hisobchi_uz/features/documents/data/document_models.dart';
 import 'package:hisobchi_uz/features/documents/data/documents_repository.dart';
 import 'package:hisobchi_uz/features/projects/presentation/widgets/worker_selection_sheet.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 class _Repository implements DocumentsRepository {
   int creates = 0;
@@ -58,6 +59,9 @@ void main() {
     Worker? selected;
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('uz'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: ThemeData(extensions: const [AppColorsExtension.light]),
         home: Builder(
           builder: (context) => Scaffold(

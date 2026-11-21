@@ -18,6 +18,7 @@ import '../../../partners/presentation/widgets/transaction_action_sheets.dart';
 import '../../../partners/presentation/widgets/transaction_receipt_sheet.dart';
 import '../../../partners/presentation/widgets/transaction_tile.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class PartnerHistoryWalletsPage extends StatefulWidget {
   final int partnerId;
@@ -127,7 +128,7 @@ class _PartnerHistoryWalletsPageState extends State<PartnerHistoryWalletsPage> {
         if (!mounted) return;
         res.when(
           success: (_) {
-            AppSnackbar.success(context, 'Saqlandi');
+            AppSnackbar.success(context, context.l10n.commonSaved);
             _loadWallets();
           },
           failure: (f) => AppSnackbar.error(context, f.message),
@@ -142,7 +143,7 @@ class _PartnerHistoryWalletsPageState extends State<PartnerHistoryWalletsPage> {
         if (!mounted) return;
         res.when(
           success: (_) {
-            AppSnackbar.success(context, 'O\'chirildi');
+            AppSnackbar.success(context, context.l10n.commonDeletedToast);
             _loadWallets();
           },
           failure: (f) => AppSnackbar.error(context, f.message),
@@ -153,7 +154,9 @@ class _PartnerHistoryWalletsPageState extends State<PartnerHistoryWalletsPage> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final title = _isKirim ? 'Kirimlar ro\'yxati' : 'Chiqimlar ro\'yxati';
+    final title = _isKirim
+        ? context.l10n.reportIncomesList
+        : context.l10n.reportExpensesList;
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -183,15 +186,13 @@ class _PartnerHistoryWalletsPageState extends State<PartnerHistoryWalletsPage> {
   }
 
   Widget _buildContent(BuildContext context) {
-    final colors = context.colors;
-
     if (_isLoading) {
       return const AppSkeletonList();
     }
 
     if (_error != null) {
       return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
+        title: context.l10n.errorLoadShort,
         description: _error,
         onRetry: _loadWallets,
       );
@@ -199,8 +200,8 @@ class _PartnerHistoryWalletsPageState extends State<PartnerHistoryWalletsPage> {
 
     final wallets = _wallets ?? [];
     if (wallets.isEmpty) {
-      return const AppEmptyState(
-        title: 'Hozircha tranzaksiya yo\'q',
+      return AppEmptyState(
+        title: context.l10n.partnerDetailEmptyTransactions,
         icon: AppIcons.receipt,
       );
     }

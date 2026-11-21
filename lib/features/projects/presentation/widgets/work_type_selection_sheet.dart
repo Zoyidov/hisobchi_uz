@@ -9,13 +9,16 @@ import '../../../../core/widgets/states/app_error_state.dart';
 import '../../../documents/data/document_models.dart';
 import '../../../documents/data/documents_repository.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 Future<SimpleDocument?> showWorkTypeSelectionSheet(
   BuildContext context, {
   int? selectedId,
 }) => showAppBottomSheet<SimpleDocument>(
   context,
-  title: 'Ish turini tanlang',
+  title: context.l10n.workTypeSelect,
   heightFactor: .7,
   child: _WorkTypeSelection(selectedId: selectedId),
 );
@@ -66,7 +69,9 @@ class _WorkTypeSelectionState extends State<_WorkTypeSelection> {
       useSafeArea: true,
       backgroundColor: context.colors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppRadius.large),
+        ),
       ),
       builder: (_) => _WorkTypeForm(initialName: _query),
     );
@@ -89,19 +94,19 @@ class _WorkTypeSelectionState extends State<_WorkTypeSelection> {
               Expanded(
                 child: TextField(
                   onChanged: (value) => setState(() => _query = value.trim()),
-                  decoration: const InputDecoration(
-                    hintText: 'Ish turini qidirish',
+                  decoration: InputDecoration(
+                    hintText: context.l10n.workTypeSearch,
                     prefixIcon: Icon(AppIcons.search),
                   ),
                 ),
               ),
               const SizedBox(width: 10),
               IconButton.filled(
-                tooltip: 'Yangi ish turi yaratish',
+                tooltip: context.l10n.workTypeCreateNew,
                 style: IconButton.styleFrom(
                   minimumSize: const Size(48, 48),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppRadius.medium),
                   ),
                 ),
                 onPressed: _creating ? null : _create,
@@ -127,19 +132,19 @@ class _WorkTypeSelectionState extends State<_WorkTypeSelection> {
                           size: 36,
                           color: context.colors.textTertiary,
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.sm),
                         Text(
                           _query.isEmpty
-                              ? 'Ish turlari hali mavjud emas'
-                              : 'Ish turi topilmadi',
+                              ? context.l10n.workTypeNoneYet
+                              : context.l10n.docWorkTypeNotFound,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.sm),
                         TextButton.icon(
                           onPressed: _creating ? null : _create,
                           icon: const Icon(AppIcons.add),
-                          label: const Text('Yangi ish turi yaratish'),
+                          label: Text(context.l10n.workTypeCreateNew),
                         ),
                       ],
                     ),
@@ -200,7 +205,7 @@ class _WorkTypeFormState extends State<_WorkTypeForm> {
   Future<void> _save() async {
     if (_saving) return;
     if (_name.text.trim().isEmpty) {
-      setState(() => _error = 'Ish turi nomini kiriting');
+      setState(() => _error = context.l10n.workTypeEnterName);
       return;
     }
     setState(() {
@@ -247,28 +252,28 @@ class _WorkTypeFormState extends State<_WorkTypeForm> {
               children: [
                 Expanded(
                   child: Text(
-                    'Yangi ish turi',
+                    context.l10n.workTypeNew,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Yopish',
+                  tooltip: context.l10n.commonClose,
                   onPressed: _saving ? null : () => Navigator.of(context).pop(),
                   icon: const Icon(AppIcons.close),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             TextField(
               controller: _name,
               autofocus: true,
               enabled: !_saving,
               textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
-                labelText: 'Ish turi nomi',
-                hintText: 'Masalan, elektr montaj',
+                labelText: context.l10n.workTypeName,
+                hintText: context.l10n.workTypeNameHint,
                 errorText: _error,
               ),
             ),
@@ -278,16 +283,16 @@ class _WorkTypeFormState extends State<_WorkTypeForm> {
               enabled: !_saving,
               minLines: 2,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Tavsif (ixtiyoriy)',
+              decoration: InputDecoration(
+                labelText: context.l10n.commonDescriptionOptional,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.lg),
             FilledButton.icon(
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppRadius.medium),
                 ),
               ),
               onPressed: _saving ? null : _save,
@@ -298,7 +303,11 @@ class _WorkTypeFormState extends State<_WorkTypeForm> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(AppIcons.check, size: 20),
-              label: Text(_saving ? 'Saqlanmoqda…' : 'Yaratish va tanlash'),
+              label: Text(
+                _saving
+                    ? context.l10n.commonSaving
+                    : context.l10n.commonCreateAndSelect,
+              ),
             ),
           ],
         ),

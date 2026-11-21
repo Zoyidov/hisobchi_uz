@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../core/icons/app_icons.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/localization/app_localization_extension.dart';
 
 /// Bottom navigatsiya — `liquid_glass_widgets` orqali iOS 26 uslubidagi
 /// suzuvchi "liquid glass" panel, orqa fon to'liq ko'rinib turishi uchun
@@ -11,31 +13,31 @@ class MainShellPage extends StatelessWidget {
 
   final StatefulNavigationShell navigationShell;
 
-  static const _tabs = [
+  static List<GlassTab> _tabs(AppLocalizations l10n) => [
     GlassTab(
       icon: Icon(AppIcons.home),
       activeIcon: Icon(AppIcons.homeActive),
-      label: 'Asosiy',
+      label: l10n.navHome,
     ),
     GlassTab(
       icon: Icon(AppIcons.partners),
       activeIcon: Icon(AppIcons.partnersActive),
-      label: 'Hamkorlar',
+      label: l10n.navPartners,
     ),
     GlassTab(
       icon: Icon(AppIcons.project),
       activeIcon: Icon(AppIcons.projectActive),
-      label: 'Loyihalar',
+      label: l10n.navProjects,
     ),
     GlassTab(
       icon: Icon(AppIcons.reports),
       activeIcon: Icon(AppIcons.reportsActive),
-      label: 'Hisobotlar',
+      label: l10n.navReports,
     ),
     GlassTab(
       icon: Icon(AppIcons.profile),
       activeIcon: Icon(AppIcons.profileActive),
-      label: 'Profil',
+      label: l10n.navProfile,
     ),
   ];
 
@@ -52,7 +54,7 @@ class MainShellPage extends StatelessWidget {
       bottomNavigationBar: Padding(
         padding: EdgeInsets.only(bottom: bottomOffset),
         child: GlassTabBar.bottom(
-          tabs: _tabs,
+          tabs: _tabs(context.l10n),
           selectedIndex: navigationShell.currentIndex,
           onTabSelected: (index) => navigationShell.goBranch(
             index,
@@ -63,8 +65,8 @@ class MainShellPage extends StatelessWidget {
           barHeight: 58,
           selectedIconColor: theme.colorScheme.primary,
           selectedLabelColor: theme.colorScheme.primary,
-          unselectedIconColor: isDark ? Colors.white : null,
-          unselectedLabelColor: isDark ? Colors.white : null,
+          unselectedIconColor: isDark ? context.colors.textPrimary : null,
+          unselectedLabelColor: isDark ? context.colors.textPrimary : null,
           adaptiveBrightness: true,
           settings: LiquidGlassSettings(
             thickness: 16,

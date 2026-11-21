@@ -5,6 +5,9 @@ import '../../domain/entities/app_file.dart';
 import '../../theme/app_colors.dart';
 import '../feedback/app_snackbar.dart';
 import '../../icons/app_icons.dart';
+import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
+import '../../localization/app_localization_extension.dart';
 
 class AppFilePreview extends StatelessWidget {
   const AppFilePreview({super.key, required this.files});
@@ -24,8 +27,8 @@ class AppFilePreview extends StatelessWidget {
             backgroundColor: Colors.black,
             appBar: AppBar(
               backgroundColor: Colors.black,
-              foregroundColor: Colors.white,
-              title: Text(file.name ?? 'Rasm'),
+              foregroundColor: context.colors.onPrimary,
+              title: Text(file.name ?? context.l10n.fileImage),
             ),
             body: Center(
               child: InteractiveViewer(
@@ -51,10 +54,7 @@ class AppFilePreview extends StatelessWidget {
       }
     }
     if (!opened && context.mounted) {
-      AppSnackbar.error(
-        context,
-        'Faylni ochib bo‘lmadi. Qayta urinib ko‘ring.',
-      );
+      AppSnackbar.error(context, context.l10n.fileOpenError);
     }
   }
 
@@ -63,7 +63,7 @@ class AppFilePreview extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       Text(
-        'Biriktirilgan fayllar (${files.length})',
+        context.l10n.fileAttachedFiles(files.length),
         style: Theme.of(
           context,
         ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
@@ -85,10 +85,12 @@ class AppFilePreview extends StatelessWidget {
                     button: true,
                     label:
                         file.name ??
-                        (_isImage(file) ? 'Rasmni ochish' : 'Faylni ochish'),
+                        (_isImage(file)
+                            ? context.l10n.fileOpenImage
+                            : context.l10n.fileOpenFile),
                     child: Material(
                       color: context.colors.surfaceSecondary,
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(AppRadius.medium),
                       clipBehavior: Clip.antiAlias,
                       child: InkWell(
                         onTap: () => _open(context, file),
@@ -104,9 +106,10 @@ class AppFilePreview extends StatelessWidget {
                                       color: context.colors.primary,
                                       size: 28,
                                     ),
-                                    const SizedBox(height: 8),
+                                    const SizedBox(height: AppSpacing.xs),
                                     Text(
-                                      file.name ?? 'Fayl #${file.id}',
+                                      file.name ??
+                                          context.l10n.fileNumbered(file.id),
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.center,
@@ -162,7 +165,7 @@ class _RemoteImageState extends State<_RemoteImage> {
           ),
     errorBuilder: (context, _, _) => Center(
       child: IconButton(
-        tooltip: 'Rasm yuklanmadi. Qayta urinish',
+        tooltip: context.l10n.fileImageLoadRetry,
         color: Theme.of(context).brightness == Brightness.dark
             ? Colors.white70
             : context.colors.textSecondary,

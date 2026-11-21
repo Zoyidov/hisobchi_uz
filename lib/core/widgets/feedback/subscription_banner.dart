@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../cubits/subscription_cubit.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../icons/app_icons.dart';
+import '../../localization/app_localization_extension.dart';
+import '../../router/route_paths.dart';
 
 /// Global obuna banneri — GRACE (sariq) / READ_ONLY (qizil) / ARCHIVED
 /// (MOBILE_APP_TZ.md 4.6, E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 65, 175).
 class SubscriptionBanner extends StatelessWidget {
   const SubscriptionBanner({super.key, this.onAction});
 
+  /// Tugma bosilganda. Berilmasa — tariflar sahifasi ochiladi.
   final VoidCallback? onAction;
 
   @override
@@ -27,20 +31,20 @@ class SubscriptionBanner extends StatelessWidget {
           SubscriptionStatus.gracePeriod => (
             colors.warning,
             AppIcons.warning,
-            'Obunangiz muddati tugash arafasida',
-            'Yangilash',
+            context.l10n.subscriptionBannerGrace,
+            context.l10n.subscriptionBannerRenew,
           ),
           SubscriptionStatus.readOnly => (
             colors.error,
             AppIcons.lock,
-            'Faqat ko\'rish rejimi',
-            'Tariflar',
+            context.l10n.subscriptionBannerReadOnly,
+            context.l10n.subscriptionBannerPlans,
           ),
           SubscriptionStatus.archived => (
             colors.error,
             AppIcons.lock,
-            'Obuna talab qilinadi',
-            'Tariflar',
+            context.l10n.subscriptionBannerRequired,
+            context.l10n.subscriptionBannerPlans,
           ),
           _ => (colors.info, AppIcons.info, '', ''),
         };
@@ -66,11 +70,11 @@ class SubscriptionBanner extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.small),
                 ),
                 child: Icon(icon, color: color, size: 18),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
                   text,
@@ -80,10 +84,12 @@ class SubscriptionBanner extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.xs),
               InkWell(
-                onTap: onAction,
-                borderRadius: BorderRadius.circular(10),
+                onTap:
+                    onAction ??
+                    () => context.push(RoutePaths.subscriptionPlans),
+                borderRadius: BorderRadius.circular(AppRadius.small),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -91,12 +97,12 @@ class SubscriptionBanner extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: color,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(AppRadius.small),
                   ),
                   child: Text(
                     actionLabel,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: context.colors.onPrimary,
                       fontWeight: FontWeight.w700,
                       fontSize: 12,
                     ),

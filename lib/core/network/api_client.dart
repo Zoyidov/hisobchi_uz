@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../errors/failure.dart';
 import 'api_result.dart';
 import 'paged_result.dart';
+import '../localization/app_localization_extension.dart';
 
 typedef JsonMap = Map<String, dynamic>;
 
@@ -184,7 +185,9 @@ class ApiClient {
       if (kDebugMode) {
         debugPrint('💥 ApiClient parse error: $e\n$stack');
       }
-      return ApiResult.failure(UnknownFailure('Xatolik: $e'));
+      return ApiResult.failure(
+        UnknownFailure(AppL10n.current.errorWithDetails(e)),
+      );
     }
   }
 }

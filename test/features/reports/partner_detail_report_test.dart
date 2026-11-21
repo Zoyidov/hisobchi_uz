@@ -10,6 +10,7 @@ import 'package:hisobchi_uz/features/partners/data/partners_repository.dart';
 import 'package:hisobchi_uz/features/reports/data/reports_repository.dart';
 import 'package:hisobchi_uz/features/reports/presentation/pages/partner_detail_report_page.dart';
 import 'package:hisobchi_uz/features/reports/presentation/pages/report_detail_list_page.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 Map<String, Object> currencyReport(String balance) => {
   'balance': balance,
@@ -118,6 +119,9 @@ void main() {
         addTearDown(getIt.reset);
         await tester.pumpWidget(
           MaterialApp(
+            locale: const Locale('uz'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             theme: dark ? AppTheme.dark() : AppTheme.light(),
             home: ReportDetailListPage(
               title: 'Hamkorlar',

@@ -15,6 +15,7 @@ import '../../../../core/widgets/typography/money_text.dart';
 import '../../data/installment_models.dart';
 import '../../data/installments_repository.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// To'lovlar tarixi — faqat oxirgi bekor qilinmagan to'lov bekor qilinadi
 /// (MOBILE_APP_TZ.md 9.7).
@@ -70,8 +71,8 @@ class _InstallmentPaymentHistoryPageState
   Future<void> _cancelPayment(int paymentId) async {
     final confirmed = await showAppConfirmationSheet(
       context,
-      title: 'To\'lovni bekor qilish',
-      description: 'Bu amalni keyin qaytarib bo\'lmaydi.',
+      title: context.l10n.installmentCancelPayment,
+      description: context.l10n.commonIrreversible,
     );
     if (!confirmed || !mounted) return;
     final result = await getIt<InstallmentsRepository>().cancelPayment(
@@ -81,7 +82,7 @@ class _InstallmentPaymentHistoryPageState
     if (!mounted) return;
     result.when(
       success: (_) {
-        AppSnackbar.success(context, 'Saqlandi');
+        AppSnackbar.success(context, context.l10n.commonSaved);
         _load();
       },
       failure: (f) => AppSnackbar.error(context, f.message),
@@ -91,7 +92,7 @@ class _InstallmentPaymentHistoryPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('To\'lovlar tarixi')),
+      appBar: AppBar(title: Text(context.l10n.installmentPaymentHistory)),
       body: _buildBody(context),
     );
   }
@@ -99,15 +100,15 @@ class _InstallmentPaymentHistoryPageState
   Widget _buildBody(BuildContext context) {
     if (_error != null) {
       return AppErrorState(
-        title: 'Yuklab bo\'lmadi',
+        title: context.l10n.errorLoadShort,
         description: _error,
         onRetry: _load,
       );
     }
     if (_payments == null) return const AppSkeletonList();
     if (_payments!.isEmpty) {
-      return const AppEmptyState(
-        title: 'To\'lovlar yo\'q',
+      return AppEmptyState(
+        title: context.l10n.installmentNoPayments,
         icon: AppIcons.receipt,
       );
     }
@@ -138,7 +139,7 @@ class _InstallmentPaymentHistoryPageState
                           colorOverride: colors.success,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.xxs),
                       if (payment.createdAt != null)
                         Text(
                           AppDateFormatter.displayDateTime(payment.createdAt!),
@@ -156,7 +157,9 @@ class _InstallmentPaymentHistoryPageState
                           ),
                         ),
                       Text(
-                        '${payment.receivedByName} qabul qildi',
+                        context.l10n.installmentReceivedBy(
+                          payment.receivedByName,
+                        ),
                         style: TextStyle(
                           color: colors.textTertiary,
                           fontSize: 11,
@@ -166,7 +169,7 @@ class _InstallmentPaymentHistoryPageState
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
-                            'Bekor qilingan',
+                            context.l10n.commonCancelled,
                             style: TextStyle(color: colors.error, fontSize: 12),
                           ),
                         ),
@@ -175,7 +178,7 @@ class _InstallmentPaymentHistoryPageState
                 ),
                 if (i == _lastActiveIndex)
                   AppButton.text(
-                    label: 'Bekor qilish',
+                    label: context.l10n.commonCancel,
                     onPressed: () => _cancelPayment(payment.id),
                   ),
               ],

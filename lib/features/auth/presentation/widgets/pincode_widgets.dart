@@ -4,47 +4,19 @@ import 'package:flutter/services.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 
-/// Neon capsule slot colors matching the design:
-/// Slot 0: Cyan / Electric Sky Blue
-/// Slot 1: White / Crisp Slate
-/// Slot 2: Hot Pink / Rose
-/// Slot 3: Cyan / Electric Sky Blue
+/// PIN slotlari ranglari — Hisup brend palitrasidan (logotipdagi och va
+/// to'q ko'k) navbatma-navbat olinadi; xato holatida hammasi `error`.
 class PincodeColors {
   static Color slotColor({
     required int index,
-    required bool isDark,
+    required AppColorsExtension colors,
     required bool isError,
-    required Color errorColor,
   }) {
-    if (isError) return errorColor;
-    if (isDark) {
-      switch (index) {
-        case 0:
-          return const Color(0xFF00E5FF); // Neon Cyan
-        case 1:
-          return const Color(0xFFFFFFFF); // Crisp White
-        case 2:
-          return const Color(0xFFFF5286); // Neon Rose/Pink
-        case 3:
-          return const Color(0xFF00E5FF); // Neon Cyan
-        default:
-          return const Color(0xFF00E5FF);
-      }
-    } else {
-      switch (index) {
-        case 0:
-          return const Color(0xFF0284C7); // Deep Sky Blue
-        case 1:
-          return const Color(0xFF1E293B); // Slate 800 Charcoal
-        case 2:
-          return const Color(0xFFE11D48); // Vibrant Rose
-        case 3:
-          return const Color(0xFF0284C7); // Deep Sky Blue
-        default:
-          return const Color(0xFF0284C7);
-      }
-    }
+    if (isError) return colors.error;
+    return index.isEven ? colors.brandAccent : colors.primary;
   }
 }
 
@@ -145,9 +117,8 @@ class PincodeCapsulesViewState extends State<PincodeCapsulesView>
               final isFilled = index < widget.code.length;
               final slotColor = PincodeColors.slotColor(
                 index: index,
-                isDark: isDark,
+                colors: colors,
                 isError: widget.isError,
-                errorColor: colors.error,
               );
 
               return Padding(
@@ -160,7 +131,9 @@ class PincodeCapsulesViewState extends State<PincodeCapsulesView>
                     color: isDark
                         ? (isFilled
                               ? slotColor.withValues(alpha: 0.08)
-                              : Colors.white.withValues(alpha: 0.03))
+                              : context.colors.onPrimary.withValues(
+                                  alpha: 0.03,
+                                ))
                         : (isFilled
                               ? slotColor.withValues(alpha: 0.06)
                               : Colors.black.withValues(alpha: 0.02)),
@@ -186,11 +159,14 @@ class PincodeCapsulesViewState extends State<PincodeCapsulesView>
                         height: math.min(18.0, capsuleWidth * 0.3),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDark ? Colors.white : slotColor,
+                          color: isDark ? context.colors.onPrimary : slotColor,
                           boxShadow: [
                             BoxShadow(
-                              color: (isDark ? Colors.white : slotColor)
-                                  .withValues(alpha: 0.6),
+                              color:
+                                  (isDark
+                                          ? context.colors.onPrimary
+                                          : slotColor)
+                                      .withValues(alpha: 0.6),
                               blurRadius: 8,
                               spreadRadius: 1,
                             ),
@@ -233,8 +209,7 @@ class PincodeNumericKeypad extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final numberColor = isDark ? Colors.white : const Color(0xFF0F172A);
+    final numberColor = context.colors.textPrimary;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -242,11 +217,11 @@ class PincodeNumericKeypad extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildRow(['1', '2', '3'], numberColor, colors),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           _buildRow(['4', '5', '6'], numberColor, colors),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           _buildRow(['7', '8', '9'], numberColor, colors),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -395,17 +370,17 @@ class PincodePillButton extends StatelessWidget {
             HapticFeedback.lightImpact();
             onTap();
           },
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(AppRadius.large),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             decoration: BoxDecoration(
               color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
+                  ? context.colors.onPrimary.withValues(alpha: 0.08)
                   : Colors.black.withValues(alpha: 0.04),
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(AppRadius.large),
               border: Border.all(
                 color: isDark
-                    ? Colors.white.withValues(alpha: 0.16)
+                    ? context.colors.onPrimary.withValues(alpha: 0.16)
                     : Colors.black.withValues(alpha: 0.1),
                 width: 1,
               ),
@@ -415,7 +390,7 @@ class PincodePillButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: isDark ? Colors.white : colors.textPrimary,
+                color: colors.textPrimary,
                 letterSpacing: -0.2,
               ),
             ),
@@ -521,9 +496,7 @@ class PincodeScreenLayout extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: isDark
-                                  ? const Color(0xFF94A3B8)
-                                  : const Color(0xFF64748B),
+                              color: context.colors.textSecondary,
                               letterSpacing: -0.2,
                             ),
                           ),
@@ -532,9 +505,7 @@ class PincodeScreenLayout extends StatelessWidget {
                               visualDensity: VisualDensity.compact,
                               icon: Icon(
                                 exitIcon,
-                                color: isDark
-                                    ? Colors.white
-                                    : const Color(0xFF0F172A),
+                                color: context.colors.textPrimary,
                                 size: 22,
                               ),
                               onPressed: () {
@@ -548,7 +519,7 @@ class PincodeScreenLayout extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.sm),
 
                     // Greetings & Title
                     Padding(
@@ -561,27 +532,23 @@ class PincodeScreenLayout extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.w800,
-                              color: isDark
-                                  ? Colors.white
-                                  : const Color(0xFF0F172A),
+                              color: context.colors.textPrimary,
                               letterSpacing: -0.6,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: AppSpacing.xxs),
                           Text(
                             subtitle,
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
-                              color: isDark
-                                  ? const Color(0xFF94A3B8)
-                                  : const Color(0xFF64748B),
+                              color: context.colors.textSecondary,
                               letterSpacing: -0.4,
                             ),
                           ),
                           if (errorMessage != null &&
                               errorMessage!.isNotEmpty) ...[
-                            const SizedBox(height: 8),
+                            const SizedBox(height: AppSpacing.xs),
                             AnimatedOpacity(
                               duration: const Duration(milliseconds: 250),
                               opacity: 1.0,
@@ -609,7 +576,7 @@ class PincodeScreenLayout extends StatelessWidget {
                       isError: isError,
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: AppSpacing.xl),
 
                     // Middle Pill Button (e.g. "Forgot PIN" or "Skip")
                     if (pillButtonLabel != null && onPillButtonTap != null)
@@ -631,7 +598,7 @@ class PincodeScreenLayout extends StatelessWidget {
                       showBiometrics: showBiometrics,
                     ),
 
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.sm),
                   ],
                 );
               },

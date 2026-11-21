@@ -17,6 +17,9 @@ import '../../../../core/widgets/states/app_error_state.dart';
 import '../../../documents/data/document_models.dart';
 import '../../../documents/data/documents_repository.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 Future<Worker?> showWorkerSelectionSheet(
   BuildContext context, {
@@ -24,7 +27,7 @@ Future<Worker?> showWorkerSelectionSheet(
   int? projectId,
 }) => showAppBottomSheet<Worker>(
   context,
-  title: 'Ishchini tanlang',
+  title: context.l10n.workerSelect,
   heightFactor: .7,
   child: _WorkerSelection(selectedId: selectedId, projectId: projectId),
 );
@@ -133,19 +136,19 @@ class _WorkerSelectionState extends State<_WorkerSelection> {
               Expanded(
                 child: TextField(
                   onChanged: (value) => setState(() => _query = value.trim()),
-                  decoration: const InputDecoration(
-                    hintText: 'Ism yoki telefon orqali qidirish',
+                  decoration: InputDecoration(
+                    hintText: context.l10n.partnersSearchByNamePhone,
                     prefixIcon: Icon(AppIcons.search),
                   ),
                 ),
               ),
               const SizedBox(width: 10),
               IconButton.filled(
-                tooltip: 'Yangi ishchi yaratish',
+                tooltip: context.l10n.workerCreateNew,
                 style: IconButton.styleFrom(
                   minimumSize: const Size(48, 48),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppRadius.medium),
                   ),
                 ),
                 onPressed: _creating ? null : _create,
@@ -161,7 +164,7 @@ class _WorkerSelectionState extends State<_WorkerSelection> {
               width: double.infinity,
               child: OutlinedButton.icon(
                 icon: const Icon(AppIcons.teamAdd, size: 19),
-                label: const Text('Loyihaga xodim biriktirish'),
+                label: Text(context.l10n.projectAssignStaff),
                 onPressed: _creating
                     ? null
                     : () async {
@@ -191,19 +194,19 @@ class _WorkerSelectionState extends State<_WorkerSelection> {
                           size: 36,
                           color: context.colors.textTertiary,
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.sm),
                         Text(
                           _query.isEmpty
-                              ? 'Ishchilar hali mavjud emas'
-                              : 'Ishchi topilmadi',
+                              ? context.l10n.workerNoneYet
+                              : context.l10n.docWorkerNotFound,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.sm),
                         TextButton.icon(
                           onPressed: _creating ? null : _create,
                           icon: const Icon(AppIcons.add),
-                          label: const Text('Yangi ishchi yaratish'),
+                          label: Text(context.l10n.workerCreateNew),
                         ),
                       ],
                     ),
@@ -248,7 +251,7 @@ Future<Worker?> showWorkerCreateSheet(
   useSafeArea: true,
   backgroundColor: context.colors.surface,
   shape: const RoundedRectangleBorder(
-    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.large)),
   ),
   builder: (_) => _WorkerForm(initialName: initialName),
 );
@@ -286,12 +289,14 @@ class _WorkerFormState extends State<_WorkerForm> {
   Future<void> _save() async {
     if (_saving) return;
     setState(() {
-      _error = _name.text.trim().isEmpty ? 'Ishchi ismini kiriting' : null;
+      _error = _name.text.trim().isEmpty ? context.l10n.workerEnterName : null;
       _phoneError = Validators.phone(_phone.text);
       _additionalPhoneError = _additionalPhone.text.isEmpty
           ? null
           : Validators.phone(_additionalPhone.text);
-      _positionError = _position == null ? 'Lavozimni tanlang' : null;
+      _positionError = _position == null
+          ? context.l10n.docSelectPosition
+          : null;
       _formError = null;
       _descriptionError = null;
     });
@@ -356,10 +361,10 @@ class _WorkerFormState extends State<_WorkerForm> {
     if (message == null) return null;
     final lower = message.toLowerCase();
     if (lower.contains('already') && lower.contains('taken')) {
-      return 'Bu ma’lumot allaqachon ro‘yxatdan o‘tgan';
+      return context.l10n.errorAlreadyRegistered;
     }
-    if (lower.contains('required')) return 'Bu maydonni to‘ldiring';
-    if (lower.contains('invalid')) return 'Kiritilgan ma’lumot noto‘g‘ri';
+    if (lower.contains('required')) return context.l10n.errorFillField;
+    if (lower.contains('invalid')) return context.l10n.errorInvalidData;
     return message;
   }
 
@@ -382,20 +387,20 @@ class _WorkerFormState extends State<_WorkerForm> {
               children: [
                 Expanded(
                   child: Text(
-                    'Yangi ishchi',
+                    context.l10n.workerNew,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Yopish',
+                  tooltip: context.l10n.commonClose,
                   onPressed: _saving ? null : () => Navigator.of(context).pop(),
                   icon: const Icon(AppIcons.close),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             TextField(
               controller: _name,
               autofocus: true,
@@ -404,9 +409,9 @@ class _WorkerFormState extends State<_WorkerForm> {
               textInputAction: TextInputAction.next,
               onChanged: (_) => setState(() => _error = null),
               decoration: InputDecoration(
-                labelText: 'Ism *',
+                labelText: context.l10n.commonNameRequired,
                 prefixIcon: Icon(AppIcons.user, color: context.colors.primary),
-                hintText: 'Ishchining ismi',
+                hintText: context.l10n.workerNameHint,
                 errorText: _error,
               ),
             ),
@@ -415,7 +420,7 @@ class _WorkerFormState extends State<_WorkerForm> {
               absorbing: _saving,
               child: AppPhoneField(
                 controller: _phone,
-                label: 'Telefon *',
+                label: context.l10n.commonPhoneRequired,
                 errorText: _phoneError,
                 onChanged: (_) => setState(() => _phoneError = null),
               ),
@@ -425,14 +430,14 @@ class _WorkerFormState extends State<_WorkerForm> {
               absorbing: _saving,
               child: AppPhoneField(
                 controller: _additionalPhone,
-                label: 'Qo‘shimcha telefon (ixtiyoriy)',
+                label: context.l10n.commonAdditionalPhoneOptional,
                 errorText: _additionalPhoneError,
                 onChanged: (_) => setState(() => _additionalPhoneError = null),
               ),
             ),
             const SizedBox(height: 14),
             InkWell(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
               onTap: _saving
                   ? null
                   : () async {
@@ -450,7 +455,7 @@ class _WorkerFormState extends State<_WorkerForm> {
                     },
               child: InputDecorator(
                 decoration: InputDecoration(
-                  labelText: 'Lavozim *',
+                  labelText: context.l10n.positionRequired,
                   errorText: _positionError,
                   prefixIcon: Icon(
                     AppIcons.project,
@@ -460,7 +465,9 @@ class _WorkerFormState extends State<_WorkerForm> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(_position?.name ?? 'Lavozimni tanlang'),
+                      child: Text(
+                        _position?.name ?? context.l10n.docSelectPosition,
+                      ),
                     ),
                     Icon(
                       AppIcons.chevronDown,
@@ -477,13 +484,13 @@ class _WorkerFormState extends State<_WorkerForm> {
               minLines: 2,
               maxLines: 3,
               decoration: InputDecoration(
-                labelText: 'Izoh (ixtiyoriy)',
-                hintText: 'Qo‘shimcha ma’lumot',
+                labelText: context.l10n.commonNoteOptional,
+                hintText: context.l10n.commonAdditionalInfoHint,
                 errorText: _descriptionError,
               ),
             ),
             if (_formError != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.sm),
               Text(
                 _formError!,
                 style: Theme.of(
@@ -491,12 +498,12 @@ class _WorkerFormState extends State<_WorkerForm> {
                 ).textTheme.bodySmall?.copyWith(color: context.colors.error),
               ),
             ],
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.lg),
             FilledButton.icon(
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppRadius.medium),
                 ),
               ),
               onPressed: _saving ? null : _save,
@@ -507,7 +514,11 @@ class _WorkerFormState extends State<_WorkerForm> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(AppIcons.check, size: 20),
-              label: Text(_saving ? 'Saqlanmoqda…' : 'Yaratish va tanlash'),
+              label: Text(
+                _saving
+                    ? context.l10n.commonSaving
+                    : context.l10n.commonCreateAndSelect,
+              ),
             ),
           ],
         ),

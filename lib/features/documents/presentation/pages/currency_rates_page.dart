@@ -10,6 +10,7 @@ import '../../../../core/widgets/states/app_skeleton.dart';
 import '../../data/document_models.dart';
 import '../../data/documents_repository.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Valyuta kurslari (CBU) + konvertor (MOBILE_APP_TZ.md 11-bo'lim).
 class CurrencyRatesPage extends StatefulWidget {
@@ -57,7 +58,7 @@ class _CurrencyRatesPageState extends State<CurrencyRatesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Valyuta kurslari')),
+      appBar: AppBar(title: Text(context.l10n.docCurrencyRates)),
       body: _buildBody(context),
     );
   }
@@ -65,15 +66,15 @@ class _CurrencyRatesPageState extends State<CurrencyRatesPage> {
   Widget _buildBody(BuildContext context) {
     if (_error != null) {
       return AppErrorState(
-        title: 'Kurslarni yuklab bo\'lmadi',
+        title: context.l10n.docRatesLoadError,
         description: _error,
         onRetry: _load,
       );
     }
     if (_rates == null) return const AppSkeletonList();
     if (_rates!.isEmpty) {
-      return const AppEmptyState(
-        title: 'Kurslar topilmadi',
+      return AppEmptyState(
+        title: context.l10n.docRatesEmpty,
         icon: AppIcons.exchange,
       );
     }
@@ -89,7 +90,7 @@ class _CurrencyRatesPageState extends State<CurrencyRatesPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Konvertor',
+                  context.l10n.docConverter,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: AppSpacing.sm),

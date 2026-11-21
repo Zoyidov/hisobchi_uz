@@ -20,21 +20,21 @@ class _QuickActions extends StatelessWidget {
             >[
               (
                 permission: AppPermission.walletsDebtCreate,
-                label: 'Kirim',
+                label: context.l10n.commonIncome,
                 icon: AppIcons.income,
                 color: colors.success,
                 onTap: () => _wallet(context, 'debt'),
               ),
               (
                 permission: AppPermission.walletsCreditCreate,
-                label: 'Chiqim',
+                label: context.l10n.commonExpense,
                 icon: AppIcons.expense,
                 color: colors.error,
                 onTap: () => _wallet(context, 'credit'),
               ),
               (
                 permission: AppPermission.partnersCreate,
-                label: 'Hamkor',
+                label: context.l10n.dashboardAddPartner,
                 icon: AppIcons.partnerAdd,
                 color: colors.primary,
                 onTap: () async {
@@ -46,7 +46,7 @@ class _QuickActions extends StatelessWidget {
               ),
               (
                 permission: AppPermission.projectsCreate,
-                label: 'Loyiha',
+                label: context.l10n.dashboardAddProject,
                 icon: AppIcons.projectAdd,
                 color: colors.accentViolet,
                 onTap: () => context.go(RoutePaths.projects),

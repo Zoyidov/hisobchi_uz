@@ -16,6 +16,9 @@ import '../../data/project_models.dart';
 import '../../data/projects_repository.dart';
 import '../cubit/project_form_cubit.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Loyiha yaratish/tahrirlash (MOBILE_APP_TZ.md 10.3).
 class ProjectFormPage extends StatelessWidget {
@@ -89,7 +92,7 @@ class _ViewState extends State<_View> {
         backgroundColor: colors.surface,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          _isEditing ? 'Loyihani tahrirlash' : 'Loyiha qo‘shish',
+          _isEditing ? context.l10n.projectEdit : context.l10n.projectAdd,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w700,
             letterSpacing: -.4,
@@ -100,7 +103,7 @@ class _ViewState extends State<_View> {
         child: BlocConsumer<ProjectFormCubit, ProjectFormState>(
           listener: (context, state) {
             if (state is ProjectFormSuccess) {
-              AppSnackbar.success(context, 'Saqlandi');
+              AppSnackbar.success(context, context.l10n.commonSaved);
               Navigator.of(context).pop(state.project);
             } else if (state is ProjectFormValidationError) {
               setState(() => _errors = state.fieldErrors);
@@ -143,7 +146,9 @@ class _ViewState extends State<_View> {
                                         ),
                                       ],
                                     ),
-                                    borderRadius: BorderRadius.circular(20),
+                                    borderRadius: BorderRadius.circular(
+                                      AppRadius.card,
+                                    ),
                                   ),
                                   child: Row(
                                     children: [
@@ -164,7 +169,7 @@ class _ViewState extends State<_View> {
                                           size: 24,
                                         ),
                                       ),
-                                      const SizedBox(width: 12),
+                                      const SizedBox(width: AppSpacing.sm),
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
@@ -172,7 +177,7 @@ class _ViewState extends State<_View> {
                                           children: [
                                             Text(
                                               value.text.trim().isEmpty
-                                                  ? 'Yangi loyiha'
+                                                  ? context.l10n.projectNew
                                                   : value.text.trim(),
                                               maxLines: 2,
                                               overflow: TextOverflow.ellipsis,
@@ -184,11 +189,17 @@ class _ViewState extends State<_View> {
                                                     letterSpacing: -.3,
                                                   ),
                                             ),
-                                            const SizedBox(height: 4),
+                                            const SizedBox(
+                                              height: AppSpacing.xxs,
+                                            ),
                                             Text(
                                               _isEditing
-                                                  ? 'Loyiha ma’lumotlarini yangilang'
-                                                  : 'Loyiha va buyurtmachi ma’lumotlari',
+                                                  ? context
+                                                        .l10n
+                                                        .projectUpdateData
+                                                  : context
+                                                        .l10n
+                                                        .projectAndClientData,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodySmall
@@ -203,19 +214,21 @@ class _ViewState extends State<_View> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: AppSpacing.md),
                               AppCard(
                                 hasShadow: false,
                                 padding: const EdgeInsets.all(14),
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.card,
+                                ),
                                 child: Column(
                                   crossAxisAlignment:
                                       CrossAxisAlignment.stretch,
                                   children: [
                                     AppTextField(
                                       controller: _nameController,
-                                      label: 'Loyiha nomi *',
-                                      hint: 'Masalan, yangi ofis qurilishi',
+                                      label: context.l10n.projectNameRequired,
+                                      hint: context.l10n.projectNameHint,
                                       prefixIcon: Icon(
                                         AppIcons.project,
                                         size: 20,
@@ -233,8 +246,8 @@ class _ViewState extends State<_View> {
                                     const SizedBox(height: 18),
                                     AppTextField(
                                       controller: _ownerController,
-                                      label: 'Buyurtmachi *',
-                                      hint: 'Ism yoki tashkilot nomi',
+                                      label: context.l10n.projectClientRequired,
+                                      hint: context.l10n.projectClientHint,
                                       prefixIcon: Icon(
                                         AppIcons.user,
                                         size: 20,
@@ -250,16 +263,16 @@ class _ViewState extends State<_View> {
                                     const SizedBox(height: 14),
                                     AppPhoneField(
                                       controller: _phoneController,
-                                      label: 'Telefon *',
+                                      label: context.l10n.commonPhoneRequired,
                                       errorText: _errors['phone'],
                                       onChanged: (_) => _clearError('phone'),
                                     ),
                                     const SizedBox(height: 14),
                                     AppTextField(
                                       controller: _addressController,
-                                      label: 'Manzil (ixtiyoriy)',
-                                      hint:
-                                          'Shahar, ko‘cha yoki loyiha manzili',
+                                      label:
+                                          context.l10n.projectAddressOptional,
+                                      hint: context.l10n.projectAddressHint,
                                       prefixIcon: Icon(
                                         AppIcons.location,
                                         size: 20,
@@ -276,7 +289,9 @@ class _ViewState extends State<_View> {
                               Material(
                                 color: colors.surface,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(18),
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.xl,
+                                  ),
                                   side: BorderSide(color: colors.border),
                                 ),
                                 clipBehavior: Clip.antiAlias,
@@ -292,14 +307,14 @@ class _ViewState extends State<_View> {
                                     size: 21,
                                   ),
                                   title: Text(
-                                    'Fayllar va rasmlar',
+                                    context.l10n.projectFilesAndImages,
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleSmall
                                         ?.copyWith(fontWeight: FontWeight.w600),
                                   ),
                                   subtitle: Text(
-                                    'Ixtiyoriy',
+                                    context.l10n.commonOptional,
                                     style: Theme.of(context)
                                         .textTheme
                                         .labelSmall
@@ -344,10 +359,10 @@ class _ViewState extends State<_View> {
                       ),
                       child: AppButton.primary(
                         label: _filesUploading
-                            ? 'Fayl yuklanmoqda…'
+                            ? context.l10n.fileUploading
                             : _isEditing
-                            ? 'Saqlash'
-                            : 'Loyihani yaratish',
+                            ? context.l10n.commonSave
+                            : context.l10n.projectCreate,
                         icon: Icon(
                           _isEditing ? AppIcons.check : AppIcons.add,
                           size: 20,
@@ -369,7 +384,7 @@ class _ViewState extends State<_View> {
   void _submit(BuildContext context) {
     if (context.read<ProjectFormCubit>().state is ProjectFormSubmitting) return;
     if (_filesUploading) {
-      AppSnackbar.error(context, 'Fayl yuklanishini kuting, keyin saqlang.');
+      AppSnackbar.error(context, context.l10n.fileWaitThenSave);
       return;
     }
     final nameError = Validators.required(_nameController.text);
@@ -398,19 +413,19 @@ class _ViewState extends State<_View> {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Limit tugagan'),
+        title: Text(context.l10n.partnerLimitReached),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Yopish'),
+            child: Text(context.l10n.commonClose),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
               context.push(RoutePaths.profileSubscription);
             },
-            child: const Text('Tariflarni ko\'rish'),
+            child: Text(context.l10n.commonViewPlans),
           ),
         ],
       ),

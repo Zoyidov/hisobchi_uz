@@ -13,6 +13,9 @@ import '../../../../core/widgets/lists/app_paged_list_view.dart';
 import '../../data/partner_operation_models.dart';
 import 'partner_detail_report_page.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class _OperationsCubit extends PagedListCubit<PartnerOperation> {
   _OperationsCubit(this.fetcher);
@@ -46,7 +49,7 @@ class PartnerReportOperationsPage extends StatelessWidget {
             onRefresh: cubit.refresh,
             onRetry: cubit.loadFirst,
             emptyIcon: AppIcons.receipt,
-            emptyTitle: 'Operatsiyalar topilmadi',
+            emptyTitle: context.l10n.reportOperationsEmpty,
             padding: const EdgeInsets.all(16),
             itemBuilder: (context, item, index) =>
                 _OperationCard(item: item, currencyTypeId: currencyTypeId),
@@ -95,7 +98,7 @@ class _OperationCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
-          'Qolgan',
+          context.l10n.commonRemaining,
           style: TextStyle(fontSize: 10, color: colors.textSecondary),
         ),
         const SizedBox(height: 3),
@@ -113,7 +116,7 @@ class _OperationCard extends StatelessWidget {
     return AppCard(
       hasShadow: false,
       padding: const EdgeInsets.all(12),
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppRadius.lg),
       onTap: item.partnerId <= 0
           ? null
           : () => Navigator.of(context).push(
@@ -136,21 +139,25 @@ class _OperationCard extends StatelessWidget {
               if (stacked) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [identity, const SizedBox(height: 8), balance],
+                  children: [
+                    identity,
+                    const SizedBox(height: AppSpacing.xs),
+                    balance,
+                  ],
                 );
               }
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(child: identity),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.sm),
                   Expanded(child: balance),
                 ],
               );
             },
           ),
           if (item.description?.trim().isNotEmpty == true) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               item.description!,
               maxLines: 2,
@@ -165,7 +172,7 @@ class _OperationCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
                 decoration: BoxDecoration(
                   color: tint.withValues(alpha: .1),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(AppRadius.xs),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -175,9 +182,11 @@ class _OperationCard extends StatelessWidget {
                       size: 12,
                       color: tint,
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: AppSpacing.xxs),
                     Text(
-                      item.isCredit ? 'Chiqim' : 'Kirim',
+                      item.isCredit
+                          ? context.l10n.commonExpense
+                          : context.l10n.commonIncome,
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
@@ -205,19 +214,29 @@ class _OperationCard extends StatelessWidget {
             ],
           ),
           if (item.scheduledAmount != null || item.paidAmount != null) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
             Wrap(
               spacing: 14,
               runSpacing: 4,
               children: [
                 if (item.scheduledAmount != null)
                   Text(
-                    'Summa: ${MoneyFormatter.format(parseMoney(item.scheduledAmount), currencyTypeId: currencyTypeId)}',
+                    context.l10n.receiptShareAmountPlain(
+                      MoneyFormatter.format(
+                        parseMoney(item.scheduledAmount),
+                        currencyTypeId: currencyTypeId,
+                      ),
+                    ),
                     style: TextStyle(fontSize: 10, color: colors.textSecondary),
                   ),
                 if (item.paidAmount != null)
                   Text(
-                    'To‘langan: ${MoneyFormatter.format(parseMoney(item.paidAmount), currencyTypeId: currencyTypeId)}',
+                    context.l10n.reportPaidAmount(
+                      MoneyFormatter.format(
+                        parseMoney(item.paidAmount),
+                        currencyTypeId: currencyTypeId,
+                      ),
+                    ),
                     style: TextStyle(fontSize: 10, color: colors.success),
                   ),
               ],

@@ -9,14 +9,14 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/cubits/auth_cubit.dart';
 import '../auth_navigation.dart';
 import '../../../../core/cubits/user_cubit.dart';
+import '../../../../core/errors/failure.dart';
 import '../../../../core/di/injector.dart';
-import '../../../../core/domain/repositories/auth_repository.dart';
 import '../../../../core/router/route_paths.dart';
-import '../../../../core/services/device_info_service.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/states/app_error_state.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Premium iOS uslubidagi zamonaviy Splash Screen.
 /// Versiya tekshiruvi, token holati, xavfsiz bootstrap jarayoni.
@@ -66,8 +66,6 @@ class _SplashPageState extends State<SplashPage>
 
   Future<void> _bootstrap() async {
     if (_loadFailed) setState(() => _loadFailed = false);
-    final authRepository = getIt<AuthRepository>();
-    final deviceInfo = getIt<DeviceInfoService>();
     final secureStorage = getIt<SecureStorageService>();
     final authCubit = context.read<AuthCubit>();
     final userCubit = context.read<UserCubit>();
@@ -123,6 +121,15 @@ class _SplashPageState extends State<SplashPage>
     if (user == null) {
       await minSplashWait;
       if (!mounted) return;
+      final userState = userCubit.state;
+      final sessionExpired =
+          (userState is UserError && userState.failure is AuthFailure) ||
+          authCubit.state == AuthStatus.unauthenticated;
+      if (sessionExpired) {
+        // Token yaroqsiz (401) — xato ekrani emas, kirish sahifasi.
+        context.go(RoutePaths.phone);
+        return;
+      }
       setState(() => _loadFailed = true);
       return;
     }
@@ -139,32 +146,30 @@ class _SplashPageState extends State<SplashPage>
       return Scaffold(body: AppErrorState(onRetry: _bootstrap));
     }
     final colors = context.colors;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = colors.isDark;
 
-    final bgGradient = isDark
-        ? const LinearGradient(
-            colors: [
-              Color(0xFF090D16),
-              Color(0xFF0F172A),
-              Color(0xFF1E293B),
-              Color(0xFF0A101D),
+    // Fon native launch screen bilan uzluksiz bo'lishi uchun sirt
+    // tokenlaridan, brend tusi bilan yumshoq aralashtirilgan.
+    final bgGradient = LinearGradient(
+      colors: isDark
+          ? [
+              colors.background,
+              colors.surface,
+              colors.surfaceSecondary,
+              colors.background,
+            ]
+          : [
+              colors.surface,
+              colors.background,
+              colors.primaryContainer,
+              colors.surfaceSecondary,
             ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          )
-        : const LinearGradient(
-            colors: [
-              Color(0xFFFFFFFF),
-              Color(0xFFF8FAFC),
-              Color(0xFFEFF6FF),
-              Color(0xFFF1F5F9),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          );
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF090D16) : Colors.white,
+      backgroundColor: isDark ? colors.background : colors.surface,
       body: Stack(
         children: [
           // 1. Theme-Adaptive Gradient Background
@@ -200,8 +205,7 @@ class _SplashPageState extends State<SplashPage>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    (isDark ? const Color(0xFF3B82F6) : const Color(0xFF60A5FA))
-                        .withValues(alpha: isDark ? 0.18 : 0.12),
+                    colors.brandAccent.withValues(alpha: isDark ? 0.18 : 0.12),
                     Colors.transparent,
                   ],
                 ),
@@ -227,10 +231,10 @@ class _SplashPageState extends State<SplashPage>
 
                   // Subtitle
                   Text(
-                    'Biznes va moliya boshqaruvi',
+                    context.l10n.splashTagline,
                     style: TextStyle(
                       color: isDark
-                          ? Colors.white.withValues(alpha: 0.65)
+                          ? context.colors.onPrimary.withValues(alpha: 0.65)
                           : colors.textSecondary,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
@@ -264,15 +268,15 @@ class _SplashPageState extends State<SplashPage>
                         AppIcons.shield,
                         size: 14,
                         color: isDark
-                            ? Colors.white.withValues(alpha: 0.4)
+                            ? context.colors.onPrimary.withValues(alpha: 0.4)
                             : colors.textTertiary,
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'Xavfsiz va himoyalangan tizim',
+                        context.l10n.splashSecure,
                         style: TextStyle(
                           color: isDark
-                              ? Colors.white.withValues(alpha: 0.45)
+                              ? context.colors.onPrimary.withValues(alpha: 0.45)
                               : colors.textTertiary,
                           fontSize: 11,
                           fontWeight: FontWeight.w500,

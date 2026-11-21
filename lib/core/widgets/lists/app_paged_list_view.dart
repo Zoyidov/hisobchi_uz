@@ -8,6 +8,7 @@ import '../states/app_empty_state.dart';
 import '../states/app_error_state.dart';
 import '../states/app_skeleton.dart';
 import '../../icons/app_icons.dart';
+import '../../localization/app_localization_extension.dart';
 
 /// Umumiy infinite-scroll ro'yxat — Loading/Empty/Error/Success 4 holati bilan
 /// (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 143, MOBILE_APP_TZ.md 4.7, 7-bandlar).
@@ -19,7 +20,7 @@ class AppPagedListView<T> extends StatelessWidget {
     required this.onLoadMore,
     required this.onRefresh,
     required this.onRetry,
-    this.emptyTitle = 'Ma\'lumot topilmadi',
+    this.emptyTitle,
     this.emptyDescription,
     this.emptyIcon = AppIcons.empty,
     this.emptyAction,
@@ -37,7 +38,9 @@ class AppPagedListView<T> extends StatelessWidget {
   final VoidCallback onLoadMore;
   final Future<void> Function() onRefresh;
   final VoidCallback onRetry;
-  final String emptyTitle;
+
+  /// Bo'sh bo'lsa — `l10n.emptyGenericTitle`.
+  final String? emptyTitle;
   final String? emptyDescription;
   final IconData emptyIcon;
   final String? emptyAction;
@@ -71,7 +74,7 @@ class AppPagedListView<T> extends StatelessWidget {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.6,
               child: AppEmptyState(
-                title: emptyTitle,
+                title: emptyTitle ?? context.l10n.emptyGenericTitle,
                 description: emptyDescription,
                 icon: emptyIcon,
                 actionLabel: emptyAction,
@@ -122,7 +125,7 @@ class AppPagedListView<T> extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(AppSpacing.md),
                     child: AppButton.secondary(
-                      label: 'Qayta urinish',
+                      label: context.l10n.commonRetry,
                       expand: false,
                       onPressed: onLoadMore,
                     ),

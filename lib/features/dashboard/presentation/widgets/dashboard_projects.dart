@@ -8,17 +8,17 @@ class _ProjectsSection extends StatelessWidget {
     final colors = context.colors;
     final statuses = [
       (
-        label: 'Jarayonda',
+        label: context.l10n.projectStatusInProgress,
         count: summary.projectsInProgress,
         color: colors.primary,
       ),
       (
-        label: 'Muzlatilgan',
+        label: context.l10n.projectStatusFrozen,
         count: summary.projectsFrozen,
         color: colors.warning,
       ),
       (
-        label: 'Yakunlangan',
+        label: context.l10n.projectStatusCompleted,
         count: summary.projectsCompleted,
         color: colors.success,
       ),
@@ -43,7 +43,7 @@ class _ProjectsSection extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  '${summary.projectsCount} ta loyiha',
+                  context.l10n.dashboardProjectsCount(summary.projectsCount),
                   style: _DashboardStyle.section(context),
                 ),
               ),
@@ -54,10 +54,10 @@ class _ProjectsSection extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           if (summary.projectsCount == 0)
             Text(
-              'Birinchi loyihangizni qo‘shib, ishlarni shu yerda kuzating.',
+              context.l10n.dashboardProjectsEmpty,
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(color: colors.textSecondary),
@@ -66,7 +66,7 @@ class _ProjectsSection extends StatelessWidget {
             Semantics(
               label: statuses.map((s) => '${s.label}: ${s.count}').join(', '),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(AppRadius.xs),
                 child: SizedBox(
                   key: const ValueKey('dashboard-project-progress'),
                   height: 8,

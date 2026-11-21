@@ -9,6 +9,7 @@ import '../../../../core/events/data_refresh_bus.dart';
 import '../../data/installment_models.dart';
 import '../../data/installment_scheduler.dart';
 import '../../data/installments_repository.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class InstallmentCreateState extends Equatable {
   const InstallmentCreateState({
@@ -80,52 +81,52 @@ class InstallmentCreateState extends Equatable {
   /// AC-9.3, 9.4 validatsiya qoidalari.
   String? get step2ValidationError {
     if (totalAmount == null || totalAmount! <= Decimal.zero) {
-      return 'Jami summa 0 dan katta bo\'lishi kerak.';
+      return AppL10n.current.installmentValidationTotalPositive;
     }
     if (hasAdvance &&
         (advanceAmount == null ||
             advanceAmount! <= Decimal.zero ||
             advanceAmount! >= totalAmount!)) {
-      return 'Avans summasi jami summadan kichik bo\'lishi kerak.';
+      return AppL10n.current.installmentValidationAdvanceLess;
     }
     if (scheduleType == InstallmentScheduleType.equal) {
       final minCount = hasAdvance ? 1 : 2;
       if (installmentCount < minCount) {
         return hasAdvance
-            ? 'Avans bilan kamida 1 ta qism bo\'lishi kerak.'
-            : 'Avanssiz kamida 2 ta qism bo\'lishi kerak.';
+            ? AppL10n.current.installmentValidationMinPartsWithAdvance
+            : AppL10n.current.installmentValidationMinPartsNoAdvance;
       }
       if ((startDate ?? DateTime.now()).isBefore(
         DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
       )) {
-        return 'Boshlanish sanasi bugundan kichik bo\'lishi mumkin emas.';
+        return AppL10n.current.installmentValidationStartDatePast;
       }
     } else {
       if (customItems.any((i) => i.amount <= Decimal.zero)) {
-        return 'Har bir qism summasi 0 dan katta bo‘lishi kerak.';
+        return AppL10n.current.installmentValidationPartPositive;
       }
       if (customItems.length < (hasAdvance ? 1 : 2)) {
         return hasAdvance
-            ? 'Avans bilan kamida 1 ta qism kiritilishi kerak.'
-            : 'Kamida 2 ta qism kiritilishi kerak.';
+            ? AppL10n.current.installmentValidationEnterMinPartsWithAdvance
+            : AppL10n.current.installmentValidationEnterMinParts;
       }
       final sum = customItems.fold(Decimal.zero, (acc, i) => acc + i.amount);
       final expected = hasAdvance
           ? totalAmount! - (advanceAmount ?? Decimal.zero)
           : totalAmount!;
       if (sum != expected) {
-        return 'Qismlar yig\'indisi jami summaga teng bo\'lishi kerak.';
+        return AppL10n.current.installmentValidationPartsSum;
       }
       final today = DateTime.now();
       final hasPastDate = customItems.any(
         (i) => i.dueDate.isBefore(DateTime(today.year, today.month, today.day)),
       );
       if (hasPastDate) {
-        return 'To\'lov sanasi bugundan kichik bo\'lishi mumkin emas.';
+        return AppL10n.current.installmentValidationPaymentDatePast;
       }
     }
     if (preview.any((i) => i.amount <= Decimal.zero)) {
-      return 'Har bir qism summasi 0 dan katta bo‘lishi kerak.';
+      return AppL10n.current.installmentValidationPartPositive;
     }
     return null;
   }
@@ -250,7 +251,7 @@ class InstallmentCreateCubit extends Cubit<InstallmentCreateState> {
   Future<void> submit() async {
     if (state.isSubmitting || state.createdPlan != null) return;
     final error = state.isUploading
-        ? 'Fayllar yuklanishini kuting.'
+        ? AppL10n.current.fileWaitForUploads
         : state.step2ValidationError;
     if (error != null) {
       emit(state.copyWith(submitError: BusinessFailure(error)));

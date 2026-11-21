@@ -8,6 +8,9 @@ import 'package:hisobchi_uz/core/network/api_client.dart';
 import 'package:hisobchi_uz/core/theme/app_theme.dart';
 import 'package:hisobchi_uz/features/reports/data/reports_repository.dart';
 import 'package:hisobchi_uz/features/reports/presentation/pages/installment_reports_page.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
+
+import '../../helpers/localized_finders.dart';
 
 const summary = {
   'currency_type_id': 1,
@@ -219,6 +222,9 @@ void main() {
       addTearDown(getIt.reset);
       await tester.pumpWidget(
         MaterialApp(
+          locale: const Locale('uz'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           theme: AppTheme.light(),
           home: const InstallmentReportsPage(),
         ),
@@ -233,7 +239,7 @@ void main() {
       }
 
       Future<void> back() async {
-        await tester.pageBack();
+        await tapBack(tester);
         await tester.pumpAndSettle();
       }
 
@@ -279,6 +285,9 @@ void main() {
         addTearDown(getIt.reset);
         await tester.pumpWidget(
           MaterialApp(
+            locale: const Locale('uz'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             theme: dark ? AppTheme.dark() : AppTheme.light(),
             builder: (context, child) => MediaQuery(
               data: MediaQuery.of(

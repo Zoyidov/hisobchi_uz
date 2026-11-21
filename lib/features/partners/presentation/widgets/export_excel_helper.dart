@@ -7,6 +7,9 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../core/network/api_result.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/feedback/app_snackbar.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// Excel eksport — yuklab olish → vaqtinchalik faylga saqlash → OS ulashish
 /// oynasi (MOBILE_APP_TZ.md 4.10).
@@ -31,7 +34,7 @@ Future<void> downloadAndShareExcel(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             decoration: BoxDecoration(
               color: colors.surface,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(AppRadius.card),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.15),
@@ -51,14 +54,14 @@ Future<void> downloadAndShareExcel(
                     valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.md),
                 Flexible(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Fayl tayyorlanmoqda...',
+                        context.l10n.exportPreparing,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -67,7 +70,7 @@ Future<void> downloadAndShareExcel(
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Iltimos, kuting',
+                        context.l10n.exportPleaseWait,
                         style: TextStyle(
                           fontSize: 12,
                           color: colors.textSecondary,
@@ -96,14 +99,18 @@ Future<void> downloadAndShareExcel(
           final dir = await getTemporaryDirectory();
           final file = File('${dir.path}/$fileName');
           await file.writeAsBytes(bytes);
-          final box = context.mounted ? (context.findRenderObject() as RenderBox?) : null;
+          final box = context.mounted
+              ? (context.findRenderObject() as RenderBox?)
+              : null;
           await Share.shareXFiles(
             [XFile(file.path)],
-            sharePositionOrigin: box != null ? box.localToGlobal(Offset.zero) & box.size : null,
+            sharePositionOrigin: box != null
+                ? box.localToGlobal(Offset.zero) & box.size
+                : null,
           );
         } catch (_) {
           if (context.mounted) {
-            AppSnackbar.error(context, 'Faylni ulashishda xatolik yuz berdi');
+            AppSnackbar.error(context, context.l10n.exportShareError);
           }
         }
       },
@@ -118,7 +125,7 @@ Future<void> downloadAndShareExcel(
       navigator.pop();
     }
     if (context.mounted) {
-      AppSnackbar.error(context, 'Yuklab olishda xatolik yuz berdi');
+      AppSnackbar.error(context, context.l10n.exportDownloadError);
     }
   }
 }

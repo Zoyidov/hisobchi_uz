@@ -6,6 +6,9 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/formatters/money_formatter.dart';
 import '../../data/project_models.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 class ProjectBalanceCard extends StatefulWidget {
   const ProjectBalanceCard({super.key, required this.account});
@@ -68,7 +71,7 @@ class _ProjectBalanceCardState extends State<ProjectBalanceCard> {
         curve: Curves.easeOutCubic,
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(AppRadius.xl),
           border: Border.all(color: tint.withValues(alpha: 0.22), width: 1.2),
           boxShadow: [
             BoxShadow(
@@ -95,7 +98,7 @@ class _ProjectBalanceCardState extends State<ProjectBalanceCard> {
                     height: 38,
                     decoration: BoxDecoration(
                       color: colors.surfaceSecondary,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
                       border: Border.all(
                         color: colors.border.withValues(alpha: 0.4),
                       ),
@@ -113,8 +116,8 @@ class _ProjectBalanceCardState extends State<ProjectBalanceCard> {
                           width: tabWidth,
                           child: Container(
                             decoration: BoxDecoration(
-                              color: isDark ? colors.surface : Colors.white,
-                              borderRadius: BorderRadius.circular(9),
+                              color: colors.surface,
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withValues(
@@ -159,7 +162,7 @@ class _ProjectBalanceCardState extends State<ProjectBalanceCard> {
 
             // Aktiv valyutadagi ma'lumotlar (yo'naltirilgan silliq slide va fade animatsiya bilan)
             ClipRRect(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
               child: AnimatedSize(
                 duration: const Duration(milliseconds: 280),
                 curve: Curves.fastOutSlowIn,
@@ -210,7 +213,7 @@ class _ProjectBalanceCardState extends State<ProjectBalanceCard> {
 
             // Silliq nuqta indikatori (faqat ikkala valyuta mavjud bo'lganda)
             if (hasUsd) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.xs),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -255,7 +258,7 @@ class _ProjectBalanceCardState extends State<ProjectBalanceCard> {
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: tint.withValues(alpha: isSelected ? 0.16 : 0.08),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(AppRadius.xs),
                 ),
                 child: Text(
                   label,
@@ -300,7 +303,7 @@ class _ProjectBalanceCardState extends State<ProjectBalanceCard> {
       height: 4,
       decoration: BoxDecoration(
         color: isSelected ? color : color.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(AppRadius.hairline),
       ),
     );
   }
@@ -327,7 +330,7 @@ class _ProjectBalanceCardState extends State<ProjectBalanceCard> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: tint.withValues(alpha: .12),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Text(
                   currency,
@@ -344,7 +347,7 @@ class _ProjectBalanceCardState extends State<ProjectBalanceCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Sof balans',
+                    context.l10n.balanceNet,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       color: colors.textSecondary,
                       fontWeight: FontWeight.w500,
@@ -353,8 +356,8 @@ class _ProjectBalanceCardState extends State<ProjectBalanceCard> {
                   const SizedBox(height: 2),
                   Text(
                     currency == 'UZS'
-                        ? 'O‘zbek so‘mi hisobi'
-                        : 'AQSH dollari hisobi',
+                        ? context.l10n.partnerAccountUzs
+                        : context.l10n.partnerAccountUsd,
                     style: TextStyle(
                       fontSize: 11,
                       color: colors.textTertiary,
@@ -385,14 +388,14 @@ class _ProjectBalanceCardState extends State<ProjectBalanceCard> {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
           decoration: BoxDecoration(
             color: colors.surfaceSecondary.withValues(alpha: .6),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
           child: Row(
             children: [
               Expanded(
                 child: _flow(
                   context,
-                  'Kirim',
+                  context.l10n.commonIncome,
                   account.income,
                   colors.success,
                   AppIcons.income,
@@ -404,11 +407,11 @@ class _ProjectBalanceCardState extends State<ProjectBalanceCard> {
                 height: 24,
                 color: colors.border.withValues(alpha: 0.5),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: _flow(
                   context,
-                  'Chiqim',
+                  context.l10n.commonExpense,
                   account.cost,
                   colors.error,
                   AppIcons.expense,
@@ -440,7 +443,7 @@ class _ProjectBalanceCardState extends State<ProjectBalanceCard> {
         ),
         child: Icon(icon, size: 14, color: color),
       ),
-      const SizedBox(width: 8),
+      const SizedBox(width: AppSpacing.xs),
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

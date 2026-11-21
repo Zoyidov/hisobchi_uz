@@ -3,6 +3,7 @@ import 'package:decimal/decimal.dart';
 import '../../../core/utils/formatters/date_formatter.dart';
 import '../../../core/utils/money.dart';
 import '../../../core/domain/entities/app_file.dart';
+import '../../../core/localization/app_localization_extension.dart';
 
 enum ProjectStatus { inProgress, frozen, completed }
 
@@ -21,10 +22,10 @@ extension ProjectStatusX on ProjectStatus {
     ProjectStatus.completed => 'completed',
   };
 
-  String get label => switch (this) {
-    ProjectStatus.inProgress => 'Jarayonda',
-    ProjectStatus.frozen => 'Muzlatilgan',
-    ProjectStatus.completed => 'Tugallangan',
+  String label(AppLocalizations l10n) => switch (this) {
+    ProjectStatus.inProgress => l10n.projectStatusInProgress,
+    ProjectStatus.frozen => l10n.projectStatusFrozen,
+    ProjectStatus.completed => l10n.dashboardCompleted,
   };
 }
 

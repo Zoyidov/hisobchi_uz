@@ -4,6 +4,7 @@ import '../../theme/app_spacing.dart';
 import '../buttons/app_button.dart';
 import 'app_bottom_sheet.dart';
 import 'app_selection_sheet.dart';
+import '../../localization/app_localization_extension.dart';
 
 /// Ko'p tanlovli sheet — checkbox ro'yxat + "N ta tanlandi" sticky panel
 /// (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 55, MOBILE_APP_TZ.md 10.4-D).
@@ -17,12 +18,18 @@ Future<List<T>?> showAppMultiSelectionSheet<T>(
     context,
     title: title,
     heightFactor: 0.75,
-    child: _MultiSelectionList<T>(items: items, initiallySelected: initiallySelected),
+    child: _MultiSelectionList<T>(
+      items: items,
+      initiallySelected: initiallySelected,
+    ),
   );
 }
 
 class _MultiSelectionList<T> extends StatefulWidget {
-  const _MultiSelectionList({required this.items, required this.initiallySelected});
+  const _MultiSelectionList({
+    required this.items,
+    required this.initiallySelected,
+  });
   final List<AppSelectionItem<T>> items;
   final List<T> initiallySelected;
 
@@ -62,15 +69,23 @@ class _MultiSelectionListState<T> extends State<_MultiSelectionList<T>> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, 0),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            AppSpacing.sm,
+            AppSpacing.md,
+            0,
+          ),
           child: Row(
             children: [
-              Text('${_selected.length} ta tanlandi'),
+              Text(context.l10n.commonSelectedCount(_selected.length)),
               const Spacer(),
-              AppButton.text(label: 'Bekor qilish', onPressed: () => Navigator.of(context).pop()),
+              AppButton.text(
+                label: context.l10n.commonCancel,
+                onPressed: () => Navigator.of(context).pop(),
+              ),
               const SizedBox(width: AppSpacing.xs),
               AppButton.primary(
-                label: 'Tanlash',
+                label: context.l10n.commonSelect,
                 expand: false,
                 onPressed: () => Navigator.of(context).pop(_selected.toList()),
               ),

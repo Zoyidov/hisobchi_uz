@@ -10,6 +10,7 @@ import '../auth_navigation.dart';
 import '../cubit/pincode_setup_cubit.dart';
 import '../widgets/pincode_widgets.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// PIN yaratish — login/register'dan keyingi ixtiyoriy taklif ekrani
 /// (MOBILE_APP_TZ.md 5.6, 5.8).
@@ -79,7 +80,7 @@ class _PincodeSetupViewState extends State<_PincodeSetupView> {
       setState(() {
         _firstCode = null;
         _code = '';
-        _error = 'PIN kodlar mos emas. Qaytadan kiriting';
+        _error = context.l10n.authPincodeMismatch;
       });
       _capsulesKey.currentState?.triggerShake();
       return;
@@ -121,15 +122,15 @@ class _PincodeSetupViewState extends State<_PincodeSetupView> {
           final user = context.watch<UserCubit>().currentUserOrNull;
           final firstName = user?.name.trim().split(RegExp(r'\s+')).firstOrNull;
           final title = (firstName != null && firstName.isNotEmpty)
-              ? 'Salom, $firstName!'
-              : 'Xush kelibsiz!';
+              ? context.l10n.authHello(firstName)
+              : context.l10n.authWelcome;
 
           final subtitle = _firstCode == null
-              ? 'Yangi PIN-kod yarating'
-              : 'PIN-kodni takrorlang';
+              ? context.l10n.authPincodeCreate
+              : context.l10n.authPincodeRepeat;
 
           return PincodeScreenLayout(
-            topLabel: 'Xavfsiz kirish',
+            topLabel: context.l10n.authSecureEntry,
             onExit: _onExitOrSkip,
             exitIcon: AppIcons.close,
             title: title,
@@ -140,7 +141,7 @@ class _PincodeSetupViewState extends State<_PincodeSetupView> {
             onBackspace: _onBackspace,
             onLongPressBackspace: _onLongPressBackspace,
             showBiometrics: false,
-            pillButtonLabel: 'Hozircha o‘tkazib yuborish',
+            pillButtonLabel: context.l10n.authPincodeSkip,
             onPillButtonTap: _onExitOrSkip,
             capsulesKey: _capsulesKey,
             isError: _error != null,

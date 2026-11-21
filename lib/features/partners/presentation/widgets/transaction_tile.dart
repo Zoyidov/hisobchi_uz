@@ -7,6 +7,8 @@ import '../../../../core/widgets/cards/app_card.dart';
 import '../../../../core/widgets/typography/money_text.dart';
 import '../../data/partner_models.dart';
 import '../../../../core/icons/app_icons.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/localization/app_localization_extension.dart';
 
 /// `TransactionCard` — business component (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 25,
 /// MOBILE_APP_TZ.md 8.6).
@@ -34,7 +36,7 @@ class TransactionTile extends StatelessWidget {
       onTap: onTap,
       hasShadow: !compact,
       padding: EdgeInsets.all(compact ? 10 : AppSpacing.md),
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(AppRadius.xl),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -44,7 +46,7 @@ class TransactionTile extends StatelessWidget {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Icon(
               isExpense ? AppIcons.arrowUp : AppIcons.arrowDown,
@@ -62,7 +64,9 @@ class TransactionTile extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        isExpense ? 'Chiqim' : 'Kirim',
+                        isExpense
+                            ? context.l10n.commonExpense
+                            : context.l10n.commonIncome,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: colors.textSecondary,
                           fontWeight: FontWeight.w600,
@@ -76,7 +80,7 @@ class TransactionTile extends StatelessWidget {
                       Text(
                         AppDateFormatter.relative(
                           wallet.createdAt!,
-                          isRussian: false,
+                          context.l10n,
                         ),
                         style: TextStyle(
                           color: colors.textTertiary,
@@ -99,7 +103,7 @@ class TransactionTile extends StatelessWidget {
                 ),
                 if (wallet.description != null &&
                     wallet.description!.isNotEmpty) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xxs),
                   Text(
                     wallet.description!,
                     maxLines: compact ? 2 : null,
@@ -120,10 +124,12 @@ class TransactionTile extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: colors.info.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(AppRadius.xs),
                     ),
                     child: Text(
-                      'Qaytarish: ${AppDateFormatter.display(wallet.returnDate!)}',
+                      context.l10n.walletReturnShort(
+                        AppDateFormatter.display(wallet.returnDate!),
+                      ),
                       style: TextStyle(
                         color: colors.info,
                         fontSize: 11,
@@ -141,10 +147,12 @@ class TransactionTile extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: colors.error.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(AppRadius.xs),
                     ),
                     child: Text(
-                      'Bekor qilingan${wallet.cancelReason != null ? ': ${wallet.cancelReason}' : ''}',
+                      wallet.cancelReason != null
+                          ? '${context.l10n.commonCancelled}: ${wallet.cancelReason}'
+                          : context.l10n.commonCancelled,
                       style: TextStyle(
                         color: colors.error,
                         fontSize: 11,
@@ -154,9 +162,9 @@ class TransactionTile extends StatelessWidget {
                   ),
                 ],
                 if (wallet.performedByName != null) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xxs),
                   Text(
-                    '${wallet.performedByName} kiritdi',
+                    context.l10n.walletEnteredBy(wallet.performedByName!),
                     style: TextStyle(color: colors.textTertiary, fontSize: 11),
                   ),
                 ],

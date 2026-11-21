@@ -10,6 +10,7 @@ import 'package:hisobchi_uz/features/documents/data/document_models.dart';
 import 'package:hisobchi_uz/features/documents/data/documents_repository.dart';
 import 'package:hisobchi_uz/features/projects/data/projects_repository.dart';
 import 'package:hisobchi_uz/features/projects/presentation/widgets/project_worker_assignment_sheet.dart';
+import 'package:hisobchi_uz/core/localization/gen/app_localizations.dart';
 
 class _Documents implements DocumentsRepository {
   int? excludedProject;
@@ -63,6 +64,9 @@ void main() {
       bool? assigned;
       await tester.pumpWidget(
         MaterialApp(
+          locale: const Locale('uz'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           theme: ThemeData(extensions: const [AppColorsExtension.light]),
           home: Builder(
             builder: (context) => Scaffold(

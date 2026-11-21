@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../theme/app_colors.dart';
+
 /// Hisup mark and wordmark, kept together on entry screens.
 class HisupLogo extends StatelessWidget {
   const HisupLogo({super.key, this.markSize = 104, this.fontSize = 40});
@@ -29,9 +31,7 @@ class HisupLogo extends StatelessWidget {
             Text(
               'Hisup',
               style: TextStyle(
-                color: isDark
-                    ? const Color(0xFFF1F5FF)
-                    : const Color(0xFF061536),
+                color: context.colors.textPrimary,
                 fontSize: fontSize,
                 height: 1.1,
                 fontWeight: FontWeight.w800,

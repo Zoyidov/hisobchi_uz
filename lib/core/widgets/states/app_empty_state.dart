@@ -4,6 +4,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../buttons/app_button.dart';
 import '../../icons/app_icons.dart';
+import '../../theme/app_radius.dart';
 
 /// Har bir list/report uchun majburiy bo'sh holat — "0" bilan bo'sh ekran
 /// qoldirilmaydi (E_HISOB_FLUTTER_UI_COMPONENTS_TZ.md 69, 134, 155).
@@ -38,7 +39,7 @@ class AppEmptyState extends StatelessWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: colors.primary.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(AppRadius.large),
                 border: Border.all(
                   color: colors.primary.withValues(alpha: 0.15),
                   width: 1.5,
